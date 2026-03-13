@@ -3,13 +3,10 @@ import {Animated, StyleSheet, Text, View} from 'react-native';
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import {ControlsShowcase} from '../components/showcase/ControlsShowcase';
 import {FormsShowcase} from '../components/showcase/FormsShowcase';
+import {PickersShowcase} from '../components/showcase/PickersShowcase';
 import {Colors, Radius, Spacing, Typography, fluentShadow} from '../theme';
 
 const UPCOMING = [
-  {
-    title: '1.3 Pickers & Selectors',
-    detail: 'Dropdowns, date/time pickers, color selection, and file flows.',
-  },
   {
     title: '1.4 Feedback & Overlays',
     detail: 'Toasts, dialogs, bottom sheets, progress states, and pull to refresh.',
@@ -50,11 +47,12 @@ export default function ComponentsScreen() {
         ]}>
         <Text style={styles.title}>UI Components</Text>
         <Text style={styles.subtitle}>
-          Phase 1.1 and 1.2 are now live here. Buttons, controls, inputs, and form flows are ready for reuse in later demos.
+          Phases 1.1 through 1.3 are now live here. Buttons, form flows, pickers, and device-style selection patterns are ready for reuse in later demos.
         </Text>
 
         <ControlsShowcase />
         <FormsShowcase />
+        <PickersShowcase />
 
         <View style={styles.roadmapCard}>
           <Text style={styles.roadmapTitle}>Still upcoming in Phase 1</Text>

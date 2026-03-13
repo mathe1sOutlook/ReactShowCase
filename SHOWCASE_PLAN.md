@@ -29,7 +29,7 @@ src/
     ├── ThreeDScreen.tsx        Flip cards, cubo 3D, transforms com perspectiva
     ├── ChartsScreen.tsx        Bar chart, line chart, donut/pie chart
     ├── PlatformScreen.tsx      Cards de hardware/capabilities do sistema
-    ├── ComponentsScreen.tsx    Showcase interativo das Fases 1.1 e 1.2 com controls, inputs, wizard, OTP e rich text
+    ├── ComponentsScreen.tsx    Showcase interativo das Fases 1.1, 1.2 e 1.3 com controls, inputs, wizard, OTP, rich text e pickers
     ├── AboutScreen.tsx         Tech stack, versões, links
     ├── ParticlesScreen.tsx     (Android) Sistema de partículas neon
     ├── ColorsScreen.tsx        (Android) Color picker HSL com 120+ swatches
@@ -107,14 +107,14 @@ src/
 - [x] Rich Text Editor (bold, italic, listas)
 
 ### 1.3 Seletores e Pickers
-- [ ] Dropdown / Select com animação
-- [ ] Date Picker (calendário)
-- [ ] Time Picker
-- [ ] DateTime Picker combinado
-- [ ] Color Picker avançado (HSL, RGB, HEX com preview)
-- [ ] File Picker (selecionar arquivos do dispositivo)
-- [ ] Image Picker (câmera e galeria)
-- [ ] Country / Phone code picker
+- [x] Dropdown / Select com animação
+- [x] Date Picker (calendário)
+- [x] Time Picker
+- [x] DateTime Picker combinado
+- [x] Color Picker avançado (HSL, RGB, HEX com preview)
+- [x] File Picker (selecionar arquivos do dispositivo)
+- [x] Image Picker (câmera e galeria)
+- [x] Country / Phone code picker
 
 ### 1.4 Feedback e Notificações
 - [ ] Toast / Snackbar (success, warning, error, info) com posições variadas
@@ -522,7 +522,7 @@ src/
 |---|---|---|---|---|
 | 🔴 1 | Fase 0 | Reestruturação + Navegação | Fundamental | ✅ Concluída |
 | 🔴 2 | Fase 1.4 | Toasts, Modals, Dialogs | Alto | |
-| 🔴 3 | Fase 1.1-1.3 | Componentes básicos de UI | Alto | 1.1-1.2 concluídas |
+| 🔴 3 | Fase 1.1-1.3 | Componentes básicos de UI | Alto | 1.1-1.3 concluídas |
 | 🟡 4 | Fase 2 | Layouts e Listas | Alto | |
 | 🟡 5 | Fase 3.1-3.2 | Animações e Canvas 2D | Muito Alto | |
 | 🟡 6 | Fase 3.4 | Gráficos e Charts | Muito Alto | |
@@ -599,7 +599,7 @@ src/
 | Fase | Total | Feitos | Progresso |
 |---|---|---|---|
 | Fase 0 - Arquitetura | 23 | 23 | ██████████████████ 100% |
-| Fase 1 - UI Básicos | 52 | 23 | ████████░░░░░░░░░░ 44% |
+| Fase 1 - UI Básicos | 52 | 31 | ███████████░░░░░░░ 60% |
 | Fase 2 - Layouts | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 3 - Animações/Gráficos | 61 | 15 | █████░░░░░░░░░░░░░ 25% |
 | Fase 4 - DataGrid | 26 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
@@ -608,7 +608,7 @@ src/
 | Fase 7 - Web/Conectividade | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 8 - Avançadas | 48 | 2 | █░░░░░░░░░░░░░░░░░ 4% |
 | Fase 9 - Qualidade | 23 | 2 | ██░░░░░░░░░░░░░░░░ 9% |
-| **TOTAL** | **360** | **68** | **███░░░░░░░░░░░░░░░ 19%** |
+| **TOTAL** | **360** | **76** | **████░░░░░░░░░░░░░ 21%** |
 
 ---
 
