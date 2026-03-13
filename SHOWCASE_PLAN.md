@@ -4,7 +4,7 @@
 
 ---
 
-## Arquitetura Atual (pós Fase 1.2)
+## Arquitetura Atual (pós Fase 1.5)
 
 ```
 App.tsx → NavigationContainer (deep linking) + AppNavigator
@@ -17,6 +17,12 @@ src/
 │   ├── ScreenContainer.tsx                 Container padrão ScrollView
 │   ├── AnimatedHeader.tsx                  Header custom com back animado + breadcrumb (Win)
 │   └── AcrylicCard.tsx (Win)               Card com efeito Fluent acrylic
+├── components/showcase/
+│   ├── ControlsShowcase.tsx               Botões, toggles, sliders, chips, segmented
+│   ├── FormsShowcase.tsx                  Inputs, validação, masks, wizard, OTP, rich text
+│   ├── PickersShowcase.tsx                Dropdown, date/time, color, file, image pickers
+│   ├── FeedbackShowcase.tsx               Toast, alert, bottom sheet, modal, skeleton, progress
+│   └── DataDisplayShowcase.tsx            Avatars, badges, cards, lists, accordion, timeline, KPIs, empty/error
 ├── navigation/
 │   ├── AppNavigator.tsx    BottomTabs (Android) / SideRail (Windows)
 │   ├── HomeStack.tsx       Stack com header customizado
@@ -29,7 +35,7 @@ src/
     ├── ThreeDScreen.tsx        Flip cards, cubo 3D, transforms com perspectiva
     ├── ChartsScreen.tsx        Bar chart, line chart, donut/pie chart
     ├── PlatformScreen.tsx      Cards de hardware/capabilities do sistema
-    ├── ComponentsScreen.tsx    Showcase interativo das Fases 1.1, 1.2, 1.3 e 1.4 com controls, forms, pickers, feedback, overlays e loading states
+    ├── ComponentsScreen.tsx    Showcase interativo Fases 1.1–1.5: controls, forms, pickers, feedback, data display (avatars, badges, cards, lists, accordion, timeline, KPIs, empty/error states)
     ├── AboutScreen.tsx         Tech stack, versões, links
     ├── ParticlesScreen.tsx     (Android) Sistema de partículas neon
     ├── ColorsScreen.tsx        (Android) Color picker HSL com 120+ swatches
@@ -131,15 +137,15 @@ src/
 - [x] Pull to Refresh indicator
 
 ### 1.5 Exibição de Dados
-- [ ] Avatar (imagem, iniciais, ícone) com badge de status
-- [ ] Badge / Counter
-- [ ] Card com variações (simples, com imagem, com ações, expandível)
-- [ ] List Item (com ícone, subtitle, ação, swipe actions)
-- [ ] Accordion / Expandable section
-- [ ] Timeline / Stepper vertical
-- [ ] Stat Card / KPI display
-- [ ] Empty State (ilustração + mensagem quando não há dados)
-- [ ] Error State com botão de retry
+- [x] Avatar (imagem, iniciais, ícone) com badge de status
+- [x] Badge / Counter
+- [x] Card com variações (simples, com imagem, com ações, expandível)
+- [x] List Item (com ícone, subtitle, ação, swipe actions)
+- [x] Accordion / Expandable section
+- [x] Timeline / Stepper vertical
+- [x] Stat Card / KPI display
+- [x] Empty State (ilustração + mensagem quando não há dados)
+- [x] Error State com botão de retry
 
 ---
 
@@ -522,7 +528,7 @@ src/
 |---|---|---|---|---|
 | 🔴 1 | Fase 0 | Reestruturação + Navegação | Fundamental | ✅ Concluída |
 | 🔴 2 | Fase 1.4 | Toasts, Modals, Dialogs | Alto | ✅ Concluída |
-| 🔴 3 | Fase 1.1-1.3 | Componentes básicos de UI | Alto | 1.1-1.3 concluídas |
+| 🔴 3 | Fase 1.1-1.5 | Componentes de UI completos | Alto | ✅ Concluída |
 | 🟡 4 | Fase 2 | Layouts e Listas | Alto | |
 | 🟡 5 | Fase 3.1-3.2 | Animações e Canvas 2D | Muito Alto | |
 | 🟡 6 | Fase 3.4 | Gráficos e Charts | Muito Alto | |
@@ -599,7 +605,7 @@ src/
 | Fase | Total | Feitos | Progresso |
 |---|---|---|---|
 | Fase 0 - Arquitetura | 23 | 23 | ██████████████████ 100% |
-| Fase 1 - UI Básicos | 52 | 43 | ███████████████░░░ 83% |
+| Fase 1 - UI Básicos | 52 | 52 | ██████████████████ 100% |
 | Fase 2 - Layouts | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 3 - Animações/Gráficos | 61 | 15 | █████░░░░░░░░░░░░░ 25% |
 | Fase 4 - DataGrid | 26 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
@@ -608,7 +614,7 @@ src/
 | Fase 7 - Web/Conectividade | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 8 - Avançadas | 48 | 2 | █░░░░░░░░░░░░░░░░░ 4% |
 | Fase 9 - Qualidade | 23 | 2 | ██░░░░░░░░░░░░░░░░ 9% |
-| **TOTAL** | **360** | **88** | **████░░░░░░░░░░░░░ 24%** |
+| **TOTAL** | **360** | **97** | **█████░░░░░░░░░░░░ 27%** |
 
 ---
 
