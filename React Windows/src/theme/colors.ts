@@ -3,15 +3,20 @@ export const Colors = {
   primary: '#0078d4',
   primaryLight: '#60cdff',
   primaryDark: '#005a9e',
+  secondary: '#8764b8',
   accent: '#8764b8',
   accentLight: '#b4a0ff',
 
   // Backgrounds
   bg: '#f3f3f3',
   bgAlt: '#e8e8e8',
+  bgLight: '#e8e8e8',
   bgCard: '#ffffff',
+  bgCardAlt: '#f8f8f8',
   bgSmoke: 'rgba(255,255,255,0.72)',
   bgElevated: '#ffffff',
+  surface: 'rgba(255,255,255,0.72)',
+  surfaceElevated: '#ffffff',
 
   // Text
   textPrimary: '#1a1a1a',
@@ -28,6 +33,7 @@ export const Colors = {
   // Borders & Surfaces
   border: 'rgba(0,0,0,0.06)',
   borderMedium: 'rgba(0,0,0,0.12)',
+  borderLight: 'rgba(0,0,0,0.12)',
   shadow: 'rgba(0,0,0,0.08)',
   shadowDeep: 'rgba(0,0,0,0.14)',
 

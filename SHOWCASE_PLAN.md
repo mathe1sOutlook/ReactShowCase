@@ -29,7 +29,7 @@ src/
     ├── ThreeDScreen.tsx        Flip cards, cubo 3D, transforms com perspectiva
     ├── ChartsScreen.tsx        Bar chart, line chart, donut/pie chart
     ├── PlatformScreen.tsx      Cards de hardware/capabilities do sistema
-    ├── ComponentsScreen.tsx    Showcase interativo das Fases 1.1, 1.2 e 1.3 com controls, inputs, wizard, OTP, rich text e pickers
+    ├── ComponentsScreen.tsx    Showcase interativo das Fases 1.1, 1.2, 1.3 e 1.4 com controls, forms, pickers, feedback, overlays e loading states
     ├── AboutScreen.tsx         Tech stack, versões, links
     ├── ParticlesScreen.tsx     (Android) Sistema de partículas neon
     ├── ColorsScreen.tsx        (Android) Color picker HSL com 120+ swatches
@@ -117,18 +117,18 @@ src/
 - [x] Country / Phone code picker
 
 ### 1.4 Feedback e Notificações
-- [ ] Toast / Snackbar (success, warning, error, info) com posições variadas
-- [ ] Alert Dialog customizado
-- [ ] Confirmation Dialog (com botões Sim/Não)
-- [ ] Bottom Sheet arrastável
-- [ ] Modal com backdrop blur
-- [ ] Popup / Popover posicionado
-- [ ] Tooltip em hover/press
-- [ ] Banner de notificação in-app
-- [ ] Progress Bar (determinado e indeterminado)
-- [ ] Circular Progress / Activity Indicator
-- [ ] Skeleton Loading / Shimmer effect
-- [ ] Pull to Refresh indicator
+- [x] Toast / Snackbar (success, warning, error, info) com posições variadas
+- [x] Alert Dialog customizado
+- [x] Confirmation Dialog (com botões Sim/Não)
+- [x] Bottom Sheet arrastável
+- [x] Modal com backdrop blur
+- [x] Popup / Popover posicionado
+- [x] Tooltip em hover/press
+- [x] Banner de notificação in-app
+- [x] Progress Bar (determinado e indeterminado)
+- [x] Circular Progress / Activity Indicator
+- [x] Skeleton Loading / Shimmer effect
+- [x] Pull to Refresh indicator
 
 ### 1.5 Exibição de Dados
 - [ ] Avatar (imagem, iniciais, ícone) com badge de status
@@ -521,7 +521,7 @@ src/
 | Prioridade | Fase | Descrição | Impacto Visual | Status |
 |---|---|---|---|---|
 | 🔴 1 | Fase 0 | Reestruturação + Navegação | Fundamental | ✅ Concluída |
-| 🔴 2 | Fase 1.4 | Toasts, Modals, Dialogs | Alto | |
+| 🔴 2 | Fase 1.4 | Toasts, Modals, Dialogs | Alto | ✅ Concluída |
 | 🔴 3 | Fase 1.1-1.3 | Componentes básicos de UI | Alto | 1.1-1.3 concluídas |
 | 🟡 4 | Fase 2 | Layouts e Listas | Alto | |
 | 🟡 5 | Fase 3.1-3.2 | Animações e Canvas 2D | Muito Alto | |
@@ -599,7 +599,7 @@ src/
 | Fase | Total | Feitos | Progresso |
 |---|---|---|---|
 | Fase 0 - Arquitetura | 23 | 23 | ██████████████████ 100% |
-| Fase 1 - UI Básicos | 52 | 31 | ███████████░░░░░░░ 60% |
+| Fase 1 - UI Básicos | 52 | 43 | ███████████████░░░ 83% |
 | Fase 2 - Layouts | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 3 - Animações/Gráficos | 61 | 15 | █████░░░░░░░░░░░░░ 25% |
 | Fase 4 - DataGrid | 26 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
@@ -608,7 +608,7 @@ src/
 | Fase 7 - Web/Conectividade | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 8 - Avançadas | 48 | 2 | █░░░░░░░░░░░░░░░░░ 4% |
 | Fase 9 - Qualidade | 23 | 2 | ██░░░░░░░░░░░░░░░░ 9% |
-| **TOTAL** | **360** | **76** | **████░░░░░░░░░░░░░ 21%** |
+| **TOTAL** | **360** | **88** | **████░░░░░░░░░░░░░ 24%** |
 
 ---
 

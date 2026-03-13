@@ -2,15 +2,12 @@ import React, {useEffect, useRef} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import {ControlsShowcase} from '../components/showcase/ControlsShowcase';
+import {FeedbackShowcase} from '../components/showcase/FeedbackShowcase';
 import {FormsShowcase} from '../components/showcase/FormsShowcase';
 import {PickersShowcase} from '../components/showcase/PickersShowcase';
 import {Colors, Radius, Spacing, Typography, fluentShadow} from '../theme';
 
 const UPCOMING = [
-  {
-    title: '1.4 Feedback & Overlays',
-    detail: 'Toasts, dialogs, bottom sheets, progress states, and pull to refresh.',
-  },
   {
     title: '1.5 Data Display',
     detail: 'Cards, avatars, badges, accordions, timelines, and empty states.',
@@ -47,15 +44,16 @@ export default function ComponentsScreen() {
         ]}>
         <Text style={styles.title}>UI Components</Text>
         <Text style={styles.subtitle}>
-          Phases 1.1 through 1.3 are now live here. Buttons, form flows, pickers, and device-style selection patterns are ready for reuse in later demos.
+          Phases 1.1 through 1.4 are now live here. Buttons, form flows, pickers, feedback overlays, and loading states are ready for reuse in later demos.
         </Text>
 
         <ControlsShowcase />
         <FormsShowcase />
         <PickersShowcase />
+        <FeedbackShowcase />
 
         <View style={styles.roadmapCard}>
-          <Text style={styles.roadmapTitle}>Still upcoming in Phase 1</Text>
+          <Text style={styles.roadmapTitle}>Next in Phase 1</Text>
           <View style={styles.list}>
             {UPCOMING.map(item => (
               <View key={item.title} style={styles.listItem}>
