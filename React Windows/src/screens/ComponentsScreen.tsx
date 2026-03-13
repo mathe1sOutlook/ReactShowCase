@@ -2,13 +2,10 @@ import React, {useEffect, useRef} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import {ControlsShowcase} from '../components/showcase/ControlsShowcase';
+import {FormsShowcase} from '../components/showcase/FormsShowcase';
 import {Colors, Radius, Spacing, Typography, fluentShadow} from '../theme';
 
 const UPCOMING = [
-  {
-    title: '1.2 Inputs & Forms',
-    detail: 'Floating labels, validation, masking, multi-step flows, and OTP.',
-  },
   {
     title: '1.3 Pickers & Selectors',
     detail: 'Dropdowns, date/time pickers, color selection, and file flows.',
@@ -53,13 +50,14 @@ export default function ComponentsScreen() {
         ]}>
         <Text style={styles.title}>UI Components</Text>
         <Text style={styles.subtitle}>
-          Phase 1 started here. Buttons and controls are live, and the next UI blocks are queued underneath.
+          Phase 1.1 and 1.2 are now live here. Buttons, controls, inputs, and form flows are ready for reuse in later demos.
         </Text>
 
         <ControlsShowcase />
+        <FormsShowcase />
 
         <View style={styles.roadmapCard}>
-          <Text style={styles.roadmapTitle}>Next in Phase 1</Text>
+          <Text style={styles.roadmapTitle}>Still upcoming in Phase 1</Text>
           <View style={styles.list}>
             {UPCOMING.map(item => (
               <View key={item.title} style={styles.listItem}>

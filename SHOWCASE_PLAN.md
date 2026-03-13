@@ -4,7 +4,7 @@
 
 ---
 
-## Arquitetura Atual (pós Fase 0)
+## Arquitetura Atual (pós Fase 1.2)
 
 ```
 App.tsx → NavigationContainer (deep linking) + AppNavigator
@@ -29,7 +29,7 @@ src/
     ├── ThreeDScreen.tsx        Flip cards, cubo 3D, transforms com perspectiva
     ├── ChartsScreen.tsx        Bar chart, line chart, donut/pie chart
     ├── PlatformScreen.tsx      Cards de hardware/capabilities do sistema
-    ├── ComponentsScreen.tsx    Showcase interativo da Fase 1.1 com buttons, toggles, sliders e chips
+    ├── ComponentsScreen.tsx    Showcase interativo das Fases 1.1 e 1.2 com controls, inputs, wizard, OTP e rich text
     ├── AboutScreen.tsx         Tech stack, versões, links
     ├── ParticlesScreen.tsx     (Android) Sistema de partículas neon
     ├── ColorsScreen.tsx        (Android) Color picker HSL com 120+ swatches
@@ -94,17 +94,17 @@ src/
 - [x] Segmented Control / Tab selector
 
 ### 1.2 Inputs e Formulários
-- [ ] TextInput com label animado (floating label)
-- [ ] TextInput com validação em tempo real (email, senha, CPF, etc.)
-- [ ] TextInput com máscara (telefone, CEP, CPF, cartão de crédito)
-- [ ] TextInput multiline / TextArea
-- [ ] Password input com toggle de visibilidade
-- [ ] Search input com ícone e clear button
-- [ ] Autocomplete / Suggestions dropdown
-- [ ] Formulário multi-step (wizard) com progress bar
-- [ ] Formulário com validação completa e mensagens de erro
-- [ ] Pin Code / OTP input
-- [ ] Rich Text Editor (bold, italic, listas)
+- [x] TextInput com label animado (floating label)
+- [x] TextInput com validação em tempo real (email, senha, CPF, etc.)
+- [x] TextInput com máscara (telefone, CEP, CPF, cartão de crédito)
+- [x] TextInput multiline / TextArea
+- [x] Password input com toggle de visibilidade
+- [x] Search input com ícone e clear button
+- [x] Autocomplete / Suggestions dropdown
+- [x] Formulário multi-step (wizard) com progress bar
+- [x] Formulário com validação completa e mensagens de erro
+- [x] Pin Code / OTP input
+- [x] Rich Text Editor (bold, italic, listas)
 
 ### 1.3 Seletores e Pickers
 - [ ] Dropdown / Select com animação
@@ -522,7 +522,7 @@ src/
 |---|---|---|---|---|
 | 🔴 1 | Fase 0 | Reestruturação + Navegação | Fundamental | ✅ Concluída |
 | 🔴 2 | Fase 1.4 | Toasts, Modals, Dialogs | Alto | |
-| 🔴 3 | Fase 1.1-1.3 | Componentes básicos de UI | Alto | |
+| 🔴 3 | Fase 1.1-1.3 | Componentes básicos de UI | Alto | 1.1-1.2 concluídas |
 | 🟡 4 | Fase 2 | Layouts e Listas | Alto | |
 | 🟡 5 | Fase 3.1-3.2 | Animações e Canvas 2D | Muito Alto | |
 | 🟡 6 | Fase 3.4 | Gráficos e Charts | Muito Alto | |
@@ -598,17 +598,17 @@ src/
 
 | Fase | Total | Feitos | Progresso |
 |---|---|---|---|
-| Fase 0 - Arquitetura | 18 | 18 | ██████████████████ 100% |
-| Fase 1 - UI Básicos | 62 | 12 | ███░░░░░░░░░░░░░░░ 19% |
+| Fase 0 - Arquitetura | 23 | 23 | ██████████████████ 100% |
+| Fase 1 - UI Básicos | 52 | 23 | ████████░░░░░░░░░░ 44% |
 | Fase 2 - Layouts | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
-| Fase 3 - Animações/Gráficos | 55 | 14 | ████░░░░░░░░░░░░░░ 25% |
-| Fase 4 - DataGrid | 25 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
-| Fase 5 - Mídia | 30 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
-| Fase 6 - Dispositivo | 40 | 3 | █░░░░░░░░░░░░░░░░░ 8% |
+| Fase 3 - Animações/Gráficos | 61 | 15 | █████░░░░░░░░░░░░░ 25% |
+| Fase 4 - DataGrid | 26 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
+| Fase 5 - Mídia | 31 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
+| Fase 6 - Dispositivo | 52 | 3 | █░░░░░░░░░░░░░░░░░ 6% |
 | Fase 7 - Web/Conectividade | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
-| Fase 8 - Avançadas | 45 | 2 | █░░░░░░░░░░░░░░░░░ 4% |
-| Fase 9 - Qualidade | 22 | 2 | █░░░░░░░░░░░░░░░░░ 9% |
-| **TOTAL** | **341** | **51** | **███░░░░░░░░░░░░░░░ 15%** |
+| Fase 8 - Avançadas | 48 | 2 | █░░░░░░░░░░░░░░░░░ 4% |
+| Fase 9 - Qualidade | 23 | 2 | ██░░░░░░░░░░░░░░░░ 9% |
+| **TOTAL** | **360** | **68** | **███░░░░░░░░░░░░░░░ 19%** |
 
 ---
 
