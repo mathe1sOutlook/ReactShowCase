@@ -1,19 +1,26 @@
 import React, {useEffect, useRef} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
-import {Colors, Spacing} from '../theme';
 import {ScreenContainer} from '../components/common/ScreenContainer';
+import {ControlsShowcase} from '../components/showcase/ControlsShowcase';
+import {Colors, Radius, Spacing, Typography} from '../theme';
 
 const UPCOMING = [
-  {icon: '\u{1F518}', label: 'Buttons & Controls'},
-  {icon: '\u{270D}\uFE0F', label: 'Forms & Inputs'},
-  {icon: '\u{1F4CB}', label: 'DataGrid'},
-  {icon: '\u{1F514}', label: 'Toasts & Modals'},
-  {icon: '\u{1F4C5}', label: 'Calendar & Pickers'},
-  {icon: '\u{1F4F7}', label: 'Camera & Media'},
-  {icon: '\u{1F4C4}', label: 'PDF Viewer'},
-  {icon: '\u{1F310}', label: 'WebView'},
-  {icon: '\u{1F5FA}\uFE0F', label: 'Maps'},
-  {icon: '\u{1F50D}', label: 'QR & Barcode Scanner'},
+  {
+    title: '1.2 Inputs & Forms',
+    detail: 'Floating labels, validation, masking, multi-step flows, and OTP.',
+  },
+  {
+    title: '1.3 Pickers & Selectors',
+    detail: 'Dropdowns, date/time pickers, color selection, and file flows.',
+  },
+  {
+    title: '1.4 Feedback & Overlays',
+    detail: 'Toasts, dialogs, bottom sheets, progress states, and pull to refresh.',
+  },
+  {
+    title: '1.5 Data Display',
+    detail: 'Cards, avatars, badges, accordions, timelines, and empty states.',
+  },
 ];
 
 export default function ComponentsScreen() {
@@ -29,37 +36,43 @@ export default function ComponentsScreen() {
 
   return (
     <ScreenContainer>
-      <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            opacity: fadeAnim,
+            transform: [
+              {
+                translateY: fadeAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [18, 0],
+                }),
+              },
+            ],
+          },
+        ]}>
         <Text style={styles.title}>UI Components</Text>
         <Text style={styles.subtitle}>
-          Coming soon {'\u2014'} these demos will be added in upcoming phases
+          Phase 1 started here. Buttons and controls are live, and the next UI blocks are queued underneath.
         </Text>
 
-        <View style={styles.list}>
-          {UPCOMING.map((item, i) => (
-            <Animated.View
-              key={item.label}
-              style={[
-                styles.listItem,
-                {
-                  opacity: fadeAnim,
-                  transform: [
-                    {
-                      translateX: fadeAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [30, 0],
-                      }),
-                    },
-                  ],
-                },
-              ]}>
-              <Text style={styles.itemIcon}>{item.icon}</Text>
-              <Text style={styles.itemLabel}>{item.label}</Text>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>SOON</Text>
+        <ControlsShowcase />
+
+        <View style={styles.roadmapCard}>
+          <Text style={styles.roadmapTitle}>Next in Phase 1</Text>
+          <View style={styles.list}>
+            {UPCOMING.map(item => (
+              <View key={item.title} style={styles.listItem}>
+                <View style={styles.itemCopy}>
+                  <Text style={styles.itemLabel}>{item.title}</Text>
+                  <Text style={styles.itemDetail}>{item.detail}</Text>
+                </View>
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>NEXT</Text>
+                </View>
               </View>
-            </Animated.View>
-          ))}
+            ))}
+          </View>
         </View>
       </Animated.View>
     </ScreenContainer>
@@ -69,51 +82,63 @@ export default function ComponentsScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: Spacing.lg,
+    gap: Spacing.lg,
   },
   title: {
-    fontSize: 26,
-    fontWeight: '800',
+    ...Typography.h2,
     color: Colors.white,
-    letterSpacing: 1,
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 13,
+    ...Typography.bodySmall,
     color: Colors.textSecondary,
-    marginBottom: Spacing.xl,
+  },
+  roadmapCard: {
+    backgroundColor: Colors.bgCard,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    padding: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  roadmapTitle: {
+    ...Typography.h4,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
   },
   list: {
     gap: Spacing.sm,
   },
   listItem: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.bgCard,
-    borderRadius: 12,
-    padding: Spacing.lg,
+    alignItems: 'flex-start',
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: Colors.borderLight,
+    gap: Spacing.md,
   },
-  itemIcon: {
-    fontSize: 22,
-    marginRight: Spacing.md,
+  itemCopy: {
+    flex: 1,
+    gap: 2,
   },
   itemLabel: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: '600',
+    ...Typography.h4,
     color: Colors.textPrimary,
+  },
+  itemDetail: {
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
   },
   badge: {
     backgroundColor: Colors.accent + '25',
     paddingHorizontal: 10,
     paddingVertical: 3,
-    borderRadius: 10,
+    borderRadius: Radius.full,
   },
   badgeText: {
-    fontSize: 9,
-    fontWeight: '700',
+    ...Typography.label,
     color: Colors.accent,
-    letterSpacing: 1,
   },
 });

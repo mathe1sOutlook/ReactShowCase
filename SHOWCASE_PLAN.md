@@ -29,7 +29,7 @@ src/
     ├── ThreeDScreen.tsx        Flip cards, cubo 3D, transforms com perspectiva
     ├── ChartsScreen.tsx        Bar chart, line chart, donut/pie chart
     ├── PlatformScreen.tsx      Cards de hardware/capabilities do sistema
-    ├── ComponentsScreen.tsx    Placeholder para UI components futuros
+    ├── ComponentsScreen.tsx    Showcase interativo da Fase 1.1 com buttons, toggles, sliders e chips
     ├── AboutScreen.tsx         Tech stack, versões, links
     ├── ParticlesScreen.tsx     (Android) Sistema de partículas neon
     ├── ColorsScreen.tsx        (Android) Color picker HSL com 120+ swatches
@@ -80,18 +80,18 @@ src/
 ## 📋 FASE 1 — Componentes de UI Básicos
 
 ### 1.1 Botões e Controles
-- [ ] Botões: Primary, Secondary, Outlined, Text, Icon, FAB (Floating Action Button)
-- [ ] Botão com loading spinner
-- [ ] Botão com ícone + texto
-- [ ] Grupo de botões (Button Group)
-- [ ] Toggle / Switch com animação
-- [ ] Checkbox com animação de check
-- [ ] Radio Button com animação de seleção
-- [ ] Slider com valor em tempo real
-- [ ] Range Slider (dois thumbs)
-- [ ] Stepper / Incremento numérico (+/-)
-- [ ] Chip / Tag selecionável
-- [ ] Segmented Control / Tab selector
+- [x] Botões: Primary, Secondary, Outlined, Text, Icon, FAB (Floating Action Button)
+- [x] Botão com loading spinner
+- [x] Botão com ícone + texto
+- [x] Grupo de botões (Button Group)
+- [x] Toggle / Switch com animação
+- [x] Checkbox com animação de check
+- [x] Radio Button com animação de seleção
+- [x] Slider com valor em tempo real
+- [x] Range Slider (dois thumbs)
+- [x] Stepper / Incremento numérico (+/-)
+- [x] Chip / Tag selecionável
+- [x] Segmented Control / Tab selector
 
 ### 1.2 Inputs e Formulários
 - [ ] TextInput com label animado (floating label)
@@ -599,7 +599,7 @@ src/
 | Fase | Total | Feitos | Progresso |
 |---|---|---|---|
 | Fase 0 - Arquitetura | 18 | 18 | ██████████████████ 100% |
-| Fase 1 - UI Básicos | 62 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
+| Fase 1 - UI Básicos | 62 | 12 | ███░░░░░░░░░░░░░░░ 19% |
 | Fase 2 - Layouts | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 3 - Animações/Gráficos | 55 | 14 | ████░░░░░░░░░░░░░░ 25% |
 | Fase 4 - DataGrid | 25 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
@@ -608,7 +608,7 @@ src/
 | Fase 7 - Web/Conectividade | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 8 - Avançadas | 45 | 2 | █░░░░░░░░░░░░░░░░░ 4% |
 | Fase 9 - Qualidade | 22 | 2 | █░░░░░░░░░░░░░░░░░ 9% |
-| **TOTAL** | **341** | **39** | **██░░░░░░░░░░░░░░░░ 11%** |
+| **TOTAL** | **341** | **51** | **███░░░░░░░░░░░░░░░ 15%** |
 
 ---
 
