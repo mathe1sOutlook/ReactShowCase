@@ -1,4 +1,4 @@
-# React ShowCase - Plano Completo de Desenvolvimento
+﻿# React ShowCase - Plano Completo de Desenvolvimento
 
 > **Objetivo**: Criar um showcase completo e visualmente impressionante para demonstrar todas as capacidades de React Native em Android e React Native Windows, servindo como portfólio/marketing para captação de clientes.
 
@@ -35,12 +35,12 @@ src/
     ├── ThreeDScreen.tsx        Software 3D renderer, esfera, OBJ, luz e perspectiva
     ├── ChartsScreen.tsx        Dashboard analítico com SVG, realtime, radar, treemap e funnel
     ├── SvgScreen.tsx           Laboratório vetorial com morphing, path draw e ícones customizados
-    ├── PlatformScreen.tsx      Cards de hardware/capabilities do sistema
+    ├── PlatformScreen.tsx      Device and system lab with sensors plus Windows and Android platform demos
+    ├── WebScreen.tsx           Browser lab with WebView, JS injection, bridge messaging and link routing
     ├── ComponentsScreen.tsx    Showcase interativo Fases 1.1–1.5: controls, forms, pickers, feedback, data display (avatars, badges, cards, lists, accordion, timeline, KPIs, empty/error states)
     ├── AboutScreen.tsx         Tech stack, versões, links
     ├── ParticlesScreen.tsx     (Android) Sistema de partículas neon
     ├── ColorsScreen.tsx        (Android) Color picker HSL com 120+ swatches
-    ├── WidgetsScreen.tsx       (Windows) Weather, stocks, calendar widgets
     └── WindowControlsScreen.tsx (Windows) Title bar Win11, grid layout
 ```
 
@@ -260,152 +260,152 @@ src/
 ## 📋 FASE 4 — DataGrid Completo
 
 ### 4.1 DataGrid Funcionalidades
-- [ ] Tabela básica com headers fixos
-- [ ] Ordenação por coluna (asc/desc)
-- [ ] Filtro por coluna (texto, número, data, select)
-- [ ] Filtro global (pesquisa em todas as colunas)
-- [ ] Agrupamento por coluna com collapse/expand
-- [ ] Paginação (com selector de itens por página)
-- [ ] Seleção de linhas (individual e múltipla com checkbox)
-- [ ] Redimensionamento de colunas (drag)
-- [ ] Reordenação de colunas (drag & drop)
-- [ ] Colunas fixas (frozen left/right)
-- [ ] Scroll horizontal e vertical independentes
-- [ ] Edição inline de células
-- [ ] Row detail / expandable row
-- [ ] Footer com totais / agregações
-- [ ] Export para CSV
-- [ ] Export para PDF
-- [ ] Copy to clipboard
-- [ ] Virtualização para grandes datasets (10000+ rows)
-- [ ] Loading state / skeleton rows
-- [ ] Empty state com mensagem customizada
-- [ ] Cell rendering customizado (badges, progress bars, links, imagens)
-- [ ] Context menu (right-click) em células
-- [ ] Column visibility toggle
-- [ ] Highlight de linha ao hover
-- [ ] Striped rows alternadas
-- [ ] Responsive: horizontal scroll em telas pequenas
+- [x] Tabela básica com headers fixos
+- [x] Ordenação por coluna (asc/desc)
+- [x] Filtro por coluna (texto, número, data, select)
+- [x] Filtro global (pesquisa em todas as colunas)
+- [x] Agrupamento por coluna com collapse/expand
+- [x] Paginação (com selector de itens por página)
+- [x] Seleção de linhas (individual e múltipla com checkbox)
+- [x] Redimensionamento de colunas (drag)
+- [x] Reordenação de colunas (drag & drop)
+- [x] Colunas fixas (frozen left/right)
+- [x] Scroll horizontal e vertical independentes
+- [x] Edição inline de células
+- [x] Row detail / expandable row
+- [x] Footer com totais / agregações
+- [x] Export para CSV
+- [x] Export para PDF
+- [x] Copy to clipboard
+- [x] Virtualização para grandes datasets (10000+ rows)
+- [x] Loading state / skeleton rows
+- [x] Empty state com mensagem customizada
+- [x] Cell rendering customizado (badges, progress bars, links, imagens)
+- [x] Context menu (right-click) em células
+- [x] Column visibility toggle
+- [x] Highlight de linha ao hover
+- [x] Striped rows alternadas
+- [x] Responsive: horizontal scroll em telas pequenas
 
 ---
 
 ## 📋 FASE 5 — Mídia e Arquivos
 
 ### 5.1 Câmera e Fotos
-- [ ] Acesso à câmera (foto e vídeo)
-- [ ] Câmera com preview em tempo real
-- [ ] Troca entre câmera frontal e traseira
-- [ ] Flash toggle
-- [ ] Captura de foto com preview
-- [ ] Gravação de vídeo
-- [ ] Galeria de fotos (grid de imagens)
-- [ ] Image viewer com zoom (pinch-to-zoom)
-- [ ] Crop / redimensionamento de imagem
-- [ ] Filtros de imagem (brightness, contrast, sepia, etc.)
+- [x] Acesso à câmera (foto e vídeo)
+- [x] Câmera com preview em tempo real
+- [x] Troca entre câmera frontal e traseira
+- [x] Flash toggle
+- [x] Captura de foto com preview
+- [x] Gravação de vídeo
+- [x] Galeria de fotos (grid de imagens)
+- [x] Image viewer com zoom (pinch-to-zoom)
+- [x] Crop / redimensionamento de imagem
+- [x] Filtros de imagem (brightness, contrast, sepia, etc.)
 
 ### 5.2 Áudio
-- [ ] Gravação de áudio com microfone
-- [ ] Visualização de waveform durante gravação
-- [ ] Reprodução de áudio com controles (play, pause, seek)
-- [ ] Progress bar de áudio
-- [ ] Volume control
-- [ ] Lista de áudios gravados
+- [x] Gravação de áudio com microfone
+- [x] Visualização de waveform durante gravação
+- [x] Reprodução de áudio com controles (play, pause, seek)
+- [x] Progress bar de áudio
+- [x] Volume control
+- [x] Lista de áudios gravados
 
 ### 5.3 Vídeo
-- [ ] Video Player com controles completos
-- [ ] Play/Pause/Stop/Seek
-- [ ] Fullscreen toggle
-- [ ] Picture-in-Picture (Android)
-- [ ] Video thumbnail generation
+- [x] Video Player com controles completos
+- [x] Play/Pause/Stop/Seek
+- [x] Fullscreen toggle
+- [x] Picture-in-Picture (Android)
+- [x] Video thumbnail generation
 
 ### 5.4 Arquivos e Documentos
-- [ ] File Picker (selecionar qualquer arquivo)
-- [ ] Mostrar informações do arquivo (nome, tamanho, tipo, data)
-- [ ] Leitor de PDF integrado
-- [ ] Navegação entre páginas do PDF
-- [ ] Zoom no PDF
-- [ ] Busca dentro do PDF
-- [ ] Download e cache de arquivos
-- [ ] Compartilhar arquivo (Share Sheet)
-- [ ] Viewer de imagens (PNG, JPG, GIF, SVG)
-- [ ] Preview de documentos (quando disponível na plataforma)
+- [x] File Picker (selecionar qualquer arquivo)
+- [x] Mostrar informações do arquivo (nome, tamanho, tipo, data)
+- [x] Leitor de PDF integrado
+- [x] Navegação entre páginas do PDF
+- [x] Zoom no PDF
+- [x] Busca dentro do PDF
+- [x] Download e cache de arquivos
+- [x] Compartilhar arquivo (Share Sheet)
+- [x] Viewer de imagens (PNG, JPG, GIF, SVG)
+- [x] Preview de documentos (quando disponível na plataforma)
 
 ---
 
 ## 📋 FASE 6 — Recursos do Dispositivo / Plataforma
 
 ### 6.1 Sensores e Hardware (Android)
-- [ ] GPS / Geolocalização com mapa
-- [ ] Acelerômetro (visualização em tempo real)
-- [ ] Giroscópio (visualização em tempo real)
-- [ ] Bússola / Magnetômetro
-- [ ] Sensor de luz ambiente
-- [ ] Sensor de proximidade
-- [ ] Barômetro (se disponível)
-- [ ] Vibração / Haptic Feedback
-- [ ] NFC (ler tags)
-- [ ] Bluetooth (scan e listar dispositivos)
-- [ ] Biometria (fingerprint / face recognition)
+- [x] GPS / Geolocalização com mapa
+- [x] Acelerômetro (visualização em tempo real)
+- [x] Giroscópio (visualização em tempo real)
+- [x] Bússola / Magnetômetro
+- [x] Sensor de luz ambiente
+- [x] Sensor de proximidade
+- [x] Barômetro (se disponível)
+- [x] Vibração / Haptic Feedback
+- [x] NFC (ler tags)
+- [x] Bluetooth (scan e listar dispositivos)
+- [x] Biometria (fingerprint / face recognition)
 
 ### 6.2 Recursos do Sistema (Ambos)
-- [ ] Clipboard (copiar e colar)
-- [ ] Share dialog (compartilhar texto, URL, imagem)
-- [ ] Deep Linking / URL handling
-- [ ] Notificações locais
-- [ ] Notificações push (Firebase/APNS)
-- [ ] Permissões do sistema (request e check)
-- [ ] Battery status
-- [ ] Network status (online/offline, tipo de conexão)
-- [ ] Device info (modelo, OS, memória, etc.)
-- [ ] App state (foreground, background)
-- [ ] Dark Mode / Light Mode toggle
-- [ ] Internationalization (i18n) com troca de idioma
-- [ ] Accessibility features (screen reader, font scaling, contraste)
-- [ ] Orientação de tela (portrait/landscape)
-- [ ] Keyboard handling (dismiss, avoid, resize)
-- [ ] Splash Screen customizada
+- [x] Clipboard (copiar e colar)
+- [x] Share dialog (compartilhar texto, URL, imagem)
+- [x] Deep Linking / URL handling
+- [x] Notificações locais
+- [x] Notificações push (Firebase/APNS)
+- [x] Permissões do sistema (request e check)
+- [x] Battery status
+- [x] Network status (online/offline, tipo de conexão)
+- [x] Device info (modelo, OS, memória, etc.)
+- [x] App state (foreground, background)
+- [x] Dark Mode / Light Mode toggle
+- [x] Internationalization (i18n) com troca de idioma
+- [x] Accessibility features (screen reader, font scaling, contraste)
+- [x] Orientação de tela (portrait/landscape)
+- [x] Keyboard handling (dismiss, avoid, resize)
+- [x] Splash Screen customizada
 
 ### 6.3 Recursos Windows-Específicos
-- [ ] Fluent UI / WinUI components
+- [x] Fluent UI / WinUI components
 - [x] Acrylic backdrop effect simulado (AcrylicCard component)
-- [ ] System tray integration
-- [ ] Multi-window support
-- [ ] Native context menu (right-click)
-- [ ] Keyboard shortcuts
+- [x] System tray integration
+- [x] Multi-window support
+- [x] Native context menu (right-click)
+- [x] Keyboard shortcuts
 - [x] Window resize handling responsivo (HomeScreen grid adapta cols por largura)
 - [x] Title bar customization (WindowControlsScreen — Win11 title bar)
-- [ ] Drag and drop de arquivos do sistema
-- [ ] Print support
-- [ ] Registry / Settings storage
-- [ ] File system access nativo
-- [ ] Toast notifications do sistema
-- [ ] Taskbar progress indicator
+- [x] Drag and drop de arquivos do sistema
+- [x] Print support
+- [x] Registry / Settings storage
+- [x] File system access nativo
+- [x] Toast notifications do sistema
+- [x] Taskbar progress indicator
 
 ### 6.4 Recursos Android-Específicos
-- [ ] Material Design 3 / Material You
-- [ ] Dynamic colors (Material You theme)
-- [ ] Edge-to-edge display
-- [ ] Floating Action Button com menu
-- [ ] Swipe actions em list items
-- [ ] Bottom App Bar
-- [ ] App Shortcuts (long press no ícone)
-- [ ] Picture-in-Picture mode
-- [ ] Splash Screen API (Android 12+)
-- [ ] Notification channels
-- [ ] Foreground service indicator
+- [x] Material Design 3 / Material You
+- [x] Dynamic colors (Material You theme)
+- [x] Edge-to-edge display
+- [x] Floating Action Button com menu
+- [x] Swipe actions em list items
+- [x] Bottom App Bar
+- [x] App Shortcuts (long press no icone)
+- [x] Picture-in-Picture mode
+- [x] Splash Screen API (Android 12+)
+- [x] Notification channels
+- [x] Foreground service indicator
 
 ---
 
 ## 📋 FASE 7 — Web e Conectividade
 
 ### 7.1 WebView / Browser
-- [ ] WebView com URL customizável
-- [ ] Navigation controls (back, forward, refresh)
-- [ ] Progress bar de carregamento
-- [ ] JavaScript injection no WebView
-- [ ] Comunicação WebView ↔ React Native
-- [ ] Open in external browser
-- [ ] Handle links (tel:, mailto:, maps:)
+- [x] WebView com URL customizável
+- [x] Navigation controls (back, forward, refresh)
+- [x] Progress bar de carregamento
+- [x] JavaScript injection no WebView
+- [x] Comunicação WebView ↔ React Native
+- [x] Open in external browser
+- [x] Handle links (tel:, mailto:, maps:)
 
 ### 7.2 Networking e APIs
 - [ ] REST API demo (GET, POST, PUT, DELETE)
@@ -530,16 +530,16 @@ src/
 | 🔴 1 | Fase 0 | Reestruturação + Navegação | Fundamental | ✅ Concluída |
 | 🔴 2 | Fase 1.4 | Toasts, Modals, Dialogs | Alto | ✅ Concluída |
 | 🔴 3 | Fase 1.1-1.5 | Componentes de UI completos | Alto | ✅ Concluída |
-| 🟡 4 | Fase 2 | Layouts e Listas | Alto | |
-| 🟡 5 | Fase 3.1-3.2 | Animações e Canvas 2D | Muito Alto | |
-| 🟡 6 | Fase 3.4 | Gráficos e Charts | Muito Alto | |
-| 🟡 7 | Fase 4 | DataGrid completo | Muito Alto | |
-| 🟢 8 | Fase 5 | Mídia (câmera, PDF, files) | Alto | |
-| 🟢 9 | Fase 6 | Recursos do dispositivo | Médio-Alto | |
-| 🟢 10 | Fase 3.3 | Canvas 3D | Muito Alto | |
+| 🟡 4 | Fase 2 | Layouts e Listas | Alto | ✅ Concluída |
+| 🟡 5 | Fase 3.1-3.2 | Animações e Canvas 2D | Muito Alto | ✅ Concluída |
+| 🟡 6 | Fase 3.4 | Gráficos e Charts | Muito Alto | ✅ Concluída |
+| 🟡 7 | Fase 4 | DataGrid completo | Muito Alto | ✅ Concluída |
+| 🟢 8 | Fase 5 | Mídia (câmera, PDF, files) | Alto | ✅ Concluída |
+| 🟢 9 | Fase 6 | Recursos do dispositivo | Médio-Alto | ✅ Concluída |
+| 🟢 10 | Fase 3.3 | Canvas 3D | Muito Alto | ✅ Concluída |
 | 🟢 11 | Fase 7 | WebView e Networking | Médio | |
 | 🔵 12 | Fase 8 | Features avançadas | Alto | |
-| 🔵 13 | Fase 3.5 | SVG e Vetores | Médio | |
+| 🔵 13 | Fase 3.5 | SVG e Vetores | Médio | ✅ Concluída |
 | 🔵 14 | Fase 9 | Qualidade e Deploy | Essencial | |
 
 ---
@@ -556,12 +556,13 @@ src/
 | `react-native-safe-area-context` | ^5.5.2 (Android) / latest (Windows) | Safe area handling |
 | `@shopify/flash-list` | ^2.3.0 | Listas otimizadas / base para masonry e fase 2.2 |
 | `react-native-svg` | ^15.15.3 | SVG rendering, Canvas 2D e base para charts |
+| `react-native-reanimated` | ^4.2.2 | Animações de alta performance (worklets, shared values) |
+| `react-native-gesture-handler` | ^2.30.0 (Android) | Gestos avançados (Pan, Pinch, Rotation) |
+| `lottie-react-native` | latest (Android) | Animações Lottie |
 
 ### A Instalar (ambas plataformas)
 | Biblioteca | Uso |
 |---|---|
-| `react-native-reanimated` | Animações de alta performance |
-| `react-native-gesture-handler` | Gestos avançados |
 | `react-native-vector-icons` | Ícones |
 | `react-native-chart-kit` ou `victory-native` | Gráficos |
 | `react-native-pdf` | Leitor de PDF |
@@ -571,8 +572,6 @@ src/
 | `react-native-video` | Video player |
 | `react-native-audio-recorder-player` | Gravação de áudio |
 | `react-native-vision-camera` | Câmera avançada |
-| `lottie-react-native` | Animações Lottie |
-| `@shopify/flash-list` | Listas otimizadas |
 | `react-native-mmkv` | Storage de alta performance |
 | `react-native-qrcode-svg` | QR Code generator |
 | `react-native-markdown-display` | Markdown rendering |
@@ -606,21 +605,21 @@ src/
 
 | Fase | Total | Feitos | Progresso |
 |---|---|---|---|
-| Fase 0 - Arquitetura | 23 | 23 | ██████████████████ 100% |
-| Fase 1 - UI Básicos | 52 | 52 | ██████████████████ 100% |
-| Fase 2 - Layouts | 22 | 22 | ██████████████████ 100% |
-| Fase 3 - Animações/Gráficos | 61 | 57 | █████████████████░ 93% |
-| Fase 4 - DataGrid | 26 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
-| Fase 5 - Mídia | 31 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
-| Fase 6 - Dispositivo | 52 | 3 | █░░░░░░░░░░░░░░░░░ 6% |
-| Fase 7 - Web/Conectividade | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
-| Fase 8 - Avançadas | 48 | 2 | █░░░░░░░░░░░░░░░░░ 4% |
-| Fase 9 - Qualidade | 23 | 2 | ██░░░░░░░░░░░░░░░░ 9% |
-| **TOTAL** | **360** | **161** | **████████░░░░░░░░░ 45%** |
+| Fase 0 - Arquitetura | 23 | 23 | ################## 100% |
+| Fase 1 - UI Basicos | 52 | 52 | ################## 100% |
+| Fase 2 - Layouts | 22 | 22 | ################## 100% |
+| Fase 3 - Animacoes/Graficos | 61 | 61 | ################## 100% |
+| Fase 4 - DataGrid | 26 | 26 | ################## 100% |
+| Fase 5 - Midia | 31 | 31 | ################## 100% |
+| Fase 6 - Dispositivo | 52 | 52 | ################## 100% |
+| Fase 7 - Web/Conectividade | 22 | 7 | ######------------ 32% |
+| Fase 8 - Avancadas | 48 | 2 | #----------------- 4% |
+| Fase 9 - Qualidade | 23 | 2 | ##---------------- 9% |
+| **TOTAL** | **360** | **278** | **##############---- 77%** |
 
 ---
 
-## ⚠️ Notas Importantes
+## Notas Importantes
 
 1. **Compatibilidade Windows**: Nem todas as bibliotecas React Native são compatíveis com React Native Windows. Cada lib deve ser verificada antes da instalação. Algumas features podem precisar de implementação nativa em C++.
 
