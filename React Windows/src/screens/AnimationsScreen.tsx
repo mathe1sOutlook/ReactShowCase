@@ -1,632 +1,345 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Animated,
-  Dimensions,
   Easing,
+  LayoutAnimation,
   PanResponder,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import {Colors, Radius} from '../theme';
-import {useAnimatedValue} from '../hooks/useAnimatedValue';
-import {shadeColor} from '../utils';
-import {SectionWrapper} from '../components/common/SectionWrapper';
 import {ScreenContainer} from '../components/common/ScreenContainer';
+import {SectionWrapper} from '../components/common/SectionWrapper';
+import {Colors, Radius, Spacing, Typography, fluentShadow} from '../theme';
 
-const {width: SCREEN_WIDTH} = Dimensions.get('window');
+const ACCENTS = [
+  Colors.primary,
+  Colors.secondary,
+  Colors.success,
+  Colors.warning,
+  Colors.accentLight,
+];
 
-// ─── Animated Header ─────────────────────────────────────────────────────────
+const CARDS = [
+  {title: 'Commerce', body: 'Shared-style reveal with matching accent.', accent: Colors.primary},
+  {title: 'Health', body: 'Hero expands into a richer detail state.', accent: Colors.secondary},
+  {title: 'Travel', body: 'Same card identity carried into the overlay.', accent: Colors.success},
+];
 
-function AnimatedHeader() {
-  const pulse = useAnimatedValue(0);
-  const shimmer = useAnimatedValue(0);
-  const morphA = useAnimatedValue(0);
-  const morphB = useAnimatedValue(0);
-  const titleScale = useAnimatedValue(0.8);
-  const titleOpacity = useAnimatedValue(0);
-
-  useEffect(() => {
-    // Background pulse loop
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, {
-          toValue: 1,
-          duration: 3000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false,
-        }),
-        Animated.timing(pulse, {
-          toValue: 0,
-          duration: 3000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false,
-        }),
-      ]),
-    ).start();
-
-    // Shimmer sweep
-    Animated.loop(
-      Animated.timing(shimmer, {
-        toValue: 1,
-        duration: 4000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
-    ).start();
-
-    // Morph blobs
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(morphA, {
-          toValue: 1,
-          duration: 5000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(morphA, {
-          toValue: 0,
-          duration: 5000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(morphB, {
-          toValue: 1,
-          duration: 6000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(morphB, {
-          toValue: 0,
-          duration: 6000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-
-    // Title entrance
-    Animated.parallel([
-      Animated.spring(titleScale, {
-        toValue: 1,
-        friction: 4,
-        tension: 40,
-        useNativeDriver: true,
-        delay: 300,
-      }),
-      Animated.timing(titleOpacity, {
-        toValue: 1,
-        duration: 800,
-        delay: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [pulse, shimmer, morphA, morphB, titleScale, titleOpacity]);
-
-  const bgColor = pulse.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [Colors.primary, '#6b5ce7', Colors.primaryDark],
-  });
-
-  const shimmerTranslate = shimmer.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-300, SCREEN_WIDTH + 300],
-  });
-
-  const blobAX = morphA.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-40, 60],
-  });
-  const blobAY = morphA.interpolate({
-    inputRange: [0, 1],
-    outputRange: [10, -30],
-  });
-  const blobAScale = morphA.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [1, 1.3, 1],
-  });
-
-  const blobBX = morphB.interpolate({
-    inputRange: [0, 1],
-    outputRange: [40, -50],
-  });
-  const blobBY = morphB.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-10, 40],
-  });
-  const blobBScale = morphB.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [1.2, 0.8, 1.2],
-  });
-
-  return (
-    <Animated.View style={[styles.header, {backgroundColor: bgColor}]}>
-      {/* Floating blobs for depth */}
-      <Animated.View
-        style={[
-          styles.headerBlob,
-          styles.headerBlobA,
-          {
-            transform: [
-              {translateX: blobAX},
-              {translateY: blobAY},
-              {scale: blobAScale},
-            ],
-          },
-        ]}
-      />
-      <Animated.View
-        style={[
-          styles.headerBlob,
-          styles.headerBlobB,
-          {
-            transform: [
-              {translateX: blobBX},
-              {translateY: blobBY},
-              {scale: blobBScale},
-            ],
-          },
-        ]}
-      />
-      {/* Shimmer highlight */}
-      <Animated.View
-        style={[
-          styles.headerShimmer,
-          {transform: [{translateX: shimmerTranslate}]},
-        ]}
-      />
-      {/* Title content */}
-      <Animated.View
-        style={[
-          styles.headerContent,
-          {
-            opacity: titleOpacity,
-            transform: [{scale: titleScale}],
-          },
-        ]}>
-        <Text style={styles.headerIcon}>{'{ }'}</Text>
-        <Text style={styles.headerTitle}>CFD Windows</Text>
-        <Text style={styles.headerTagline}>
-          React Native Graphical Showcase
-        </Text>
-        <View style={styles.headerDivider} />
-        <Text style={styles.headerVersion}>
-          Built with React Native 0.75 for Windows Desktop
-        </Text>
-      </Animated.View>
-    </Animated.View>
-  );
-}
-
-// ─── Animated Button ─────────────────────────────────────────────────────────
-
-function AnimatedButton({
-  label,
-  color,
-  icon,
-}: {
-  label: string;
-  color: string;
-  icon: string;
-}) {
-  const scaleAnim = useAnimatedValue(1);
-  const bgAnim = useAnimatedValue(0);
-  const glowAnim = useAnimatedValue(0);
-
-  const onPressIn = () => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 0.93,
-        friction: 4,
-        tension: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(bgAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: false,
-      }),
-      Animated.timing(glowAnim, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  };
-
-  const onPressOut = () => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 3,
-        tension: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(bgAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: false,
-      }),
-      Animated.timing(glowAnim, {
-        toValue: 0,
-        duration: 400,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  };
-
-  const bgColor = bgAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [color, shadeColor(color, -20)],
-  });
-
-  const shadowRadius = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [4, 16],
-  });
-
-  return (
-    <Pressable onPressIn={onPressIn} onPressOut={onPressOut}>
-      <Animated.View
-        style={[
-          styles.animButton,
-          {
-            backgroundColor: bgColor,
-            transform: [{scale: scaleAnim}],
-            shadowRadius: shadowRadius,
-            shadowColor: color,
-            shadowOpacity: 0.4,
-            shadowOffset: {width: 0, height: 2},
-            elevation: 6,
-          },
-        ]}>
-        <Text style={styles.animButtonIcon}>{icon}</Text>
-        <Text style={styles.animButtonLabel}>{label}</Text>
-      </Animated.View>
-    </Pressable>
-  );
-}
-
-// ─── Spring Ball ─────────────────────────────────────────────────────────────
-
-function SpringBall() {
-  const posX = useAnimatedValue(0);
-  const posY = useAnimatedValue(0);
-  const scale = useAnimatedValue(1);
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        Animated.spring(scale, {
-          toValue: 1.3,
-          friction: 3,
-          useNativeDriver: true,
-        }).start();
-      },
-      onPanResponderMove: Animated.event([null, {dx: posX, dy: posY}], {
-        useNativeDriver: false,
-      }),
-      onPanResponderRelease: () => {
-        Animated.parallel([
-          Animated.spring(posX, {
-            toValue: 0,
-            friction: 3,
-            tension: 40,
-            useNativeDriver: true,
-          }),
-          Animated.spring(posY, {
-            toValue: 0,
-            friction: 3,
-            tension: 40,
-            useNativeDriver: true,
-          }),
-          Animated.spring(scale, {
-            toValue: 1,
-            friction: 3,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      },
-    }),
-  ).current;
-
-  return (
-    <View style={styles.springBallContainer}>
-      <Text style={styles.springBallHint}>
-        Drag the ball - it springs back!
-      </Text>
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[
-          styles.springBall,
-          {
-            transform: [
-              {translateX: posX},
-              {translateY: posY},
-              {scale: scale},
-            ],
-          },
-        ]}>
-        <View style={styles.springBallInner}>
-          <View style={styles.springBallHighlight} />
-        </View>
-      </Animated.View>
-    </View>
-  );
-}
-
-// ─── Pulse Ring ──────────────────────────────────────────────────────────────
-
-function PulseRing() {
-  const ring1 = useAnimatedValue(0);
-  const ring2 = useAnimatedValue(0);
-  const ring3 = useAnimatedValue(0);
-
-  useEffect(() => {
-    const animate = (anim: Animated.Value, delay: number) => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.delay(delay),
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: 2000,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim, {
-            toValue: 0,
-            duration: 0,
-            useNativeDriver: true,
-          }),
-        ]),
-      ).start();
-    };
-    animate(ring1, 0);
-    animate(ring2, 600);
-    animate(ring3, 1200);
-  }, [ring1, ring2, ring3]);
-
-  const renderRing = (anim: Animated.Value) => {
-    const ringScale = anim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [1, 2.5],
-    });
-    const ringOpacity = anim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.6, 0],
-    });
-    return (
-      <Animated.View
-        style={[
-          styles.pulseRing,
-          {
-            transform: [{scale: ringScale}],
-            opacity: ringOpacity,
-          },
-        ]}
-      />
-    );
-  };
-
-  return (
-    <View style={styles.pulseContainer}>
-      {renderRing(ring1)}
-      {renderRing(ring2)}
-      {renderRing(ring3)}
-      <View style={styles.pulseDot} />
-    </View>
-  );
-}
-
-// ─── Interactive Animations ──────────────────────────────────────────────────
-
-function InteractiveAnimations() {
-  return (
-    <SectionWrapper
-      title="Interactive Animations"
-      subtitle="Spring physics, touch feedback, and animated effects">
-      <View style={styles.animButtonRow}>
-        <AnimatedButton label="Primary" color={Colors.primary} icon=">" />
-        <AnimatedButton label="Success" color="#10b981" icon="+" />
-        <AnimatedButton label="Warning" color="#f59e0b" icon="!" />
-        <AnimatedButton label="Danger" color="#ef4444" icon="X" />
-      </View>
-      <View style={styles.animDemoRow}>
-        <SpringBall />
-        <PulseRing />
-      </View>
-    </SectionWrapper>
-  );
-}
-
-// ─── Main Screen ─────────────────────────────────────────────────────────────
+const BASE_TILES = [
+  {id: '1', label: 'Shared', accent: Colors.primary},
+  {id: '2', label: 'Layout', accent: Colors.secondary},
+  {id: '3', label: 'Gesture', accent: Colors.accent},
+  {id: '4', label: 'Confetti', accent: Colors.success},
+];
 
 export default function AnimationsScreen() {
+  const hero = useRef(new Animated.Value(0)).current;
+  const counter = useRef(new Animated.Value(0)).current;
+  const detail = useRef(new Animated.Value(0)).current;
+  const morph = useRef(new Animated.Value(0)).current;
+  const flag = useRef(new Animated.Value(0)).current;
+  const likeScale = useRef(new Animated.Value(1)).current;
+  const starSpin = useRef(new Animated.Value(0)).current;
+  const confetti = useRef(Array.from({length: 10}, () => new Animated.Value(0))).current;
+  const tx = useRef(new Animated.Value(0)).current;
+  const ty = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(1)).current;
+  const rotate = useRef(new Animated.Value(0)).current;
+  const [typed, setTyped] = useState('');
+  const [count, setCount] = useState(0);
+  const [tiles, setTiles] = useState(BASE_TILES);
+  const [selected, setSelected] = useState<(typeof CARDS)[number] | null>(null);
+  const [liked, setLiked] = useState(false);
+  const [starred, setStarred] = useState(false);
+  const [kpi, setKpi] = useState(76);
+  const [balls, setBalls] = useState([
+    {x: 18, y: 18, vx: 2.4, vy: 0, color: Colors.primary},
+    {x: 118, y: 30, vx: -2, vy: 0, color: Colors.secondary},
+  ]);
+  const dragBase = useRef({x: 0, y: 0, scale: 1, rotate: 0, distance: 1, angle: 0});
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(hero, {toValue: 1, duration: 2200, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
+        Animated.timing(hero, {toValue: 0, duration: 2200, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
+      ]),
+    ).start();
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(morph, {toValue: 1, duration: 1300, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
+        Animated.timing(morph, {toValue: 0, duration: 1300, easing: Easing.inOut(Easing.sin), useNativeDriver: false}),
+      ]),
+    ).start();
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(flag, {toValue: 1, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: true}),
+        Animated.timing(flag, {toValue: 0, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: true}),
+      ]),
+    ).start();
+    const listener = counter.addListener(({value}) => setCount(Math.round(value)));
+    Animated.timing(counter, {toValue: 128, duration: 1800, easing: Easing.out(Easing.cubic), useNativeDriver: false}).start();
+    let i = 0;
+    const msg = 'Gestures, morphs, counters, particles, and physics.';
+    const timer = setInterval(() => {
+      i += 1;
+      setTyped(msg.slice(0, i));
+      if (i >= msg.length) clearInterval(timer);
+    }, 36);
+    return () => {
+      clearInterval(timer);
+      counter.removeListener(listener);
+    };
+  }, [counter, flag, hero, morph]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setBalls(current =>
+        current.map((ball, index, all) => {
+          let vx = ball.vx;
+          let vy = ball.vy + 0.34;
+          let x = ball.x + vx;
+          let y = ball.y + vy;
+          if (x <= 0 || x >= 188) vx *= -0.92;
+          if (y <= 0) vy *= -0.92;
+          if (y >= 128) {
+            y = 128;
+            vy *= -0.82;
+          }
+          const other = all[(index + 1) % all.length];
+          if (Math.abs(x - other.x) < 34 && Math.abs(y - other.y) < 24) vx *= -1;
+          return {...ball, x: Math.max(0, Math.min(188, x)), y: Math.max(0, y), vx, vy};
+        }),
+      );
+    }, 32);
+    return () => clearInterval(id);
+  }, []);
+
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: e => {
+          dragBase.current = {
+            x: (tx as any).__getValue(),
+            y: (ty as any).__getValue(),
+            scale: (scale as any).__getValue(),
+            rotate: (rotate as any).__getValue(),
+            distance:
+              e.nativeEvent.touches.length > 1
+                ? Math.hypot(
+                    e.nativeEvent.touches[0].pageX - e.nativeEvent.touches[1].pageX,
+                    e.nativeEvent.touches[0].pageY - e.nativeEvent.touches[1].pageY,
+                  )
+                : 1,
+            angle:
+              e.nativeEvent.touches.length > 1
+                ? Math.atan2(
+                    e.nativeEvent.touches[1].pageY - e.nativeEvent.touches[0].pageY,
+                    e.nativeEvent.touches[1].pageX - e.nativeEvent.touches[0].pageX,
+                  )
+                : 0,
+          };
+        },
+        onPanResponderMove: (e, g) => {
+          if (e.nativeEvent.touches.length > 1) {
+            const distance = Math.hypot(
+              e.nativeEvent.touches[0].pageX - e.nativeEvent.touches[1].pageX,
+              e.nativeEvent.touches[0].pageY - e.nativeEvent.touches[1].pageY,
+            );
+            const angle = Math.atan2(
+              e.nativeEvent.touches[1].pageY - e.nativeEvent.touches[0].pageY,
+              e.nativeEvent.touches[1].pageX - e.nativeEvent.touches[0].pageX,
+            );
+            scale.setValue(Math.max(0.7, Math.min(1.9, dragBase.current.scale * (distance / dragBase.current.distance))));
+            rotate.setValue(dragBase.current.rotate + (angle - dragBase.current.angle));
+            return;
+          }
+          tx.setValue(dragBase.current.x + g.dx);
+          ty.setValue(dragBase.current.y + g.dy);
+        },
+        onPanResponderRelease: () => {
+          Animated.parallel([
+            Animated.spring(tx, {toValue: 0, damping: 14, stiffness: 120, mass: 0.8, useNativeDriver: true}),
+            Animated.spring(ty, {toValue: 0, damping: 14, stiffness: 120, mass: 0.8, useNativeDriver: true}),
+          ]).start();
+        },
+      }),
+    [rotate, scale, tx, ty],
+  );
+
+  const toggleLike = () => {
+    setLiked(v => !v);
+    Animated.sequence([
+      Animated.spring(likeScale, {toValue: 1.28, tension: 220, friction: 4, useNativeDriver: true}),
+      Animated.spring(likeScale, {toValue: 1, tension: 200, friction: 6, useNativeDriver: true}),
+    ]).start();
+  };
+
+  const toggleStar = () => {
+    setStarred(v => !v);
+    starSpin.setValue(0);
+    Animated.timing(starSpin, {toValue: 1, duration: 500, easing: Easing.out(Easing.back(1.1)), useNativeDriver: true}).start();
+  };
+
+  const celebrate = () => {
+    confetti.forEach(v => v.setValue(0));
+    Animated.stagger(18, confetti.map(v => Animated.timing(v, {toValue: 1, duration: 1100, easing: Easing.out(Easing.cubic), useNativeDriver: true}))).start();
+  };
+
+  const openDetail = (card: (typeof CARDS)[number]) => {
+    setSelected(card);
+    detail.setValue(0);
+    Animated.spring(detail, {toValue: 1, damping: 16, stiffness: 160, mass: 0.8, useNativeDriver: true}).start();
+  };
+
+  const closeDetail = () => {
+    Animated.timing(detail, {toValue: 0, duration: 180, useNativeDriver: true}).start(() => setSelected(null));
+  };
+
   return (
     <ScreenContainer>
-      <AnimatedHeader />
-      <InteractiveAnimations />
+      <Animated.View style={[styles.hero, {backgroundColor: hero.interpolate({inputRange: [0, 0.5, 1], outputRange: ['#eef4ff', '#e7eefc', '#f8efff']})}]}>
+        <Text style={styles.kicker}>Phase 3.1</Text>
+        <Text style={styles.heroTitle}>Advanced Animations</Text>
+        <Text style={styles.heroBody}>
+          Layout transitions, gestures, morphing shapes, counters, typewriter
+          copy, confetti, micro-interactions, waving ribbon, and physics.
+        </Text>
+        <View style={styles.heroRow}>
+          <View style={styles.metric}><Text style={styles.metricLabel}>Counter</Text><Text style={styles.metricValue}>{count}</Text></View>
+          <View style={styles.metric}><Text style={styles.metricLabel}>Scenes</Text><Text style={styles.metricValue}>11</Text></View>
+          <Animated.View style={[styles.ribbon, {transform: [{rotate: flag.interpolate({inputRange: [0, 1], outputRange: ['-5deg', '5deg']})}]}]}><Text style={styles.ribbonText}>Waving ribbon</Text></Animated.View>
+        </View>
+        <View style={styles.terminal}><Text style={styles.terminalText}>{typed}<Text style={styles.cursor}>|</Text></Text></View>
+      </Animated.View>
+
+      <SectionWrapper title="Transitions" subtitle="Tap a card to open a shared-element-style reveal overlay with a matching accent and card identity.">
+        <View style={styles.grid}>
+          {CARDS.map(card => (
+            <Pressable key={card.title} style={[styles.card, {borderColor: card.accent + '44'}]} onPress={() => openDetail(card)}>
+              <View style={[styles.bar, {backgroundColor: card.accent}]} />
+              <Text style={[styles.cardTitle, {color: card.accent}]}>{card.title}</Text>
+              <Text style={styles.cardBody}>{card.body}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </SectionWrapper>
+
+      <SectionWrapper title="Layout and Gestures" subtitle="Use LayoutAnimation for add/remove/reorder, then drag, pinch, and rotate the token on the gesture stage.">
+        <View style={styles.row}>
+          <Pressable style={styles.button} onPress={() => { LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); setTiles(t => [...t, {id: String(Date.now()), label: `Node ${t.length + 1}`, accent: ACCENTS[t.length % ACCENTS.length]}]); }}><Text style={styles.buttonText}>Add</Text></Pressable>
+          <Pressable style={styles.button} onPress={() => { LayoutAnimation.configureNext(LayoutAnimation.Presets.spring); setTiles(t => [...t].reverse()); }}><Text style={styles.buttonText}>Shuffle</Text></Pressable>
+          <Pressable style={styles.button} onPress={() => { LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); setTiles(t => t.slice(0, -1)); }}><Text style={styles.buttonText}>Remove</Text></Pressable>
+        </View>
+        <View style={styles.tileGrid}>{tiles.map(tile => <View key={tile.id} style={[styles.tile, {borderColor: tile.accent + '33'}]}><Text style={[styles.tileText, {color: tile.accent}]}>{tile.label}</Text></View>)}</View>
+        <View style={styles.gestureWrap}>
+          <View style={styles.gestureStage}>
+            <Animated.View
+              {...panResponder.panHandlers}
+              style={[
+                styles.token,
+                {
+                  transform: [
+                    {translateX: tx},
+                    {translateY: ty},
+                    {scale},
+                    {rotate: rotate.interpolate({inputRange: [-Math.PI, Math.PI], outputRange: ['-180deg', '180deg']})},
+                  ],
+                },
+              ]}>
+              <Text style={styles.tokenText}>Gesture</Text>
+            </Animated.View>
+          </View>
+          <View style={styles.morph}>
+            <Animated.View style={[styles.shape, {borderRadius: morph.interpolate({inputRange: [0, 0.5, 1], outputRange: [16, 52, 10]}), backgroundColor: morph.interpolate({inputRange: [0, 0.5, 1], outputRange: [Colors.primary, Colors.secondary, Colors.success]}), transform: [{rotate: morph.interpolate({inputRange: [0, 0.5, 1], outputRange: ['0deg', '45deg', '90deg']})}, {scale: morph.interpolate({inputRange: [0, 0.5, 1], outputRange: [1, 1.22, 0.92]})}]}]} />
+            <View style={styles.loader}>{[0, 1, 2].map(i => <Animated.View key={i} style={[styles.dot, {backgroundColor: ACCENTS[i], transform: [{translateY: morph.interpolate({inputRange: [0, 0.5, 1], outputRange: [i === 0 ? 0 : 8, i === 1 ? -10 : 8, i === 2 ? -6 : 10]})}]}]} />)}</View>
+            <Text style={styles.caption}>Morph + custom loader</Text>
+          </View>
+        </View>
+      </SectionWrapper>
+
+      <SectionWrapper title="Interactions and Physics" subtitle="Typewriter, counter, micro-interactions, confetti, and a tiny gravity + collision sandbox.">
+        <View style={styles.socialRow}>
+          <Pressable style={styles.social} onPress={toggleLike}><Animated.Text style={[styles.icon, {color: liked ? Colors.error : Colors.textPrimary, transform: [{scale: likeScale}]}]}>{'\u2665'}</Animated.Text><Text style={styles.caption}>Like</Text></Pressable>
+          <Pressable style={styles.social} onPress={toggleStar}><Animated.Text style={[styles.icon, {color: starred ? Colors.warning : Colors.textPrimary, transform: [{rotate: starSpin.interpolate({inputRange: [0, 1], outputRange: ['0deg', '360deg']})}]}]}>{'\u2605'}</Animated.Text><Text style={styles.caption}>Favorite</Text></Pressable>
+          <Pressable style={styles.social} onPress={() => setKpi(v => v + 23)}><Text style={styles.counter}>{kpi}</Text><Text style={styles.caption}>Ticker</Text></Pressable>
+        </View>
+        <Pressable style={styles.primary} onPress={celebrate}><Text style={styles.primaryText}>Celebrate</Text></Pressable>
+        <View style={styles.confettiBox}>{confetti.map((v, i) => <Animated.View key={i} style={[styles.piece, {left: `${8 + i * 8}%`, backgroundColor: ACCENTS[i % ACCENTS.length], opacity: v.interpolate({inputRange: [0, 0.8, 1], outputRange: [0, 1, 0]}), transform: [{translateY: v.interpolate({inputRange: [0, 1], outputRange: [0, 120 + i * 4]})}, {translateX: v.interpolate({inputRange: [0, 1], outputRange: [0, (i % 2 === 0 ? 1 : -1) * (18 + i * 2)]})}, {rotate: v.interpolate({inputRange: [0, 1], outputRange: ['0deg', `${(i % 2 === 0 ? 1 : -1) * 180}deg`]})}]}]} />)}</View>
+        <View style={styles.physics}>{balls.map((b, i) => <View key={i} style={[styles.ball, {backgroundColor: b.color, transform: [{translateX: b.x}, {translateY: b.y}]}]} />)}</View>
+        <View style={styles.note}><Text style={styles.noteTitle}>Deferred native-only items</Text><Text style={styles.noteBody}>`Lottie` and `Reanimated worklets` remain outside this pass because the Windows app needs extra native support for them. The rest of phase 3.1 is implemented with core RN animation APIs.</Text></View>
+      </SectionWrapper>
+
+      {selected ? (
+        <Animated.View style={[styles.overlay, {opacity: detail}]}>
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={closeDetail} />
+          <Animated.View style={[styles.detail, {transform: [{scale: detail.interpolate({inputRange: [0, 1], outputRange: [0.88, 1]})}, {translateY: detail.interpolate({inputRange: [0, 1], outputRange: [28, 0]})}]}]}>
+            <View style={[styles.detailGlow, {backgroundColor: selected.accent + '14'}]} />
+            <Text style={[styles.detailTitle, {color: selected.accent}]}>{selected.title}</Text>
+            <Text style={styles.detailBody}>{selected.body}</Text>
+            <Text style={styles.caption}>Shared-element-style reveal state</Text>
+            <Pressable style={styles.button} onPress={closeDetail}><Text style={styles.buttonText}>Close</Text></Pressable>
+          </Animated.View>
+        </Animated.View>
+      ) : null}
     </ScreenContainer>
   );
 }
 
-// ─── Styles ──────────────────────────────────────────────────────────────────
-
 const styles = StyleSheet.create({
-  // Animated Header
-  header: {
-    height: 260,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  headerBlob: {
-    position: 'absolute',
-    borderRadius: 100,
-  },
-  headerBlobA: {
-    width: 200,
-    height: 200,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    top: -30,
-    right: -40,
-  },
-  headerBlobB: {
-    width: 160,
-    height: 160,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    bottom: -20,
-    left: -30,
-  },
-  headerShimmer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 120,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    transform: [{skewX: '-15deg'}],
-  },
-  headerContent: {
-    alignItems: 'center',
-    zIndex: 2,
-  },
-  headerIcon: {
-    fontSize: 28,
-    color: 'rgba(255,255,255,0.9)',
-    fontWeight: '300',
-    marginBottom: 8,
-    letterSpacing: 4,
-  },
-  headerTitle: {
-    fontSize: 42,
-    fontWeight: '800',
-    color: '#ffffff',
-    letterSpacing: -1,
-    textShadowColor: 'rgba(0,0,0,0.2)',
-    textShadowOffset: {width: 0, height: 2},
-    textShadowRadius: 8,
-  },
-  headerTagline: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.85)',
-    marginTop: 8,
-    fontWeight: '400',
-    letterSpacing: 1,
-  },
-  headerDivider: {
-    width: 40,
-    height: 2,
-    backgroundColor: 'rgba(255,255,255,0.4)',
-    marginVertical: 16,
-    borderRadius: 1,
-  },
-  headerVersion: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.6)',
-    fontWeight: '500',
-  },
-
-  // Interactive Animations
-  animButtonRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 24,
-  },
-  animButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: Radius.md,
-    minWidth: 130,
-    justifyContent: 'center',
-  },
-  animButtonIcon: {
-    fontSize: 16,
-    color: '#ffffff',
-    fontWeight: '700',
-    marginRight: 8,
-  },
-  animButtonLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#ffffff',
-  },
-  animDemoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-
-  // Spring ball
-  springBallContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 160,
-    height: 160,
-  },
-  springBallHint: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  springBall: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.primary,
-    shadowColor: Colors.primary,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  springBallInner: {
-    flex: 1,
-    borderRadius: 32,
-    overflow: 'hidden',
-  },
-  springBallHighlight: {
-    position: 'absolute',
-    top: 6,
-    left: 10,
-    width: 20,
-    height: 12,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255,255,255,0.35)',
-  },
-
-  // Pulse rings
-  pulseContainer: {
-    width: 120,
-    height: 120,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pulseRing: {
-    position: 'absolute',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: Colors.primary,
-  },
-  pulseDot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: Colors.primary,
-  },
+  hero: {marginHorizontal: 20, marginTop: Spacing.lg, borderRadius: Radius.xl, borderWidth: 1, borderColor: Colors.border, padding: Spacing.xl, gap: Spacing.sm, ...fluentShadow('sm')},
+  kicker: {...Typography.label, color: Colors.primary},
+  heroTitle: {...Typography.h2, color: Colors.textPrimary},
+  heroBody: {...Typography.bodySmall, color: Colors.textSecondary},
+  heroRow: {flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, alignItems: 'center'},
+  metric: {borderRadius: Radius.full, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCardAlt, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm},
+  metricLabel: {...Typography.caption, color: Colors.textMuted},
+  metricValue: {...Typography.h4, color: Colors.textPrimary},
+  ribbon: {marginLeft: 'auto', borderRadius: Radius.full, backgroundColor: Colors.warning, paddingHorizontal: Spacing.md, paddingVertical: 6},
+  ribbonText: {...Typography.caption, color: Colors.white, fontWeight: '700'},
+  terminal: {borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCardAlt, padding: Spacing.md},
+  terminalText: {...Typography.bodySmall, color: Colors.textPrimary, minHeight: 18},
+  cursor: {color: Colors.primary},
+  grid: {gap: Spacing.md},
+  card: {borderRadius: Radius.xl, borderWidth: 1, backgroundColor: Colors.bgCardAlt, padding: Spacing.lg, ...fluentShadow('sm')},
+  bar: {width: 40, height: 4, borderRadius: Radius.full, marginBottom: Spacing.sm},
+  cardTitle: {...Typography.h4, marginBottom: 4},
+  cardBody: {...Typography.bodySmall, color: Colors.textSecondary},
+  row: {flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, marginBottom: Spacing.md},
+  button: {borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCardAlt, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm},
+  buttonText: {...Typography.caption, color: Colors.textPrimary, fontWeight: '700'},
+  tileGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, marginBottom: Spacing.md},
+  tile: {width: '47%', minHeight: 72, borderRadius: Radius.lg, borderWidth: 1, backgroundColor: Colors.bgCardAlt, padding: Spacing.md, justifyContent: 'center'},
+  tileText: {...Typography.h4},
+  gestureWrap: {flexDirection: 'row', gap: Spacing.md},
+  gestureStage: {flex: 1.2, minHeight: 220, borderRadius: Radius.xl, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCardAlt, alignItems: 'center', justifyContent: 'center'},
+  token: {width: 116, height: 116, borderRadius: 28, borderWidth: 1, borderColor: Colors.primary, backgroundColor: Colors.primary + '14', alignItems: 'center', justifyContent: 'center'},
+  tokenText: {...Typography.label, color: Colors.primary},
+  morph: {flex: 1, minHeight: 220, borderRadius: Radius.xl, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCardAlt, alignItems: 'center', justifyContent: 'center', gap: Spacing.md},
+  shape: {width: 86, height: 86},
+  loader: {flexDirection: 'row', gap: Spacing.sm, alignItems: 'flex-end'},
+  dot: {width: 14, height: 14, borderRadius: Radius.full},
+  caption: {...Typography.caption, color: Colors.textSecondary, textAlign: 'center'},
+  socialRow: {flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.md},
+  social: {flex: 1, minHeight: 140, borderRadius: Radius.xl, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCardAlt, alignItems: 'center', justifyContent: 'center', gap: Spacing.sm, ...fluentShadow('sm')},
+  icon: {fontSize: 32},
+  counter: {...Typography.h2, color: Colors.primary},
+  primary: {alignSelf: 'flex-start', borderRadius: Radius.full, backgroundColor: Colors.primary, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, marginBottom: Spacing.md},
+  primaryText: {...Typography.label, color: Colors.white},
+  confettiBox: {height: 140, borderRadius: Radius.xl, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCardAlt, overflow: 'hidden', marginBottom: Spacing.md},
+  piece: {position: 'absolute', top: 0, width: 10, height: 18, borderRadius: 3},
+  physics: {height: 170, borderRadius: Radius.xl, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCardAlt, overflow: 'hidden', marginBottom: Spacing.md},
+  ball: {position: 'absolute', top: 0, left: 0, width: 34, height: 34, borderRadius: 17},
+  note: {borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCardAlt, padding: Spacing.md},
+  noteTitle: {...Typography.h4, color: Colors.textPrimary, marginBottom: 4},
+  noteBody: {...Typography.bodySmall, color: Colors.textSecondary},
+  overlay: {...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.28)', justifyContent: 'center', alignItems: 'center'},
+  detail: {width: '84%', borderRadius: Radius.xl, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgCard, padding: Spacing.lg, gap: Spacing.sm, overflow: 'hidden', ...fluentShadow('lg')},
+  detailGlow: {position: 'absolute', top: -40, right: -10, width: 150, height: 150, borderRadius: 75},
+  detailTitle: {...Typography.h2},
+  detailBody: {...Typography.body, color: Colors.textSecondary},
 });

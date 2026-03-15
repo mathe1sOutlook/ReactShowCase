@@ -28,6 +28,9 @@ const linking: LinkingOptions<RootTabParamList> = {
       HomeTab: {
         screens: {
           Home: '',
+          Layouts: 'layouts',
+          Lists: 'lists',
+          Navigation: 'navigation',
           Animations: 'animations',
           Canvas: 'canvas',
           ThreeD: '3d',

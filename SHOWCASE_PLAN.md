@@ -31,7 +31,7 @@ src/
     ├── SplashScreen.tsx        (Android) Splash animada com átomo neon + loading dots
     ├── HomeScreen.tsx          Dashboard com grid, busca e badges "NEW"
     ├── AnimationsScreen.tsx    Header animado, botões interativos, spring ball, pulse
-    ├── CanvasScreen.tsx        Canvas 2D com PanResponder, cores, espessuras
+    ├── CanvasScreen.tsx        Canvas 2D vetorial com SVG, formas, texto e export
     ├── ThreeDScreen.tsx        Flip cards, cubo 3D, transforms com perspectiva
     ├── ChartsScreen.tsx        Bar chart, line chart, donut/pie chart
     ├── PlatformScreen.tsx      Cards de hardware/capabilities do sistema
@@ -152,32 +152,32 @@ src/
 ## 📋 FASE 2 — Layouts e Responsividade
 
 ### 2.1 Sistemas de Layout
-- [ ] Flexbox showcase (todos os justify/align/wrap)
-- [ ] Grid Layout responsivo (2, 3, 4 colunas adaptáveis)
-- [ ] Masonry / Staggered Grid (Pinterest-style)
-- [ ] Waterfall Layout
-- [ ] Responsive breakpoints (phone vs tablet vs desktop)
-- [ ] Safe Area handling em diferentes dispositivos
+- [x] Flexbox showcase (todos os justify/align/wrap)
+- [x] Grid Layout responsivo (2, 3, 4 colunas adaptáveis)
+- [x] Masonry / Staggered Grid (Pinterest-style)
+- [x] Waterfall Layout
+- [x] Responsive breakpoints (phone vs tablet vs desktop)
+- [x] Safe Area handling em diferentes dispositivos
 
 ### 2.2 Listas e Scroll
-- [ ] FlatList com performance otimizada (1000+ items)
-- [ ] SectionList com headers sticky
-- [ ] Horizontal ScrollView com snap
-- [ ] Carousel / Swiper com indicadores
-- [ ] Infinite Scroll com loading indicator
-- [ ] Pull to Refresh
-- [ ] Scroll-to-top button
-- [ ] Parallax ScrollView (header que encolhe)
-- [ ] Collapsible Header ao scrollar
-- [ ] Sticky header sections
+- [x] FlatList com performance otimizada (1000+ items)
+- [x] SectionList com headers sticky
+- [x] Horizontal ScrollView com snap
+- [x] Carousel / Swiper com indicadores
+- [x] Infinite Scroll com loading indicator
+- [x] Pull to Refresh
+- [x] Scroll-to-top button
+- [x] Parallax ScrollView (header que encolhe)
+- [x] Collapsible Header ao scrollar
+- [x] Sticky header sections
 
 ### 2.3 Navegação Avançada
-- [ ] Tab View com swipe entre tabs
-- [ ] Top Tabs com indicador animado
-- [ ] Nested navigation (tabs + stack)
-- [ ] Drawer menu com itens animados
-- [ ] Bottom Sheet navigation
-- [ ] Paginação com dots indicator
+- [x] Tab View com swipe entre tabs
+- [x] Top Tabs com indicador animado
+- [x] Nested navigation (tabs + stack)
+- [x] Drawer menu com itens animados
+- [x] Bottom Sheet navigation
+- [x] Paginação com dots indicator
 
 ---
 
@@ -185,34 +185,34 @@ src/
 
 ### 3.1 Animações Avançadas
 - [ ] Shared Element Transition entre telas
-- [ ] Layout Animations (itens entrando/saindo de listas)
-- [ ] Gesture-driven animations (arrastar, pinçar, rotacionar)
-- [ ] Animação de morph entre formas
+- [x] Layout Animations (itens entrando/saindo de listas)
+- [x] Gesture-driven animations (arrastar, pinçar, rotacionar)
+- [x] Animação de morph entre formas
 - [ ] Lottie animations (carregar e reproduzir)
-- [ ] Animação de loading customizada
-- [ ] Animação de confetti / celebração
-- [ ] Animated counter / number ticker
-- [ ] Typewriter text effect
-- [ ] Waving flag / ribbon animation
+- [x] Animação de loading customizada
+- [x] Animação de confetti / celebração
+- [x] Animated counter / number ticker
+- [x] Typewriter text effect
+- [x] Waving flag / ribbon animation
 - [x] Card flip com conteúdo diferente cada lado (Windows ThreeDScreen — FlipCard)
-- [ ] Animated gradient background
+- [x] Animated gradient background
 - [x] Breathing / Pulsing elements (Android AnimationsScreen — PulseRing, botões interativos)
 - [x] Stagger animations em listas (HomeScreen cards — ambos projetos)
 - [x] Page transition animations (slide_from_right via native-stack)
-- [ ] Micro-interactions (like button, favorite, etc.)
-- [ ] Physics-based animations (gravidade, colisão)
+- [x] Micro-interactions (like button, favorite, etc.)
+- [x] Physics-based animations (gravidade, colisão)
 - [ ] Reanimated 2/3 worklets para animações de alta performance
 
 ### 3.2 Canvas 2D
 - [x] Drawing canvas com múltiplas ferramentas (lápis) — CanvasScreen ambos projetos
 - [x] Seletor de espessura de linha (Windows CanvasScreen)
 - [x] Seletor de cor completo (8 cores Android, 6 cores Windows)
-- [ ] Undo/Redo de strokes
-- [ ] Salvar desenho como imagem
-- [ ] Carregar imagem de fundo para desenhar por cima
-- [ ] Ferramenta de texto no canvas
-- [ ] Formas geométricas (retângulo, círculo, linha, seta)
-- [ ] Grid / snap to grid
+- [x] Undo/Redo de strokes
+- [x] Salvar desenho como imagem
+- [x] Carregar imagem de fundo para desenhar por cima
+- [x] Ferramenta de texto no canvas
+- [x] Formas geométricas (retângulo, círculo, linha, seta)
+- [x] Grid / snap to grid
 
 ### 3.3 Canvas 3D / WebGL
 - [ ] Renderização 3D com react-native-gl / expo-gl
@@ -553,6 +553,8 @@ src/
 | `@react-navigation/native-stack` | latest | Stack navigator (nativo) |
 | `react-native-screens` | latest | Otimização de telas nativas |
 | `react-native-safe-area-context` | ^5.5.2 (Android) / latest (Windows) | Safe area handling |
+| `@shopify/flash-list` | ^2.3.0 | Listas otimizadas / base para masonry e fase 2.2 |
+| `react-native-svg` | ^15.15.3 | SVG rendering, Canvas 2D e base para charts |
 
 ### A Instalar (ambas plataformas)
 | Biblioteca | Uso |
@@ -560,7 +562,6 @@ src/
 | `react-native-reanimated` | Animações de alta performance |
 | `react-native-gesture-handler` | Gestos avançados |
 | `react-native-vector-icons` | Ícones |
-| `react-native-svg` | SVG rendering + charts |
 | `react-native-chart-kit` ou `victory-native` | Gráficos |
 | `react-native-pdf` | Leitor de PDF |
 | `react-native-document-picker` | File picker |
@@ -606,15 +607,15 @@ src/
 |---|---|---|---|
 | Fase 0 - Arquitetura | 23 | 23 | ██████████████████ 100% |
 | Fase 1 - UI Básicos | 52 | 52 | ██████████████████ 100% |
-| Fase 2 - Layouts | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
-| Fase 3 - Animações/Gráficos | 61 | 15 | █████░░░░░░░░░░░░░ 25% |
+| Fase 2 - Layouts | 22 | 22 | ██████████████████ 100% |
+| Fase 3 - Animações/Gráficos | 61 | 32 | █████████░░░░░░░░░ 52% |
 | Fase 4 - DataGrid | 26 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 5 - Mídia | 31 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 6 - Dispositivo | 52 | 3 | █░░░░░░░░░░░░░░░░░ 6% |
 | Fase 7 - Web/Conectividade | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 8 - Avançadas | 48 | 2 | █░░░░░░░░░░░░░░░░░ 4% |
 | Fase 9 - Qualidade | 23 | 2 | ██░░░░░░░░░░░░░░░░ 9% |
-| **TOTAL** | **360** | **97** | **█████░░░░░░░░░░░░ 27%** |
+| **TOTAL** | **360** | **136** | **███████░░░░░░░░░░ 38%** |
 
 ---
 

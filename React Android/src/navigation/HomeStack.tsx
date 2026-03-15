@@ -5,6 +5,9 @@ import type {HomeStackParamList} from './types';
 import AnimatedHeader from '../components/common/AnimatedHeader';
 
 import HomeScreen from '../screens/HomeScreen';
+import LayoutsScreen from '../screens/LayoutsScreen';
+import ListsScreen from '../screens/ListsScreen';
+import NavigationScreen from '../screens/NavigationScreen';
 import AnimationsScreen from '../screens/AnimationsScreen';
 import CanvasScreen from '../screens/CanvasScreen';
 import ThreeDScreen from '../screens/ThreeDScreen';
@@ -32,6 +35,45 @@ export default function HomeStack() {
         name="Home"
         component={HomeScreen}
         options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Layouts"
+        component={LayoutsScreen}
+        options={{
+          title: 'Layouts',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Layouts'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Lists"
+        component={ListsScreen}
+        options={{
+          title: 'Lists & Scroll',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Lists & Scroll'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Navigation"
+        component={NavigationScreen}
+        options={{
+          title: 'Advanced Navigation',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Advanced Navigation'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
       />
       <Stack.Screen
         name="Animations"

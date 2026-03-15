@@ -7,6 +7,7 @@
 
 import React from 'react';
 import {NavigationContainer, type LinkingOptions} from '@react-navigation/native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import AppNavigator from './src/navigation/AppNavigator';
 import type {RootTabParamList} from './src/navigation/types';
 
@@ -17,6 +18,9 @@ const linking: LinkingOptions<RootTabParamList> = {
       HomeTab: {
         screens: {
           Home: '',
+          Layouts: 'layouts',
+          Lists: 'lists',
+          Navigation: 'navigation',
           Animations: 'animations',
           Canvas: 'canvas',
           ThreeD: '3d',
@@ -34,8 +38,10 @@ const linking: LinkingOptions<RootTabParamList> = {
 
 export default function App(): React.JSX.Element {
   return (
-    <NavigationContainer linking={linking}>
-      <AppNavigator />
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer linking={linking}>
+        <AppNavigator />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

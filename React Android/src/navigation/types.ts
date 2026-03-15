@@ -8,6 +8,9 @@ export type RootTabParamList = {
 
 export type HomeStackParamList = {
   Home: undefined;
+  Layouts: undefined;
+  Lists: undefined;
+  Navigation: undefined;
   Animations: undefined;
   Canvas: undefined;
   ThreeD: undefined;

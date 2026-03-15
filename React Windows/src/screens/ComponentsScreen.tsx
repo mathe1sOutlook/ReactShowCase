@@ -10,8 +10,8 @@ import {Colors, Radius, Spacing, Typography, fluentShadow} from '../theme';
 
 const UPCOMING = [
   {
-    title: '2.1 Layouts',
-    detail: 'Flexbox, responsive grid, masonry, and safe area handling.',
+    title: '3.3 Canvas 3D',
+    detail: 'WebGL scenes, textured geometry, model loading, lighting, and shader experiments.',
   },
 ];
 
