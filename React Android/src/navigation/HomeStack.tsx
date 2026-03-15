@@ -12,9 +12,11 @@ import AnimationsScreen from '../screens/AnimationsScreen';
 import CanvasScreen from '../screens/CanvasScreen';
 import ThreeDScreen from '../screens/ThreeDScreen';
 import ChartsScreen from '../screens/ChartsScreen';
+import SvgScreen from '../screens/SvgScreen';
 import PlatformScreen from '../screens/PlatformScreen';
 import ParticlesScreen from '../screens/ParticlesScreen';
 import ColorsScreen from '../screens/ColorsScreen';
+import ReanimatedScreen from '../screens/ReanimatedScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -128,6 +130,19 @@ export default function HomeStack() {
         }}
       />
       <Stack.Screen
+        name="Svg"
+        component={SvgScreen}
+        options={{
+          title: 'SVG & Vector',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'SVG & Vector'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
         name="Platform"
         component={PlatformScreen}
         options={{
@@ -161,6 +176,19 @@ export default function HomeStack() {
           header: ({navigation, options}) => (
             <AnimatedHeader
               title={options.title || 'Color Picker'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Reanimated"
+        component={ReanimatedScreen}
+        options={{
+          title: 'Reanimated Worklets',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Reanimated Worklets'}
               onBack={() => navigation.goBack()}
             />
           ),

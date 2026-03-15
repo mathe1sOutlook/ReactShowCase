@@ -9,6 +9,7 @@ import React, {useState} from 'react';
 import {Platform, UIManager} from 'react-native';
 import {NavigationContainer, type LinkingOptions} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import AppNavigator from './src/navigation/AppNavigator';
 import SplashScreen from './src/screens/SplashScreen';
 import type {RootTabParamList} from './src/navigation/types';
@@ -35,9 +36,11 @@ const linking: LinkingOptions<RootTabParamList> = {
           Canvas: 'canvas',
           ThreeD: '3d',
           Charts: 'charts',
+          Svg: 'svg',
           Platform: 'platform',
           Particles: 'particles',
           Colors: 'colors',
+          Reanimated: 'reanimated',
         },
       },
       ComponentsTab: 'components',
@@ -54,10 +57,12 @@ export default function App(): React.JSX.Element {
   }
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer linking={linking}>
-        <AppNavigator />
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <SafeAreaProvider>
+        <NavigationContainer linking={linking}>
+          <AppNavigator />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

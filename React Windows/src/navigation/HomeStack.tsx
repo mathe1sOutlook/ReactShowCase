@@ -12,9 +12,11 @@ import AnimationsScreen from '../screens/AnimationsScreen';
 import CanvasScreen from '../screens/CanvasScreen';
 import ThreeDScreen from '../screens/ThreeDScreen';
 import ChartsScreen from '../screens/ChartsScreen';
+import SvgScreen from '../screens/SvgScreen';
 import PlatformScreen from '../screens/PlatformScreen';
 import WidgetsScreen from '../screens/WidgetsScreen';
 import WindowControlsScreen from '../screens/WindowControlsScreen';
+import ReanimatedScreen from '../screens/ReanimatedScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -77,6 +79,11 @@ export default function HomeStack() {
         options={{title: 'Charts & Data'}}
       />
       <Stack.Screen
+        name="Svg"
+        component={SvgScreen}
+        options={{title: 'SVG & Vector'}}
+      />
+      <Stack.Screen
         name="Platform"
         component={PlatformScreen}
         options={{title: 'System Capabilities'}}
@@ -90,6 +97,11 @@ export default function HomeStack() {
         name="WindowControls"
         component={WindowControlsScreen}
         options={{title: 'Window & Grid'}}
+      />
+      <Stack.Screen
+        name="Reanimated"
+        component={ReanimatedScreen}
+        options={{title: 'Reanimated Worklets'}}
       />
     </Stack.Navigator>
   );

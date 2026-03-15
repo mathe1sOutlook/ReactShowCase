@@ -15,9 +15,11 @@ export type HomeStackParamList = {
   Canvas: undefined;
   ThreeD: undefined;
   Charts: undefined;
+  Svg: undefined;
   Platform: undefined;
   Particles: undefined;
   Colors: undefined;
+  Reanimated: undefined;
 };
 
 export type ScreenCategory = {

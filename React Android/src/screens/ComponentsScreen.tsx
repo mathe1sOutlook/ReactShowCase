@@ -10,8 +10,8 @@ import {Colors, Radius, Spacing, Typography} from '../theme';
 
 const UPCOMING = [
   {
-    title: '3.3 Canvas 3D',
-    detail: 'WebGL scenes, textured geometry, model loading, lighting, and shader experiments.',
+    title: '4.1 DataGrid',
+    detail: 'Sortable columns, filters, pagination, virtualized rows and export actions.',
   },
 ];
 

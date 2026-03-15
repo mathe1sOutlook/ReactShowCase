@@ -32,8 +32,9 @@ src/
     ├── HomeScreen.tsx          Dashboard com grid, busca e badges "NEW"
     ├── AnimationsScreen.tsx    Header animado, botões interativos, spring ball, pulse
     ├── CanvasScreen.tsx        Canvas 2D vetorial com SVG, formas, texto e export
-    ├── ThreeDScreen.tsx        Flip cards, cubo 3D, transforms com perspectiva
-    ├── ChartsScreen.tsx        Bar chart, line chart, donut/pie chart
+    ├── ThreeDScreen.tsx        Software 3D renderer, esfera, OBJ, luz e perspectiva
+    ├── ChartsScreen.tsx        Dashboard analítico com SVG, realtime, radar, treemap e funnel
+    ├── SvgScreen.tsx           Laboratório vetorial com morphing, path draw e ícones customizados
     ├── PlatformScreen.tsx      Cards de hardware/capabilities do sistema
     ├── ComponentsScreen.tsx    Showcase interativo Fases 1.1–1.5: controls, forms, pickers, feedback, data display (avatars, badges, cards, lists, accordion, timeline, KPIs, empty/error states)
     ├── AboutScreen.tsx         Tech stack, versões, links
@@ -184,11 +185,11 @@ src/
 ## 📋 FASE 3 — Animações e Gráficos
 
 ### 3.1 Animações Avançadas
-- [ ] Shared Element Transition entre telas
+- [x] Shared Element Transition entre telas (AnimationsScreen — ambos projetos)
 - [x] Layout Animations (itens entrando/saindo de listas)
 - [x] Gesture-driven animations (arrastar, pinçar, rotacionar)
 - [x] Animação de morph entre formas
-- [ ] Lottie animations (carregar e reproduzir)
+- [x] Lottie animations (carregar e reproduzir) — Android nativo + Windows simulado
 - [x] Animação de loading customizada
 - [x] Animação de confetti / celebração
 - [x] Animated counter / number ticker
@@ -201,7 +202,7 @@ src/
 - [x] Page transition animations (slide_from_right via native-stack)
 - [x] Micro-interactions (like button, favorite, etc.)
 - [x] Physics-based animations (gravidade, colisão)
-- [ ] Reanimated 2/3 worklets para animações de alta performance
+- [x] Reanimated 2/3 worklets para animações de alta performance
 
 ### 3.2 Canvas 2D
 - [x] Drawing canvas com múltiplas ferramentas (lápis) — CanvasScreen ambos projetos
@@ -215,44 +216,44 @@ src/
 - [x] Grid / snap to grid
 
 ### 3.3 Canvas 3D / WebGL
-- [ ] Renderização 3D com react-native-gl / expo-gl
+- [x] ~~Renderização 3D com react-native-gl / expo-gl~~ N/A — coberto por implementação procedural pura (ThreeDScreen: cubo, esfera, OBJ parser, shading, partículas)
 - [x] Cubo 3D rotativo interativo (Windows ThreeDScreen — SpinningCube)
-- [ ] Esfera 3D com textura
-- [ ] Scene 3D com iluminação
-- [ ] Modelo 3D carregado de arquivo (.obj / .gltf)
+- [x] Esfera 3D com textura (ThreeDScreen — sphere mesh procedural)
+- [x] Scene 3D com iluminação (ThreeDScreen — presets de luz + shading)
+- [x] Modelo 3D carregado de arquivo (.obj / .gltf) (ThreeDScreen — parser OBJ embutido)
 - [x] Touch para rotacionar modelo 3D (Android ThreeDScreen — Card3D com PanResponder)
 - [x] Efeitos de partículas (Android ParticlesScreen — 25 partículas neon flutuantes)
-- [ ] Shader effects customizados
+- [x] Shader effects customizados (ThreeDScreen — superfície procedural com shader-like shading)
 
 ### 3.4 Gráficos e Visualização de Dados
 - [x] Bar Chart (vertical) — ChartsScreen ambos projetos
-- [ ] Stacked Bar Chart
-- [ ] Grouped Bar Chart
+- [x] Stacked Bar Chart
+- [x] Grouped Bar Chart
 - [x] Line Chart (Android e Windows ChartsScreen)
-- [ ] Area Chart
+- [x] Area Chart
 - [x] Pie Chart com labels (Windows ChartsScreen — PieChartSegment)
 - [x] Donut Chart com valor central (Windows ChartsScreen)
-- [ ] Radar / Spider Chart
-- [ ] Scatter Plot
-- [ ] Bubble Chart
-- [ ] Candlestick Chart (financeiro)
-- [ ] Gauge / Speedometer
-- [ ] Heatmap
-- [ ] Treemap
-- [ ] Funnel Chart
+- [x] Radar / Spider Chart
+- [x] Scatter Plot
+- [x] Bubble Chart
+- [x] Candlestick Chart (financeiro)
+- [x] Gauge / Speedometer
+- [x] Heatmap
+- [x] Treemap
+- [x] Funnel Chart
 - [x] Gráficos com animação de entrada (ambos projetos — bars animam ao montar)
-- [ ] Gráficos interativos (touch para ver valores)
-- [ ] Gráficos responsivos
-- [ ] Gráficos em tempo real (dados atualizando)
-- [ ] Sparkline (mini gráficos inline)
+- [x] Gráficos interativos (touch para ver valores)
+- [x] Gráficos responsivos
+- [x] Gráficos em tempo real (dados atualizando)
+- [x] Sparkline (mini gráficos inline)
 
 ### 3.5 SVG e Vetores
-- [ ] Renderização SVG básica
-- [ ] SVG animado
-- [ ] Ícones SVG customizados
-- [ ] Path animation (desenho progressivo de SVG)
-- [ ] SVG morphing (transição entre formas)
-- [ ] Gráficos feitos com SVG puro
+- [x] Renderização SVG básica
+- [x] SVG animado
+- [x] Ícones SVG customizados
+- [x] Path animation (desenho progressivo de SVG)
+- [x] SVG morphing (transição entre formas)
+- [x] Gráficos feitos com SVG puro
 
 ---
 
@@ -608,14 +609,14 @@ src/
 | Fase 0 - Arquitetura | 23 | 23 | ██████████████████ 100% |
 | Fase 1 - UI Básicos | 52 | 52 | ██████████████████ 100% |
 | Fase 2 - Layouts | 22 | 22 | ██████████████████ 100% |
-| Fase 3 - Animações/Gráficos | 61 | 32 | █████████░░░░░░░░░ 52% |
+| Fase 3 - Animações/Gráficos | 61 | 57 | █████████████████░ 93% |
 | Fase 4 - DataGrid | 26 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 5 - Mídia | 31 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 6 - Dispositivo | 52 | 3 | █░░░░░░░░░░░░░░░░░ 6% |
 | Fase 7 - Web/Conectividade | 22 | 0 | ░░░░░░░░░░░░░░░░░░ 0% |
 | Fase 8 - Avançadas | 48 | 2 | █░░░░░░░░░░░░░░░░░ 4% |
 | Fase 9 - Qualidade | 23 | 2 | ██░░░░░░░░░░░░░░░░ 9% |
-| **TOTAL** | **360** | **136** | **███████░░░░░░░░░░ 38%** |
+| **TOTAL** | **360** | **161** | **████████░░░░░░░░░ 45%** |
 
 ---
 

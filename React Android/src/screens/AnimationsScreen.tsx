@@ -9,6 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import LottieView from 'lottie-react-native';
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import {Section} from '../components/common/Section';
 import {Colors, Neon, Radius, Spacing, Typography} from '../theme';
@@ -24,6 +25,18 @@ const BASE_TILES = [
   {id: '2', label: 'Layout', accent: Colors.secondary},
   {id: '3', label: 'Gesture', accent: Colors.accent},
   {id: '4', label: 'Confetti', accent: Colors.success},
+];
+
+const SHARED_ITEMS = [
+  {id: 'music', icon: '\u{1F3B5}', title: 'Music', color: Colors.primary, desc: 'Stream your favorite tunes with adaptive audio quality and seamless playback.'},
+  {id: 'photo', icon: '\u{1F4F7}', title: 'Photos', color: Colors.secondary, desc: 'AI-powered gallery with smart albums, auto-tagging, and pro editing tools.'},
+  {id: 'chat', icon: '\u{1F4AC}', title: 'Chat', color: Colors.success, desc: 'Real-time messaging with end-to-end encryption, voice notes, and reactions.'},
+];
+
+const LOTTIE_ANIMS = [
+  {source: require('../assets/lottie/pulse.json'), label: 'Pulse'},
+  {source: require('../assets/lottie/spinner.json'), label: 'Spinner'},
+  {source: require('../assets/lottie/bounce.json'), label: 'Bounce'},
 ];
 
 export default function AnimationsScreen() {
@@ -45,6 +58,12 @@ export default function AnimationsScreen() {
   const [selected, setSelected] = useState<(typeof CARDS)[number] | null>(null);
   const [liked, setLiked] = useState(false);
   const [starred, setStarred] = useState(false);
+  const [sharedItem, setSharedItem] = useState<(typeof SHARED_ITEMS)[number] | null>(null);
+  const sharedAnim = useRef(new Animated.Value(0)).current;
+  const lottieRef = useRef<LottieView>(null);
+  const [lottieIndex, setLottieIndex] = useState(0);
+  const [lottieSpeed, setLottieSpeed] = useState(1);
+  const [lottiePlaying, setLottiePlaying] = useState(true);
   const [kpi, setKpi] = useState(76);
   const [balls, setBalls] = useState([
     {x: 18, y: 18, vx: 2.4, vy: 0, color: Colors.primary},
@@ -192,6 +211,25 @@ export default function AnimationsScreen() {
     Animated.timing(detail, {toValue: 0, duration: 180, useNativeDriver: true}).start(() => setSelected(null));
   };
 
+  const openShared = (item: (typeof SHARED_ITEMS)[number]) => {
+    setSharedItem(item);
+    sharedAnim.setValue(0);
+    Animated.spring(sharedAnim, {toValue: 1, damping: 18, stiffness: 140, mass: 0.9, useNativeDriver: true}).start();
+  };
+
+  const closeShared = () => {
+    Animated.timing(sharedAnim, {toValue: 0, duration: 200, useNativeDriver: true}).start(() => setSharedItem(null));
+  };
+
+  const toggleLottie = () => {
+    if (lottiePlaying) {
+      lottieRef.current?.pause();
+    } else {
+      lottieRef.current?.resume();
+    }
+    setLottiePlaying(!lottiePlaying);
+  };
+
   return (
     <ScreenContainer>
       <Animated.View
@@ -212,7 +250,7 @@ export default function AnimationsScreen() {
         </Text>
         <View style={styles.heroRow}>
           <View style={styles.metric}><Text style={styles.metricLabel}>Counter</Text><Text style={styles.metricValue}>{count}</Text></View>
-          <View style={styles.metric}><Text style={styles.metricLabel}>Scenes</Text><Text style={styles.metricValue}>11</Text></View>
+          <View style={styles.metric}><Text style={styles.metricLabel}>Scenes</Text><Text style={styles.metricValue}>15</Text></View>
           <Animated.View style={[styles.ribbon, {transform: [{rotate: flag.interpolate({inputRange: [0, 1], outputRange: ['-5deg', '5deg']})}]}]}><Text style={styles.ribbonText}>Waving ribbon</Text></Animated.View>
         </View>
         <View style={styles.terminal}><Text style={styles.terminalText}>{typed}<Text style={styles.cursor}>|</Text></Text></View>
@@ -275,7 +313,53 @@ export default function AnimationsScreen() {
         <Pressable style={styles.primary} onPress={celebrate}><Text style={styles.primaryText}>Celebrate</Text></Pressable>
         <View style={styles.confettiBox}>{confetti.map((v, i) => <Animated.View key={i} style={[styles.piece, {left: `${8 + i * 8}%`, backgroundColor: Neon[i % Neon.length], opacity: v.interpolate({inputRange: [0, 0.8, 1], outputRange: [0, 1, 0]}), transform: [{translateY: v.interpolate({inputRange: [0, 1], outputRange: [0, 120 + i * 4]})}, {translateX: v.interpolate({inputRange: [0, 1], outputRange: [0, (i % 2 === 0 ? 1 : -1) * (18 + i * 2)]})}, {rotate: v.interpolate({inputRange: [0, 1], outputRange: ['0deg', `${(i % 2 === 0 ? 1 : -1) * 180}deg`]})}]}]} />)}</View>
         <View style={styles.physics}>{balls.map((b, i) => <View key={i} style={[styles.ball, {backgroundColor: b.color, transform: [{translateX: b.x}, {translateY: b.y}]}]} />)}</View>
-        <View style={styles.note}><Text style={styles.noteTitle}>Deferred native-only items</Text><Text style={styles.noteBody}>`Lottie` and `Reanimated worklets` remain outside this pass because the Windows app needs extra native support for them. The rest of phase 3.1 is implemented with core RN animation APIs.</Text></View>
+      </Section>
+
+      <Section title="Shared Element Transition">
+        <Text style={styles.body}>Tap a card — the icon and accent travel from source to destination, simulating a cross-screen shared element transition.</Text>
+        <View style={[styles.grid, {flexDirection: 'row', flexWrap: 'wrap'}]}>
+          {SHARED_ITEMS.map(item => (
+            <Pressable key={item.id} style={[styles.sharedCard, {borderColor: item.color + '55'}]} onPress={() => openShared(item)}>
+              <Text style={styles.sharedIcon}>{item.icon}</Text>
+              <Text style={[styles.sharedTitle, {color: item.color}]}>{item.title}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Section>
+
+      <Section title="Lottie Animations">
+        <Text style={styles.body}>Native Lottie player rendering After Effects animations at 60 fps. Switch animations, control speed, and play/pause.</Text>
+        <View style={styles.lottieContainer}>
+          <LottieView
+            ref={lottieRef}
+            source={LOTTIE_ANIMS[lottieIndex].source}
+            autoPlay
+            loop
+            speed={lottieSpeed}
+            style={styles.lottiePlayer}
+          />
+        </View>
+        <View style={styles.row}>
+          {LOTTIE_ANIMS.map((a, i) => (
+            <Pressable key={a.label} style={[styles.button, lottieIndex === i && {borderColor: Colors.primary, backgroundColor: Colors.primary + '22'}]} onPress={() => { setLottieIndex(i); setLottiePlaying(true); }}>
+              <Text style={[styles.buttonText, lottieIndex === i && {color: Colors.primary}]}>{a.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+        <View style={styles.row}>
+          <Pressable style={[styles.button, {borderColor: lottiePlaying ? Colors.error + '66' : Colors.success + '66'}]} onPress={toggleLottie}>
+            <Text style={[styles.buttonText, {color: lottiePlaying ? Colors.error : Colors.success}]}>{lottiePlaying ? '\u23F8 Pause' : '\u25B6 Play'}</Text>
+          </Pressable>
+          {[0.5, 1, 2].map(s => (
+            <Pressable key={s} style={[styles.button, lottieSpeed === s && {borderColor: Colors.warning, backgroundColor: Colors.warning + '22'}]} onPress={() => setLottieSpeed(s)}>
+              <Text style={[styles.buttonText, lottieSpeed === s && {color: Colors.warning}]}>{s}x</Text>
+            </Pressable>
+          ))}
+        </View>
+        <View style={styles.note}>
+          <Text style={styles.noteTitle}>Phase 3.1 Complete</Text>
+          <Text style={styles.noteBody}>All advanced animation items implemented: Animated API demos, Reanimated worklets, shared element transitions, and Lottie animations.</Text>
+        </View>
       </Section>
 
       {selected ? (
@@ -287,6 +371,20 @@ export default function AnimationsScreen() {
             <Text style={styles.detailBody}>{selected.body}</Text>
             <Text style={styles.caption}>Shared-element-style reveal state</Text>
             <Pressable style={styles.button} onPress={closeDetail}><Text style={styles.buttonText}>Close</Text></Pressable>
+          </Animated.View>
+        </Animated.View>
+      ) : null}
+
+      {sharedItem ? (
+        <Animated.View style={[styles.overlay, {opacity: sharedAnim}]}>
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={closeShared} />
+          <Animated.View style={[styles.sharedDetail, {transform: [{scale: sharedAnim.interpolate({inputRange: [0, 1], outputRange: [0.5, 1]})}, {translateY: sharedAnim.interpolate({inputRange: [0, 1], outputRange: [60, 0]})}]}]}>
+            <View style={[styles.detailGlow, {backgroundColor: sharedItem.color + '22'}]} />
+            <Animated.Text style={[styles.sharedDetailIcon, {transform: [{scale: sharedAnim.interpolate({inputRange: [0, 0.6, 1], outputRange: [2.5, 1.1, 1]})}]}]}>{sharedItem.icon}</Animated.Text>
+            <Text style={[styles.detailTitle, {color: sharedItem.color}]}>{sharedItem.title}</Text>
+            <Text style={styles.detailBody}>{sharedItem.desc}</Text>
+            <Text style={styles.caption}>Shared element transition</Text>
+            <Pressable style={styles.button} onPress={closeShared}><Text style={styles.buttonText}>Close</Text></Pressable>
           </Animated.View>
         </Animated.View>
       ) : null}
@@ -583,6 +681,53 @@ const styles = StyleSheet.create({
   noteBody: {
     ...Typography.bodySmall,
     color: Colors.textSecondary,
+  },
+  sharedCard: {
+    flex: 1,
+    minWidth: 90,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    backgroundColor: Colors.bgCard,
+    padding: Spacing.lg,
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  sharedIcon: {
+    fontSize: 36,
+  },
+  sharedTitle: {
+    ...Typography.label,
+  },
+  sharedDetail: {
+    width: '84%',
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
+    backgroundColor: Colors.bgCard,
+    padding: Spacing.lg,
+    gap: Spacing.sm,
+    overflow: 'hidden',
+    alignItems: 'center',
+  },
+  sharedDetailIcon: {
+    fontSize: 64,
+    marginVertical: Spacing.md,
+  },
+  lottieContainer: {
+    marginHorizontal: 16,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
+    backgroundColor: Colors.bgCard,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 200,
+    marginBottom: Spacing.md,
+    overflow: 'hidden',
+  },
+  lottiePlayer: {
+    width: 160,
+    height: 160,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

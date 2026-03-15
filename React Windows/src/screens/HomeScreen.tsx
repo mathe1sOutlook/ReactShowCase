@@ -71,18 +71,27 @@ const CATEGORIES: ScreenCategory[] = [
   {
     key: 'ThreeD',
     title: '3D Transforms',
-    subtitle: 'Flip cards, spinning cube & perspective',
+    subtitle: 'OBJ parser, sphere shading, lighting & shader surface',
     icon: '\u{1F4A0}',
     color: Colors.accent,
-    demoCount: 4,
+    demoCount: 7,
   },
   {
     key: 'Charts',
     title: 'Charts & Data',
-    subtitle: 'Bar, donut, line charts & visualization',
+    subtitle: 'Realtime analytics, treemap, funnel, radar & finance views',
     icon: '\u{1F4CA}',
     color: Colors.success,
-    demoCount: 4,
+    demoCount: 17,
+  },
+  {
+    key: 'Svg',
+    title: 'SVG & Vector',
+    subtitle: 'Morphing, path draw, animated icons & pure SVG charts',
+    icon: '\u25C8',
+    color: Colors.primary,
+    demoCount: 6,
+    isNew: true,
   },
   {
     key: 'Platform',
@@ -108,6 +117,15 @@ const CATEGORIES: ScreenCategory[] = [
     icon: '\u2B1C',
     color: Colors.primaryDark,
     demoCount: 3,
+  },
+  {
+    key: 'Reanimated',
+    title: 'Reanimated',
+    subtitle: 'Worklets, shared values & UI thread animations',
+    icon: '\u26A1',
+    color: Colors.warning,
+    demoCount: 7,
+    isNew: true,
   },
 ];
 
