@@ -13,7 +13,20 @@ import CanvasScreen from '../screens/CanvasScreen';
 import ThreeDScreen from '../screens/ThreeDScreen';
 import ChartsScreen from '../screens/ChartsScreen';
 import SvgScreen from '../screens/SvgScreen';
+import DataGridScreen from '../screens/DataGridScreen';
+import MediaScreen from '../screens/MediaScreen';
+import AudioScreen from '../screens/AudioScreen';
+import VideoScreen from '../screens/VideoScreen';
+import FilesScreen from '../screens/FilesScreen';
 import PlatformScreen from '../screens/PlatformScreen';
+import WebScreen from '../screens/WebScreen';
+import NetworkScreen from '../screens/NetworkScreen';
+import StorageScreen from '../screens/StorageScreen';
+import MapsScreen from '../screens/MapsScreen';
+import AuthScreen from '../screens/AuthScreen';
+import ThemesScreen from '../screens/ThemesScreen';
+import CodesScreen from '../screens/CodesScreen';
+import UtilitiesScreen from '../screens/UtilitiesScreen';
 import ParticlesScreen from '../screens/ParticlesScreen';
 import ColorsScreen from '../screens/ColorsScreen';
 import ReanimatedScreen from '../screens/ReanimatedScreen';
@@ -143,13 +156,182 @@ export default function HomeStack() {
         }}
       />
       <Stack.Screen
+        name="DataGrid"
+        component={DataGridScreen}
+        options={{
+          title: 'DataGrid Studio',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'DataGrid Studio'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Media"
+        component={MediaScreen}
+        options={{
+          title: 'Camera & Photos',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Camera & Photos'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Audio"
+        component={AudioScreen}
+        options={{
+          title: 'Audio Studio',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Audio Studio'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Video"
+        component={VideoScreen}
+        options={{
+          title: 'Video Studio',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Video Studio'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Files"
+        component={FilesScreen}
+        options={{
+          title: 'Files & Documents',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Files & Documents'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
         name="Platform"
         component={PlatformScreen}
         options={{
-          title: 'Platform',
+          title: 'Device & System',
           header: ({navigation, options}) => (
             <AnimatedHeader
-              title={options.title || 'Platform'}
+              title={options.title || 'Device & System'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Web"
+        component={WebScreen}
+        options={{
+          title: 'WebView & Browser',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'WebView & Browser'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Network"
+        component={NetworkScreen}
+        options={{
+          title: 'Networking & APIs',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Networking & APIs'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Storage"
+        component={StorageScreen}
+        options={{
+          title: 'Local Storage',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Local Storage'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Maps"
+        component={MapsScreen}
+        options={{
+          title: 'Maps & Geospatial',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Maps & Geospatial'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Auth"
+        component={AuthScreen}
+        options={{
+          title: 'Auth Demo',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Auth Demo'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Themes"
+        component={ThemesScreen}
+        options={{
+          title: 'Themes & Appearance',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Themes & Appearance'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Codes"
+        component={CodesScreen}
+        options={{
+          title: 'QR & Barcode',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'QR & Barcode'}
+              onBack={() => navigation.goBack()}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Utilities"
+        component={UtilitiesScreen}
+        options={{
+          title: 'Advanced Utilities',
+          header: ({navigation, options}) => (
+            <AnimatedHeader
+              title={options.title || 'Advanced Utilities'}
               onBack={() => navigation.goBack()}
             />
           ),

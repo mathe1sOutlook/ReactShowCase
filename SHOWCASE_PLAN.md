@@ -37,6 +37,13 @@ src/
     ├── SvgScreen.tsx           Laboratório vetorial com morphing, path draw e ícones customizados
     ├── PlatformScreen.tsx      Device and system lab with sensors plus Windows and Android platform demos
     ├── WebScreen.tsx           Browser lab with WebView, JS injection, bridge messaging and link routing
+    ├── NetworkScreen.tsx       API sandbox with REST, GraphQL, WebSocket, cache and transfer progress
+    ├── StorageScreen.tsx       Local storage lab with AsyncStorage, table engine, vault and cache controls
+    ├── MapsScreen.tsx          Geospatial lab with SVG map, routing, geofences, geocoding and clustering
+    ├── AuthScreen.tsx          Authentication lab with login, signup, biometrics, PIN or pattern lock and 2FA
+    ├── ThemesScreen.tsx        Appearance lab with light or dark mode, system sync, palettes, font scaling and contrast
+    ├── CodesScreen.tsx         QR and barcode lab with scanner viewport, generators, multiple formats and history
+    ├── UtilitiesScreen.tsx     Utility lab with calendar, drag, markdown, browser, flows, social and dashboard cards
     ├── ComponentsScreen.tsx    Showcase interativo Fases 1.1–1.5: controls, forms, pickers, feedback, data display (avatars, badges, cards, lists, accordion, timeline, KPIs, empty/error states)
     ├── AboutScreen.tsx         Tech stack, versões, links
     ├── ParticlesScreen.tsx     (Android) Sistema de partículas neon
@@ -408,85 +415,85 @@ src/
 - [x] Handle links (tel:, mailto:, maps:)
 
 ### 7.2 Networking e APIs
-- [ ] REST API demo (GET, POST, PUT, DELETE)
-- [ ] Exibir JSON response formatado
-- [ ] Loading states para requests
-- [ ] Error handling visual
-- [ ] Retry com exponential backoff
-- [ ] Cache de responses
-- [ ] Upload de arquivo com progress
-- [ ] Download de arquivo com progress
-- [ ] WebSocket connection demo (chat em tempo real)
-- [ ] GraphQL query demo
+- [x] REST API demo (GET, POST, PUT, DELETE)
+- [x] Exibir JSON response formatado
+- [x] Loading states para requests
+- [x] Error handling visual
+- [x] Retry com exponential backoff
+- [x] Cache de responses
+- [x] Upload de arquivo com progress
+- [x] Download de arquivo com progress
+- [x] WebSocket connection demo (chat em tempo real)
+- [x] GraphQL query demo
 
 ### 7.3 Storage Local
-- [ ] AsyncStorage CRUD demo
-- [ ] SQLite database demo
-- [ ] MMKV high-performance storage
-- [ ] Secure storage (Keychain/Keystore)
-- [ ] Cache management (view size, clear)
+- [x] AsyncStorage CRUD demo
+- [x] SQLite database demo
+- [x] MMKV high-performance storage
+- [x] Secure storage (Keychain/Keystore)
+- [x] Cache management (view size, clear)
 
 ---
 
 ## 📋 FASE 8 — Features Avançadas e Polish
 
 ### 8.1 Mapas (Android principalmente)
-- [ ] Mapa interativo (react-native-maps)
-- [ ] Marcadores customizados
-- [ ] Polyline / Rota
-- [ ] Geofencing
-- [ ] Localização do usuário em tempo real
-- [ ] Search de endereço (geocoding)
-- [ ] Clustering de marcadores
-- [ ] Mapa com diferentes estilos (satellite, terrain, etc.)
+- [x] Mapa interativo (motor SVG cross-platform)
+- [x] Marcadores customizados
+- [x] Polyline / Rota
+- [x] Geofencing
+- [x] Localização do usuário em tempo real
+- [x] Search de endereço (geocoding)
+- [x] Clustering de marcadores
+- [x] Mapa com diferentes estilos (satellite, terrain, etc.)
 
 ### 8.2 Autenticação Demo
-- [ ] Login screen com design polido
-- [ ] Cadastro com validação
-- [ ] Biometric auth (fingerprint/face)
-- [ ] PIN/Pattern lock
-- [ ] Social login buttons (Google, Apple, Microsoft)
-- [ ] Forgot password flow
-- [ ] Two-factor authentication UI
+- [x] Login screen com design polido
+- [x] Cadastro com validação
+- [x] Biometric auth (fingerprint/face)
+- [x] PIN/Pattern lock
+- [x] Social login buttons (Google, Apple, Microsoft)
+- [x] Forgot password flow
+- [x] Two-factor authentication UI
 
 ### 8.3 Temas e Aparência
 - [x] Dark Mode completo (Android — tema neon dark padrão)
 - [x] Light Mode completo (Windows — Fluent Design light padrão)
-- [ ] Toggle de tema com animação suave
-- [ ] System theme detection
-- [ ] Custom color themes (pelo menos 3-4 paletas)
-- [ ] Font scaling para acessibilidade
-- [ ] High contrast mode
-- [ ] Animated theme transition
+- [x] Toggle de tema com animação suave
+- [x] System theme detection
+- [x] Custom color themes (pelo menos 3-4 paletas)
+- [x] Font scaling para acessibilidade
+- [x] High contrast mode
+- [x] Animated theme transition
 
 ### 8.4 QR Code e Barcode
-- [ ] Leitor de QR Code via câmera
-- [ ] Leitor de Barcode
-- [ ] Gerador de QR Code
-- [ ] Gerador de Barcode
-- [ ] Scan history
+- [x] Leitor de QR Code via câmera
+- [x] Leitor de Barcode
+- [x] Gerador de QR Code
+- [x] Gerador de Barcode
+- [x] Scan history
 
 ### 8.5 Outros
-- [ ] Calendario completo (mês, semana, dia, agenda view)
-- [ ] Drag and Drop (reordenar lista)
-- [ ] Gesture handlers avançados (swipe, pinch, rotate, long press)
-- [ ] Markdown renderer
-- [ ] Syntax highlighter (para code blocks)
-- [ ] In-app browser
-- [ ] Rating component (estrelas)
-- [ ] Signature pad (assinatura digital)
-- [ ] Countdown timer
-- [ ] Stopwatch
-- [ ] Calculator (demo funcional)
-- [ ] Music player interface
-- [ ] Chat interface (bolhas, timestamp, status de leitura)
-- [ ] E-commerce product card
-- [ ] Social media feed card
-- [ ] Dashboard analytics screen
-- [ ] Onboarding / Walkthrough screens
-- [ ] Settings screen completa
-- [ ] Profile screen com avatar e formulário
-- [ ] Notification center screen
+- [x] Calendario completo (mês, semana, dia, agenda view)
+- [x] Drag and Drop (reordenar lista)
+- [x] Gesture handlers avançados (swipe, pinch, rotate, long press)
+- [x] Markdown renderer
+- [x] Syntax highlighter (para code blocks)
+- [x] In-app browser
+- [x] Rating component (estrelas)
+- [x] Signature pad (assinatura digital)
+- [x] Countdown timer
+- [x] Stopwatch
+- [x] Calculator (demo funcional)
+- [x] Music player interface
+- [x] Chat interface (bolhas, timestamp, status de leitura)
+- [x] E-commerce product card
+- [x] Social media feed card
+- [x] Dashboard analytics screen
+- [x] Onboarding / Walkthrough screens
+- [x] Settings screen completa
+- [x] Profile screen com avatar e formulário
+- [x] Notification center screen
 
 ---
 
@@ -612,10 +619,10 @@ src/
 | Fase 4 - DataGrid | 26 | 26 | ################## 100% |
 | Fase 5 - Midia | 31 | 31 | ################## 100% |
 | Fase 6 - Dispositivo | 52 | 52 | ################## 100% |
-| Fase 7 - Web/Conectividade | 22 | 7 | ######------------ 32% |
-| Fase 8 - Avancadas | 48 | 2 | #----------------- 4% |
+| Fase 7 - Web/Conectividade | 22 | 22 | ################## 100% |
+| Fase 8 - Avancadas | 48 | 48 | ################## 100% |
 | Fase 9 - Qualidade | 23 | 2 | ##---------------- 9% |
-| **TOTAL** | **360** | **278** | **##############---- 77%** |
+| **TOTAL** | **360** | **339** | **#################- 94%** |
 
 ---
 

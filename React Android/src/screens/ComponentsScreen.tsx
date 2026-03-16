@@ -10,8 +10,8 @@ import {Colors, Radius, Spacing, Typography} from '../theme';
 
 const UPCOMING = [
   {
-    title: '4.1 DataGrid',
-    detail: 'Sortable columns, filters, pagination, virtualized rows and export actions.',
+    title: '9.1 Quality Pass',
+    detail: 'Performance, tests, accessibility and error boundary hardening.',
   },
 ];
 
