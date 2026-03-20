@@ -1,27 +1,46 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {Colors} from '../theme';
 import type {RootTabParamList} from './types';
+import {withScreenQuality} from '../quality/withScreenQuality';
+import IconSymbol, {type IconName} from '../components/common/IconSymbol';
 
 import HomeStack from './HomeStack';
 import ComponentsScreen from '../screens/ComponentsScreen';
 import AboutScreen from '../screens/AboutScreen';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
+const ComponentsScreenMonitored = withScreenQuality(
+  'Components',
+  ComponentsScreen,
+);
+const AboutScreenMonitored = withScreenQuality('About', AboutScreen);
 
-function TabIcon({label, color, focused}: {label: string; color: string; focused: boolean}) {
-  const icons: Record<string, string> = {
-    HomeTab: '\u{1F3E0}',
-    ComponentsTab: '\u{1F9E9}',
-    AboutTab: '\u{2139}\uFE0F',
+function TabIcon({
+  label,
+  color,
+  focused,
+}: {
+  label: string;
+  color: string;
+  focused: boolean;
+}) {
+  const icons: Record<string, IconName> = {
+    HomeTab: 'home',
+    ComponentsTab: 'grid',
+    AboutTab: 'info',
   };
 
   return (
     <View style={styles.tabIcon}>
-      <Text style={[styles.tabEmoji, focused && {transform: [{scale: 1.15}]}]}>
-        {icons[label] || '\u25CF'}
-      </Text>
+      <View style={[styles.tabGlyphWrap, focused && styles.tabGlyphWrapFocused]}>
+        <IconSymbol
+          name={icons[label] || 'grid'}
+          size={19}
+          color={focused ? Colors.primary : color}
+        />
+      </View>
     </View>
   );
 }
@@ -29,8 +48,11 @@ function TabIcon({label, color, focused}: {label: string; color: string; focused
 export default function AppNavigator() {
   return (
     <Tab.Navigator
+      detachInactiveScreens
       screenOptions={({route}) => ({
         headerShown: false,
+        freezeOnBlur: true,
+        lazy: true,
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,
@@ -42,17 +64,26 @@ export default function AppNavigator() {
       <Tab.Screen
         name="HomeTab"
         component={HomeStack}
-        options={{tabBarLabel: 'Explore'}}
+        options={{
+          tabBarLabel: 'Explore',
+          tabBarAccessibilityLabel: 'Explore showcase screens',
+        }}
       />
       <Tab.Screen
         name="ComponentsTab"
-        component={ComponentsScreen}
-        options={{tabBarLabel: 'Components'}}
+        component={ComponentsScreenMonitored}
+        options={{
+          tabBarLabel: 'Components',
+          tabBarAccessibilityLabel: 'Open component showcase',
+        }}
       />
       <Tab.Screen
         name="AboutTab"
-        component={AboutScreen}
-        options={{tabBarLabel: 'About'}}
+        component={AboutScreenMonitored}
+        options={{
+          tabBarLabel: 'About',
+          tabBarAccessibilityLabel: 'Open about screen',
+        }}
       />
     </Tab.Navigator>
   );
@@ -77,7 +108,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabEmoji: {
-    fontSize: 20,
+  tabGlyphWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabGlyphWrapFocused: {
+    backgroundColor: `${Colors.primary}18`,
   },
 });

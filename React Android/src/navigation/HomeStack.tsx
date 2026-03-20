@@ -3,6 +3,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Colors} from '../theme';
 import type {HomeStackParamList} from './types';
 import AnimatedHeader from '../components/common/AnimatedHeader';
+import {withScreenQuality} from '../quality/withScreenQuality';
 
 import HomeScreen from '../screens/HomeScreen';
 import LayoutsScreen from '../screens/LayoutsScreen';
@@ -32,6 +33,50 @@ import ColorsScreen from '../screens/ColorsScreen';
 import ReanimatedScreen from '../screens/ReanimatedScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
+const HomeScreenMonitored = withScreenQuality('Home', HomeScreen);
+const LayoutsScreenMonitored = withScreenQuality('Layouts', LayoutsScreen);
+const ListsScreenMonitored = withScreenQuality('Lists', ListsScreen);
+const NavigationScreenMonitored = withScreenQuality(
+  'Navigation',
+  NavigationScreen,
+);
+const AnimationsScreenMonitored = withScreenQuality(
+  'Animations',
+  AnimationsScreen,
+);
+const CanvasScreenMonitored = withScreenQuality('Canvas', CanvasScreen);
+const ThreeDScreenMonitored = withScreenQuality('ThreeD', ThreeDScreen);
+const ChartsScreenMonitored = withScreenQuality('Charts', ChartsScreen);
+const SvgScreenMonitored = withScreenQuality('Svg', SvgScreen);
+const DataGridScreenMonitored = withScreenQuality(
+  'DataGrid',
+  DataGridScreen,
+);
+const MediaScreenMonitored = withScreenQuality('Media', MediaScreen);
+const AudioScreenMonitored = withScreenQuality('Audio', AudioScreen);
+const VideoScreenMonitored = withScreenQuality('Video', VideoScreen);
+const FilesScreenMonitored = withScreenQuality('Files', FilesScreen);
+const PlatformScreenMonitored = withScreenQuality('Platform', PlatformScreen);
+const WebScreenMonitored = withScreenQuality('Web', WebScreen);
+const NetworkScreenMonitored = withScreenQuality('Network', NetworkScreen);
+const StorageScreenMonitored = withScreenQuality('Storage', StorageScreen);
+const MapsScreenMonitored = withScreenQuality('Maps', MapsScreen);
+const AuthScreenMonitored = withScreenQuality('Auth', AuthScreen);
+const ThemesScreenMonitored = withScreenQuality('Themes', ThemesScreen);
+const CodesScreenMonitored = withScreenQuality('Codes', CodesScreen);
+const UtilitiesScreenMonitored = withScreenQuality(
+  'Utilities',
+  UtilitiesScreen,
+);
+const ParticlesScreenMonitored = withScreenQuality(
+  'Particles',
+  ParticlesScreen,
+);
+const ColorsScreenMonitored = withScreenQuality('Colors', ColorsScreen);
+const ReanimatedScreenMonitored = withScreenQuality(
+  'Reanimated',
+  ReanimatedScreen,
+);
 
 export default function HomeStack() {
   return (
@@ -48,12 +93,12 @@ export default function HomeStack() {
       }}>
       <Stack.Screen
         name="Home"
-        component={HomeScreen}
+        component={HomeScreenMonitored}
         options={{headerShown: false}}
       />
       <Stack.Screen
         name="Layouts"
-        component={LayoutsScreen}
+        component={LayoutsScreenMonitored}
         options={{
           title: 'Layouts',
           header: ({navigation, options}) => (
@@ -66,7 +111,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Lists"
-        component={ListsScreen}
+        component={ListsScreenMonitored}
         options={{
           title: 'Lists & Scroll',
           header: ({navigation, options}) => (
@@ -79,7 +124,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Navigation"
-        component={NavigationScreen}
+        component={NavigationScreenMonitored}
         options={{
           title: 'Advanced Navigation',
           header: ({navigation, options}) => (
@@ -92,7 +137,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Animations"
-        component={AnimationsScreen}
+        component={AnimationsScreenMonitored}
         options={{
           title: 'Animations',
           header: ({navigation, options}) => (
@@ -105,7 +150,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Canvas"
-        component={CanvasScreen}
+        component={CanvasScreenMonitored}
         options={{
           title: 'Canvas 2D',
           header: ({navigation, options}) => (
@@ -118,7 +163,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="ThreeD"
-        component={ThreeDScreen}
+        component={ThreeDScreenMonitored}
         options={{
           title: '3D Transforms',
           header: ({navigation, options}) => (
@@ -131,7 +176,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Charts"
-        component={ChartsScreen}
+        component={ChartsScreenMonitored}
         options={{
           title: 'Charts & Data',
           header: ({navigation, options}) => (
@@ -144,7 +189,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Svg"
-        component={SvgScreen}
+        component={SvgScreenMonitored}
         options={{
           title: 'SVG & Vector',
           header: ({navigation, options}) => (
@@ -157,7 +202,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="DataGrid"
-        component={DataGridScreen}
+        component={DataGridScreenMonitored}
         options={{
           title: 'DataGrid Studio',
           header: ({navigation, options}) => (
@@ -170,7 +215,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Media"
-        component={MediaScreen}
+        component={MediaScreenMonitored}
         options={{
           title: 'Camera & Photos',
           header: ({navigation, options}) => (
@@ -183,7 +228,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Audio"
-        component={AudioScreen}
+        component={AudioScreenMonitored}
         options={{
           title: 'Audio Studio',
           header: ({navigation, options}) => (
@@ -196,7 +241,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Video"
-        component={VideoScreen}
+        component={VideoScreenMonitored}
         options={{
           title: 'Video Studio',
           header: ({navigation, options}) => (
@@ -209,7 +254,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Files"
-        component={FilesScreen}
+        component={FilesScreenMonitored}
         options={{
           title: 'Files & Documents',
           header: ({navigation, options}) => (
@@ -222,7 +267,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Platform"
-        component={PlatformScreen}
+        component={PlatformScreenMonitored}
         options={{
           title: 'Device & System',
           header: ({navigation, options}) => (
@@ -235,7 +280,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Web"
-        component={WebScreen}
+        component={WebScreenMonitored}
         options={{
           title: 'WebView & Browser',
           header: ({navigation, options}) => (
@@ -248,7 +293,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Network"
-        component={NetworkScreen}
+        component={NetworkScreenMonitored}
         options={{
           title: 'Networking & APIs',
           header: ({navigation, options}) => (
@@ -261,7 +306,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Storage"
-        component={StorageScreen}
+        component={StorageScreenMonitored}
         options={{
           title: 'Local Storage',
           header: ({navigation, options}) => (
@@ -274,7 +319,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Maps"
-        component={MapsScreen}
+        component={MapsScreenMonitored}
         options={{
           title: 'Maps & Geospatial',
           header: ({navigation, options}) => (
@@ -287,7 +332,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Auth"
-        component={AuthScreen}
+        component={AuthScreenMonitored}
         options={{
           title: 'Auth Demo',
           header: ({navigation, options}) => (
@@ -300,7 +345,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Themes"
-        component={ThemesScreen}
+        component={ThemesScreenMonitored}
         options={{
           title: 'Themes & Appearance',
           header: ({navigation, options}) => (
@@ -313,7 +358,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Codes"
-        component={CodesScreen}
+        component={CodesScreenMonitored}
         options={{
           title: 'QR & Barcode',
           header: ({navigation, options}) => (
@@ -326,7 +371,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Utilities"
-        component={UtilitiesScreen}
+        component={UtilitiesScreenMonitored}
         options={{
           title: 'Advanced Utilities',
           header: ({navigation, options}) => (
@@ -339,7 +384,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Particles"
-        component={ParticlesScreen}
+        component={ParticlesScreenMonitored}
         options={{
           title: 'Particles',
           header: ({navigation, options}) => (
@@ -352,7 +397,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Colors"
-        component={ColorsScreen}
+        component={ColorsScreenMonitored}
         options={{
           title: 'Color Picker',
           header: ({navigation, options}) => (
@@ -365,7 +410,7 @@ export default function HomeStack() {
       />
       <Stack.Screen
         name="Reanimated"
-        component={ReanimatedScreen}
+        component={ReanimatedScreenMonitored}
         options={{
           title: 'Reanimated Worklets',
           header: ({navigation, options}) => (

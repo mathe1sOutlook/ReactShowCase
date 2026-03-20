@@ -241,6 +241,9 @@ function DemoButton({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={label || icon || 'Showcase button'}
+      accessibilityHint="Activates this control demo"
+      accessibilityState={{disabled, busy: loading}}
       disabled={disabled}
       onPress={onPress}
       style={({pressed}) => [
@@ -284,7 +287,13 @@ function ToggleSwitch({label, description, value, onChange}: ToggleSwitchProps) 
   }, [animation, value]);
 
   return (
-    <Pressable style={styles.controlRow} onPress={() => onChange(!value)}>
+    <Pressable
+      style={styles.controlRow}
+      onPress={() => onChange(!value)}
+      accessibilityRole="switch"
+      accessibilityLabel={label}
+      accessibilityHint={description}
+      accessibilityState={{checked: value}}>
       <View style={styles.controlTextBlock}>
         <Text style={styles.controlLabel}>{label}</Text>
         <Text style={styles.controlDescription}>{description}</Text>

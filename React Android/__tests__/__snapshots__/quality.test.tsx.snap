@@ -1,0 +1,144 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`withScreenQuality shows a recovery fallback and retries the screen 1`] = `
+<View
+  accessibilityRole="alert"
+  style={
+    {
+      "alignItems": "center",
+      "backgroundColor": "#0a0a1a",
+      "flex": 1,
+      "justifyContent": "center",
+      "padding": 24,
+    }
+  }
+  testID="screen-error-boundary"
+>
+  <View
+    style={
+      {
+        "backgroundColor": "#161638",
+        "borderColor": "#3a3a6a",
+        "borderRadius": 16,
+        "borderWidth": 1,
+        "maxWidth": 420,
+        "padding": 24,
+        "width": "100%",
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#ffe600",
+          "fontSize": 12,
+          "fontWeight": "800",
+          "letterSpacing": 1,
+          "marginBottom": 8,
+          "textTransform": "uppercase",
+        }
+      }
+    >
+      Screen Recovery
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#f0f0ff",
+          "fontSize": 22,
+          "fontWeight": "800",
+          "marginBottom": 8,
+        }
+      }
+    >
+      Flaky
+       crashed during render
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#9999bb",
+          "fontSize": 14,
+          "lineHeight": 20,
+          "marginBottom": 12,
+        }
+      }
+    >
+      The screen was isolated by the error boundary. Retry remounts just this route instead of crashing the whole app.
+    </Text>
+    <Text
+      numberOfLines={4}
+      style={
+        {
+          "color": "#e8e8ff",
+          "fontSize": 12,
+          "lineHeight": 18,
+          "marginBottom": 12,
+        }
+      }
+    >
+      boom
+    </Text>
+    <View
+      accessibilityHint="Remounts the current screen after an error"
+      accessibilityLabel="Retry Flaky"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "alignSelf": "flex-start",
+            "backgroundColor": "#00f0ff",
+            "borderRadius": 999,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+          },
+          false,
+        ]
+      }
+      testID="screen-error-retry"
+    >
+      <Text
+        style={
+          {
+            "color": "#0a0a1a",
+            "fontSize": 13,
+            "fontWeight": "800",
+            "letterSpacing": 0.4,
+          }
+        }
+      >
+        Retry screen
+      </Text>
+    </View>
+  </View>
+</View>
+`;

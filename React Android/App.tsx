@@ -10,9 +10,12 @@ import {Platform, UIManager} from 'react-native';
 import {NavigationContainer, type LinkingOptions} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {enableFreeze} from 'react-native-screens';
 import AppNavigator from './src/navigation/AppNavigator';
 import SplashScreen from './src/screens/SplashScreen';
 import type {RootTabParamList} from './src/navigation/types';
+import PerformanceOverlay from './src/quality/PerformanceOverlay';
+import {withScreenQuality} from './src/quality/withScreenQuality';
 
 // Enable LayoutAnimation on Android
 if (
@@ -21,6 +24,10 @@ if (
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
+
+enableFreeze(true);
+
+const MonitoredSplashScreen = withScreenQuality('Splash', SplashScreen);
 
 const linking: LinkingOptions<RootTabParamList> = {
   prefixes: ['cfdandroid://', 'https://showcase.cfd.dev/android'],
@@ -66,7 +73,7 @@ export default function App(): React.JSX.Element {
   const [showSplash, setShowSplash] = useState(true);
 
   if (showSplash) {
-    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+    return <MonitoredSplashScreen onFinish={() => setShowSplash(false)} />;
   }
 
   return (
@@ -75,6 +82,7 @@ export default function App(): React.JSX.Element {
         <NavigationContainer linking={linking}>
           <AppNavigator />
         </NavigationContainer>
+        <PerformanceOverlay />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

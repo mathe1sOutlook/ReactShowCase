@@ -145,6 +145,9 @@ function ActionButton({label, variant = 'primary', onPress}: ActionButtonProps) 
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint="Runs this feedback demo action"
       style={({pressed}) => [
         styles.actionButton,
         secondary && styles.actionButtonSecondary,

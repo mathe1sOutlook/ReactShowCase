@@ -35,7 +35,9 @@ export function SectionWrapper({title, subtitle, children}: SectionWrapperProps)
         styles.sectionWrapper,
         {opacity: fadeAnim, transform: [{translateY: slideAnim}]},
       ]}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">
+        {title}
+      </Text>
       {subtitle ? <Text style={styles.sectionSubtitle}>{subtitle}</Text> : null}
       {children}
     </Animated.View>

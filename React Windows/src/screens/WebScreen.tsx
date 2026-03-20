@@ -18,6 +18,7 @@ import type {
   WebViewSource,
 } from 'react-native-webview/lib/WebViewTypes';
 import {ScreenContainer} from '../components/common/ScreenContainer';
+import StateBlock from '../components/common/StateBlock';
 import {Colors, Radius, Spacing} from '../theme';
 
 type BrowserPreset = {
@@ -397,6 +398,7 @@ export default function WebScreen() {
   const [addressInput, setAddressInput] = useState(currentUrl);
   const [progress, setProgress] = useState(0.14);
   const [loading, setLoading] = useState(false);
+  const [browserError, setBrowserError] = useState('');
   const [reloadNonce, setReloadNonce] = useState(0);
   const [lastInjected, setLastInjected] = useState('JavaScript bridge ready.');
   const [lastRouteAction, setLastRouteAction] = useState('No external handoff yet.');
@@ -421,6 +423,7 @@ export default function WebScreen() {
 
   const navigateTo = (rawValue: string) => {
     const nextUrl = normalizeUrl(rawValue);
+    setBrowserError('');
 
     if (/^(tel:|mailto:|maps:)/i.test(nextUrl)) {
       void handleSpecialLink(nextUrl, 'Address bar');
@@ -458,6 +461,7 @@ export default function WebScreen() {
   };
 
   const refresh = () => {
+    setBrowserError('');
     setReloadNonce(previous => previous + 1);
     setProgress(0.16);
     appendRequest('Refresh', currentUrl, Colors.accent);
@@ -563,6 +567,7 @@ export default function WebScreen() {
   };
 
   const handleLoadStart = () => {
+    setBrowserError('');
     setLoading(true);
     setProgress(previous => Math.max(0.12, previous));
   };
@@ -570,6 +575,15 @@ export default function WebScreen() {
   const handleLoadEnd = () => {
     setLoading(false);
     setProgress(1);
+  };
+
+  const handleLoadError = (event: {nativeEvent?: {description?: string}}) => {
+    const message =
+      event.nativeEvent?.description || 'Failed to render the requested page.';
+    setLoading(false);
+    setBrowserError(message);
+    setLastRouteAction(`Browser load error: ${message}`);
+    appendRequest('Load error', message, Colors.error);
   };
 
   let source: WebViewSource;
@@ -674,7 +688,9 @@ export default function WebScreen() {
               <Text style={styles.browserUrl}>{currentUrl}</Text>
             </View>
             <View style={styles.browserBadge}>
-              <Text style={styles.browserBadgeText}>{loading ? 'Loading' : 'Ready'}</Text>
+              <Text style={styles.browserBadgeText}>
+                {browserError ? 'Issue' : loading ? 'Loading' : 'Ready'}
+              </Text>
             </View>
           </View>
           <View style={styles.progressTrack}>
@@ -698,9 +714,32 @@ export default function WebScreen() {
               onLoadProgress={handleProgress}
               onLoadStart={handleLoadStart}
               onLoadEnd={handleLoadEnd}
+              onError={handleLoadError}
               setSupportMultipleWindows={false}
               style={styles.webView}
             />
+            {loading ? (
+              <View style={styles.browserStateOverlay}>
+                <StateBlock
+                  variant="loading"
+                  title="Loading page"
+                  description="Rendering the current WebView target and syncing browser progress."
+                  iconName="browser"
+                />
+              </View>
+            ) : null}
+            {browserError ? (
+              <View style={styles.browserStateOverlay}>
+                <StateBlock
+                  variant="error"
+                  title="Page failed to load"
+                  description={browserError}
+                  actionLabel="Try again"
+                  onAction={refresh}
+                  iconName="retry"
+                />
+              </View>
+            ) : null}
           </View>
         </View>
 
@@ -714,29 +753,49 @@ export default function WebScreen() {
           <View style={[styles.card, {width: cardWidth}]}>
             <Text style={styles.cardTitle}>Bridge Log</Text>
             <Text style={styles.cardSubtitle}>Messages exchanged between native controls and the page.</Text>
-            {bridgeLog.map(item => (
-              <View key={item.id} style={styles.logRow}>
-                <View style={[styles.logTone, {backgroundColor: item.tone}]} />
-                <View style={styles.logCopy}>
-                  <Text style={styles.logTitle}>{item.title}</Text>
-                  <Text style={styles.logDetail}>{item.detail}</Text>
+            {bridgeLog.length > 0 ? (
+              bridgeLog.map(item => (
+                <View key={item.id} style={styles.logRow}>
+                  <View style={[styles.logTone, {backgroundColor: item.tone}]} />
+                  <View style={styles.logCopy}>
+                    <Text style={styles.logTitle}>{item.title}</Text>
+                    <Text style={styles.logDetail}>{item.detail}</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))
+            ) : (
+              <StateBlock
+                variant="empty"
+                title="No bridge events yet"
+                description="Inject JavaScript or send a native message to populate the bridge timeline."
+                compact
+                iconName="bridge"
+              />
+            )}
           </View>
 
           <View style={[styles.card, {width: cardWidth}]}>
             <Text style={styles.cardTitle}>Request Log</Text>
             <Text style={styles.cardSubtitle}>Address bar updates, navigation changes and external handlers.</Text>
-            {requestLog.map(item => (
-              <View key={item.id} style={styles.logRow}>
-                <View style={[styles.logTone, {backgroundColor: item.tone}]} />
-                <View style={styles.logCopy}>
-                  <Text style={styles.logTitle}>{item.title}</Text>
-                  <Text style={styles.logDetail}>{item.detail}</Text>
+            {requestLog.length > 0 ? (
+              requestLog.map(item => (
+                <View key={item.id} style={styles.logRow}>
+                  <View style={[styles.logTone, {backgroundColor: item.tone}]} />
+                  <View style={styles.logCopy}>
+                    <Text style={styles.logTitle}>{item.title}</Text>
+                    <Text style={styles.logDetail}>{item.detail}</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))
+            ) : (
+              <StateBlock
+                variant="empty"
+                title="No route activity yet"
+                description="Use the address bar or browser controls to start the navigation history."
+                compact
+                iconName="browser"
+              />
+            )}
           </View>
         </View>
       </View>
@@ -928,10 +987,18 @@ const styles = StyleSheet.create({
   },
   webViewWrap: {
     backgroundColor: '#020816',
+    position: 'relative',
   },
   webView: {
     flex: 1,
     backgroundColor: '#020816',
+  },
+  browserStateOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    padding: Spacing.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(243, 243, 243, 0.82)',
   },
   logRow: {
     flexDirection: 'row',

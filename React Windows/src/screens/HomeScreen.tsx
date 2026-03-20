@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
   Animated,
-  Dimensions,
   Easing,
   Pressable,
   SafeAreaView,
@@ -9,18 +8,18 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Colors, Spacing, Radius} from '../theme';
 import type {HomeStackParamList, ScreenCategory} from '../navigation/types';
+import {getHomeGridMetrics} from '../utils/layout';
+import IconSymbol, {type IconName} from '../components/common/IconSymbol';
+import StateBlock from '../components/common/StateBlock';
 
-const {width: SCREEN_WIDTH} = Dimensions.get('window');
 const CARD_MARGIN = Spacing.md;
-const NUM_COLS = SCREEN_WIDTH > 800 ? 3 : 2;
-const CARD_WIDTH =
-  (SCREEN_WIDTH - Spacing.xl * 2 - CARD_MARGIN * (NUM_COLS - 1)) / NUM_COLS;
 
 type Nav = NativeStackNavigationProp<HomeStackParamList>;
 
@@ -247,11 +246,44 @@ const CATEGORIES: ScreenCategory[] = [
   },
 ];
 
+function getScreenIconName(key: ScreenCategory['key']) {
+  const icons: Record<ScreenCategory['key'], IconName> = {
+    Layouts: 'layout',
+    Lists: 'list',
+    Navigation: 'navigation',
+    Animations: 'spark',
+    Canvas: 'canvas',
+    ThreeD: 'cube',
+    Charts: 'chart',
+    Svg: 'vector',
+    DataGrid: 'table',
+    Media: 'camera',
+    Audio: 'audio',
+    Video: 'video',
+    Files: 'file',
+    Platform: 'device',
+    Web: 'browser',
+    Network: 'network',
+    Storage: 'storage',
+    Maps: 'map',
+    Auth: 'lock',
+    Themes: 'theme',
+    Codes: 'code',
+    Utilities: 'tools',
+    Widgets: 'widgets',
+    WindowControls: 'window',
+    Reanimated: 'bolt',
+    Home: 'home',
+  };
+
+  return icons[key];
+}
+
 function NewBadge() {
   const pulseAnim = useRef(new Animated.Value(0.7)).current;
 
   useEffect(() => {
-    Animated.loop(
+    const pulseLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
           toValue: 1,
@@ -266,7 +298,13 @@ function NewBadge() {
           useNativeDriver: true,
         }),
       ]),
-    ).start();
+    );
+
+    pulseLoop.start();
+
+    return () => {
+      pulseLoop.stop();
+    };
   }, [pulseAnim]);
 
   return (
@@ -276,7 +314,15 @@ function NewBadge() {
   );
 }
 
-function CategoryCard({item, index}: {item: ScreenCategory; index: number}) {
+function CategoryCard({
+  item,
+  index,
+  cardWidth,
+}: {
+  item: ScreenCategory;
+  index: number;
+  cardWidth: number;
+}) {
   const navigation = useNavigation<Nav>();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -322,6 +368,7 @@ function CategoryCard({item, index}: {item: ScreenCategory; index: number}) {
       style={[
         styles.cardOuter,
         {
+          width: cardWidth,
           opacity: fadeAnim,
           transform: [{translateY: slideAnim}, {scale: pressAnim}],
         },
@@ -330,10 +377,19 @@ function CategoryCard({item, index}: {item: ScreenCategory; index: number}) {
         style={styles.card}
         onPress={() => navigation.navigate(item.key as never)}
         onPressIn={onPressIn}
-        onPressOut={onPressOut}>
+        onPressOut={onPressOut}
+        accessibilityRole="button"
+        accessibilityLabel={`${item.title}, ${item.demoCount} demos`}
+        accessibilityHint={`Open the ${item.title} showcase`}>
         <View style={[styles.cardColorBar, {backgroundColor: item.color}]} />
         {item.isNew && <NewBadge />}
-        <Text style={styles.cardIcon}>{item.icon}</Text>
+        <View style={[styles.cardIcon, {borderColor: `${item.color}24`, backgroundColor: `${item.color}12`}]}>
+          <IconSymbol
+            name={getScreenIconName(item.key)}
+            size={22}
+            color={item.color}
+          />
+        </View>
         <Text style={styles.cardTitle}>{item.title}</Text>
         <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
         <View style={styles.cardFooter}>
@@ -355,14 +411,16 @@ function HeroHeader() {
   const titleSlide = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
-    Animated.loop(
+    const pulseLoop = Animated.loop(
       Animated.timing(pulseAnim, {
         toValue: 1,
         duration: 4000,
         easing: Easing.inOut(Easing.sin),
         useNativeDriver: false,
       }),
-    ).start();
+    );
+
+    pulseLoop.start();
 
     Animated.parallel([
       Animated.timing(titleFade, {toValue: 1, duration: 800, useNativeDriver: true}),
@@ -373,6 +431,10 @@ function HeroHeader() {
         useNativeDriver: true,
       }),
     ]).start();
+
+    return () => {
+      pulseLoop.stop();
+    };
   }, [pulseAnim, titleFade, titleSlide]);
 
   const bgColor = pulseAnim.interpolate({
@@ -389,7 +451,9 @@ function HeroHeader() {
           styles.heroContent,
           {opacity: titleFade, transform: [{translateY: titleSlide}]},
         ]}>
-        <Text style={styles.heroLogo}>{'\u2B22'}</Text>
+        <View style={styles.heroLogo}>
+          <IconSymbol name="spark" size={28} color={Colors.white} />
+        </View>
         <Text style={styles.heroTitle}>React Native</Text>
         <Text style={styles.heroSubtitle}>Windows Desktop ShowCase</Text>
         <View style={styles.heroDivider} />
@@ -403,6 +467,8 @@ function HeroHeader() {
 
 export default function HomeScreen() {
   const [searchText, setSearchText] = useState('');
+  const {width} = useWindowDimensions();
+  const {cardWidth} = getHomeGridMetrics(width);
 
   const filteredCategories = CATEGORIES.filter(cat => {
     if (!searchText.trim()) {
@@ -420,40 +486,68 @@ export default function HomeScreen() {
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled">
         <HeroHeader />
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
-            <Text style={styles.searchIcon}>{'\uD83D\uDD0D'}</Text>
+            <View style={styles.searchIcon}>
+              <IconSymbol name="search" size={18} color={Colors.textMuted} />
+            </View>
             <TextInput
               style={styles.searchInput}
               placeholder="Search demos..."
               placeholderTextColor={Colors.textMuted}
               value={searchText}
               onChangeText={setSearchText}
+              accessibilityLabel="Search demos"
+              accessibilityHint="Filters showcase categories by name or description"
+              returnKeyType="search"
             />
             {searchText.length > 0 && (
               <Pressable
                 onPress={() => setSearchText('')}
-                style={styles.clearButton}>
-                <Text style={styles.clearButtonText}>{'\u2715'}</Text>
+                style={styles.clearButton}
+                accessibilityRole="button"
+                accessibilityLabel="Clear search"
+                accessibilityHint="Removes the current search text">
+                <IconSymbol name="close" size={15} color={Colors.textMuted} />
               </Pressable>
             )}
           </View>
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Explore Demos</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">
+            Explore Demos
+          </Text>
           <Text style={styles.sectionSubtitle}>
             Click any category to see it in action
           </Text>
         </View>
         <View style={styles.grid}>
-          {filteredCategories.map((cat, i) => (
-            <CategoryCard key={cat.key} item={cat} index={i} />
-          ))}
+          {filteredCategories.length > 0 ? (
+            filteredCategories.map((cat, i) => (
+              <CategoryCard
+                key={cat.key}
+                item={cat}
+                index={i}
+                cardWidth={cardWidth}
+              />
+            ))
+          ) : (
+            <StateBlock
+              variant="empty"
+              title="No demos match this search"
+              description="Try a broader term or clear the search field to restore the full desktop showcase grid."
+              actionLabel="Clear search"
+              onAction={() => setSearchText('')}
+              style={styles.emptySearch}
+              iconName="search"
+            />
+          )}
         </View>
         <View style={styles.footer}>
           <View style={styles.footerLine} />
@@ -512,8 +606,12 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   heroLogo: {
-    fontSize: 32,
-    color: 'rgba(255,255,255,0.9)',
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.15)',
     marginBottom: 4,
   },
   heroTitle: {
@@ -566,7 +664,10 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   searchIcon: {
-    fontSize: 16,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: Spacing.sm,
   },
   searchInput: {
@@ -580,12 +681,6 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
     padding: Spacing.xs,
   },
-  clearButtonText: {
-    fontSize: 14,
-    color: Colors.textMuted,
-    fontWeight: '600',
-  },
-
   // Section
   sectionHeader: {
     paddingHorizontal: Spacing.xl,
@@ -611,10 +706,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     gap: CARD_MARGIN,
   },
+  emptySearch: {
+    width: '100%',
+  },
 
   // Card
   cardOuter: {
-    width: CARD_WIDTH,
   },
   card: {
     backgroundColor: Colors.bgCard,
@@ -641,7 +738,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: Radius.lg,
   },
   cardIcon: {
-    fontSize: 26,
+    width: 44,
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: Spacing.sm,
     marginTop: 4,
   },

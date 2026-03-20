@@ -8,8 +8,12 @@
 import React from 'react';
 import {NavigationContainer, type LinkingOptions} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {enableFreeze} from 'react-native-screens';
 import AppNavigator from './src/navigation/AppNavigator';
 import type {RootTabParamList} from './src/navigation/types';
+import PerformanceOverlay from './src/quality/PerformanceOverlay';
+
+enableFreeze(true);
 
 const linking: LinkingOptions<RootTabParamList> = {
   prefixes: ['cfdwindows://', 'https://showcase.cfd.dev/windows'],
@@ -57,6 +61,7 @@ export default function App(): React.JSX.Element {
       <NavigationContainer linking={linking}>
         <AppNavigator />
       </NavigationContainer>
+      <PerformanceOverlay />
     </SafeAreaProvider>
   );
 }

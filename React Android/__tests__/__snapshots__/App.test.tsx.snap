@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App shell renders splash first and then the navigation shell: navigator 1`] = `
+<Text
+  testID="mock-app-navigator"
+>
+  Navigator
+</Text>
+`;
+
+exports[`App shell renders splash first and then the navigation shell: splash 1`] = `
+<Text
+  onPress={[Function]}
+  testID="mock-splash-screen"
+>
+  Splash
+</Text>
+`;

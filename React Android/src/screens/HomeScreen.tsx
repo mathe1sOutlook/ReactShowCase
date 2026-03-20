@@ -1,23 +1,24 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
   Animated,
-  Dimensions,
   Easing,
   Pressable,
   StatusBar,
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Colors, Neon, Spacing} from '../theme';
 import type {HomeStackParamList, ScreenCategory} from '../navigation/types';
+import {getHomeGridMetrics} from '../utils/layout';
+import IconSymbol, {type IconName} from '../components/common/IconSymbol';
+import StateBlock from '../components/common/StateBlock';
 
-const {width: SCREEN_WIDTH} = Dimensions.get('window');
 const CARD_MARGIN = Spacing.md;
-const CARD_WIDTH = (SCREEN_WIDTH - Spacing.lg * 2 - CARD_MARGIN) / 2;
 
 type Nav = NativeStackNavigationProp<HomeStackParamList>;
 
@@ -245,11 +246,44 @@ const CATEGORIES: ScreenCategory[] = [
   },
 ];
 
+function getScreenIconName(key: ScreenCategory['key']) {
+  const icons: Record<ScreenCategory['key'], IconName> = {
+    Layouts: 'layout',
+    Lists: 'list',
+    Navigation: 'navigation',
+    Animations: 'spark',
+    Canvas: 'canvas',
+    ThreeD: 'cube',
+    Charts: 'chart',
+    Svg: 'vector',
+    DataGrid: 'table',
+    Media: 'camera',
+    Audio: 'audio',
+    Video: 'video',
+    Files: 'file',
+    Platform: 'device',
+    Web: 'browser',
+    Network: 'network',
+    Storage: 'storage',
+    Maps: 'map',
+    Auth: 'lock',
+    Themes: 'theme',
+    Codes: 'code',
+    Utilities: 'tools',
+    Particles: 'particles',
+    Colors: 'palette',
+    Reanimated: 'bolt',
+    Home: 'home',
+  };
+
+  return icons[key];
+}
+
 function NewBadge() {
   const pulseAnim = useRef(new Animated.Value(0.7)).current;
 
   useEffect(() => {
-    Animated.loop(
+    const pulseLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
           toValue: 1,
@@ -264,7 +298,13 @@ function NewBadge() {
           useNativeDriver: true,
         }),
       ]),
-    ).start();
+    );
+
+    pulseLoop.start();
+
+    return () => {
+      pulseLoop.stop();
+    };
   }, [pulseAnim]);
 
   return (
@@ -277,9 +317,11 @@ function NewBadge() {
 function CategoryCard({
   item,
   index,
+  cardWidth,
 }: {
   item: ScreenCategory;
   index: number;
+  cardWidth: number;
 }) {
   const navigation = useNavigation<Nav>();
   const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -316,6 +358,7 @@ function CategoryCard({
       style={[
         styles.cardOuter,
         {
+          width: cardWidth,
           opacity: scaleAnim,
           transform: [
             {scale: Animated.multiply(scaleAnim, pressAnim)},
@@ -332,11 +375,20 @@ function CategoryCard({
         style={styles.card}
         onPress={() => navigation.navigate(item.key as never)}
         onPressIn={onPressIn}
-        onPressOut={onPressOut}>
+        onPressOut={onPressOut}
+        accessibilityRole="button"
+        accessibilityLabel={`${item.title}, ${item.demoCount} demos`}
+        accessibilityHint={`Open the ${item.title} showcase`}>
         <View style={[styles.cardAccent, {backgroundColor: item.color}]} />
         <View style={[styles.cardGlow, {backgroundColor: item.color}]} />
         {item.isNew && <NewBadge />}
-        <Text style={styles.cardIcon}>{item.icon}</Text>
+        <View style={[styles.cardIcon, {borderColor: `${item.color}28`, backgroundColor: `${item.color}14`}]}>
+          <IconSymbol
+            name={getScreenIconName(item.key)}
+            size={22}
+            color={item.color}
+          />
+        </View>
         <Text style={[styles.cardTitle, {color: item.color}]}>{item.title}</Text>
         <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
         <View style={styles.cardFooter}>
@@ -357,14 +409,16 @@ function HeroHeader() {
   const titleAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.loop(
+    const pulseLoop = Animated.loop(
       Animated.timing(pulseAnim, {
         toValue: 1,
         duration: 3000,
         easing: Easing.inOut(Easing.sin),
         useNativeDriver: false,
       }),
-    ).start();
+    );
+
+    pulseLoop.start();
 
     Animated.spring(titleAnim, {
       toValue: 1,
@@ -372,6 +426,10 @@ function HeroHeader() {
       tension: 30,
       useNativeDriver: true,
     }).start();
+
+    return () => {
+      pulseLoop.stop();
+    };
   }, [pulseAnim, titleAnim]);
 
   const bgColor = pulseAnim.interpolate({
@@ -397,7 +455,9 @@ function HeroHeader() {
             ],
           },
         ]}>
-        <Text style={styles.heroIcon}>{'\u269B'}</Text>
+        <View style={styles.heroIcon}>
+          <IconSymbol name="spark" size={30} color={Colors.white} />
+        </View>
         <Text style={styles.heroTitle}>React Native</Text>
         <Text style={styles.heroSubtitle}>Android ShowCase</Text>
         <View style={styles.heroDivider} />
@@ -419,7 +479,9 @@ function SearchBar({
   return (
     <View style={styles.searchContainer}>
       <View style={styles.searchBar}>
-        <Text style={styles.searchIcon}>{'\u{1F50D}'}</Text>
+        <View style={styles.searchIcon}>
+          <IconSymbol name="search" size={18} color={Colors.textMuted} />
+        </View>
         <TextInput
           style={styles.searchInput}
           placeholder="Search demos..."
@@ -427,13 +489,19 @@ function SearchBar({
           value={value}
           onChangeText={onChangeText}
           selectionColor={Colors.primary}
+          accessibilityLabel="Search demos"
+          accessibilityHint="Filters showcase categories by name or description"
+          returnKeyType="search"
         />
         {value.length > 0 && (
           <Pressable
             onPress={() => onChangeText('')}
             hitSlop={8}
-            style={styles.clearButton}>
-            <Text style={styles.clearButtonText}>{'\u2715'}</Text>
+            style={styles.clearButton}
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+            accessibilityHint="Removes the current search text">
+            <IconSymbol name="close" size={15} color={Colors.textMuted} />
           </Pressable>
         )}
       </View>
@@ -443,6 +511,8 @@ function SearchBar({
 
 export default function HomeScreen() {
   const [searchText, setSearchText] = useState('');
+  const {width} = useWindowDimensions();
+  const {cardWidth} = getHomeGridMetrics(width);
 
   const filteredCategories = CATEGORIES.filter(cat => {
     if (!searchText.trim()) {
@@ -461,19 +531,39 @@ export default function HomeScreen() {
       <Animated.ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled">
         <HeroHeader />
         <SearchBar value={searchText} onChangeText={setSearchText} />
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>EXPLORE DEMOS</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">
+            EXPLORE DEMOS
+          </Text>
           <Text style={styles.sectionSubtitle}>
             Tap any category to see it in action
           </Text>
         </View>
         <View style={styles.grid}>
-          {filteredCategories.map((cat, i) => (
-            <CategoryCard key={cat.key} item={cat} index={i} />
-          ))}
+          {filteredCategories.length > 0 ? (
+            filteredCategories.map((cat, i) => (
+              <CategoryCard
+                key={cat.key}
+                item={cat}
+                index={i}
+                cardWidth={cardWidth}
+              />
+            ))
+          ) : (
+            <StateBlock
+              variant="empty"
+              title="No demos match this search"
+              description="Try a broader term or clear the search field to see the full showcase grid."
+              actionLabel="Clear search"
+              onAction={() => setSearchText('')}
+              style={styles.emptySearch}
+              iconName="search"
+            />
+          )}
         </View>
         <View style={styles.footer}>
           <View style={styles.footerLine} />
@@ -518,8 +608,12 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   heroIcon: {
-    fontSize: 36,
-    color: '#ffffff',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.14)',
     marginBottom: 4,
   },
   heroTitle: {
@@ -568,7 +662,10 @@ const styles = StyleSheet.create({
     height: 46,
   },
   searchIcon: {
-    fontSize: 16,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: Spacing.sm,
   },
   searchInput: {
@@ -583,12 +680,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  clearButtonText: {
-    fontSize: 14,
-    color: Colors.textMuted,
-    fontWeight: '600',
-  },
-
   // Section Header
   sectionHeader: {
     paddingHorizontal: Spacing.lg,
@@ -614,10 +705,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     gap: CARD_MARGIN,
   },
+  emptySearch: {
+    width: '100%',
+    marginTop: Spacing.sm,
+  },
 
   // Card
   cardOuter: {
-    width: CARD_WIDTH,
   },
   card: {
     backgroundColor: Colors.bgCard,
@@ -647,7 +741,12 @@ const styles = StyleSheet.create({
     opacity: 0.08,
   },
   cardIcon: {
-    fontSize: 28,
+    width: 44,
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: Spacing.sm,
   },
   cardTitle: {

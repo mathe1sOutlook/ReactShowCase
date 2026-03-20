@@ -69,7 +69,8 @@ export default function AnimatedHeader({
           activeOpacity={0.7}
           style={styles.backButton}
           accessibilityRole="button"
-          accessibilityLabel="Go back">
+          accessibilityLabel="Go back"
+          accessibilityHint="Returns to the previous screen">
           <Animated.Text
             style={[styles.backArrow, {transform: [{scale: backScale}]}]}>
             ←
@@ -84,6 +85,7 @@ export default function AnimatedHeader({
               opacity: titleOpacity,
             },
           ]}
+          accessibilityRole="header"
           numberOfLines={1}>
           {title}
         </Animated.Text>
@@ -101,7 +103,12 @@ export default function AnimatedHeader({
                 <Text style={styles.breadcrumbSeparator}> {'>'} </Text>
               )}
               {isHome && !isLast ? (
-                <TouchableOpacity onPress={onBack} activeOpacity={0.6}>
+                <TouchableOpacity
+                  onPress={onBack}
+                  activeOpacity={0.6}
+                  accessibilityRole="button"
+                  accessibilityLabel="Back to home"
+                  accessibilityHint="Navigates to the previous screen in the breadcrumb">
                   <Text style={[styles.breadcrumbText, styles.breadcrumbLink]}>
                     {item}
                   </Text>
