@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {ScreenContainer} from '../components/common/ScreenContainer';
+import StateBlock from '../components/common/StateBlock';
 import {Colors, Radius, Spacing} from '../theme';
 
 type RestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -188,6 +189,7 @@ export default function NetworkScreen() {
   const [downloading, setDownloading] = useState(false);
   const [graphPresetId, setGraphPresetId] = useState('workspace');
   const [graphLoading, setGraphLoading] = useState(false);
+  const [graphError, setGraphError] = useState('');
   const [graphResponse, setGraphResponse] = useState<Record<string, unknown>>({
     data: {
       workspace: {
@@ -207,6 +209,7 @@ export default function NetworkScreen() {
     makeLog('Network lab ready', 'REST, GraphQL, WebSocket and transfers are standing by.', Colors.primary),
   ]);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const graphFailureRef = useRef<Record<string, boolean>>({billing: true});
   const restPreset = REST_PRESETS.find(item => item.id === restPresetId) ?? REST_PRESETS[0];
   const graphPreset = GRAPH_PRESETS.find(item => item.id === graphPresetId) ?? GRAPH_PRESETS[0];
   const cacheKey = `${method}:${restPreset.path}`;
@@ -358,8 +361,17 @@ export default function NetworkScreen() {
 
   const runGraphQuery = async () => {
     setGraphLoading(true);
+    setGraphError('');
     pushLog('GraphQL query', graphPreset.label, graphPreset.tone);
     await wait(460);
+
+    if (graphFailureRef.current[graphPreset.id]) {
+      graphFailureRef.current[graphPreset.id] = false;
+      setGraphLoading(false);
+      setGraphError(`Resolver timeout while loading ${graphPreset.label}. Retry the query to recover.`);
+      pushLog('GraphQL error', `${graphPreset.label} resolver timed out`, Colors.error);
+      return;
+    }
 
     const response = {
       data:
@@ -522,27 +534,47 @@ export default function NetworkScreen() {
               </View>
               <Text style={styles.note}>Cache key: {cacheKey}</Text>
             </View>
-            {restError ? (
-              <View style={styles.errorCard}>
-                <Text style={styles.errorTitle}>Gateway error</Text>
-                <Text style={styles.errorText}>{restError}</Text>
+            {restStatus === 'loading' ? (
+              <StateBlock
+                variant="loading"
+                title="Running REST request"
+                description="Inspecting latency, cache rules and formatted payload output for the current endpoint."
+              />
+            ) : restError ? (
+              <StateBlock
+                variant="error"
+                title="Gateway error"
+                description={restError}
+                actionLabel="Retry request"
+                onAction={() => void runRetrySequence()}
+              />
+            ) : restResponse ? (
+              <CodePanel label="REST JSON" value={formatJson(restResponse)} />
+            ) : (
+              <StateBlock
+                variant="empty"
+                title="No response yet"
+                description="Run a request to inspect payload shape, cache hits and latency timing."
+                actionLabel="Run request"
+                onAction={() => void runRestRequest()}
+              />
+            )}
+            {Object.keys(cacheStore).length > 0 ? (
+              <View style={styles.wrap}>
+                {Object.keys(cacheStore).map(key => (
+                  <View key={key} style={styles.cacheChip}>
+                    <Text style={styles.cacheChipText}>{key}</Text>
+                  </View>
+                ))}
               </View>
-            ) : null}
-            <CodePanel
-              label="REST JSON"
-              value={
-                restResponse
-                  ? formatJson(restResponse)
-                  : '{\n  "status": "idle",\n  "hint": "Run a REST request to inspect the payload."\n}'
-              }
-            />
-            <View style={styles.wrap}>
-              {Object.keys(cacheStore).map(key => (
-                <View key={key} style={styles.cacheChip}>
-                  <Text style={styles.cacheChipText}>{key}</Text>
-                </View>
-              ))}
-            </View>
+            ) : (
+              <StateBlock
+                variant="empty"
+                title="REST cache is empty"
+                description="Successful GET requests will appear here and can be replayed instantly."
+                compact
+              />
+            )}
           </View>
         </View>
 
@@ -588,7 +620,10 @@ export default function NetworkScreen() {
                 <Pressable
                   key={item.id}
                   style={[styles.smallAction, graphPresetId === item.id && styles.smallActionActive, {borderColor: item.tone + '44'}]}
-                  onPress={() => setGraphPresetId(item.id)}>
+                  onPress={() => {
+                    setGraphPresetId(item.id);
+                    setGraphError('');
+                  }}>
                   <Text style={graphPresetId === item.id ? styles.smallActionTextActive : [styles.smallActionText, {color: item.tone}]}>
                     {item.label}
                   </Text>
@@ -599,7 +634,24 @@ export default function NetworkScreen() {
             <Pressable style={[styles.smallAction, styles.smallActionActive]} onPress={() => void runGraphQuery()}>
               <Text style={styles.smallActionTextActive}>{graphLoading ? 'Loading...' : 'Run query'}</Text>
             </Pressable>
-            <CodePanel label="GraphQL response" value={formatJson(graphResponse)} />
+            <Text style={styles.note}>Billing simulates a transient resolver failure on the first request.</Text>
+            {graphLoading ? (
+              <StateBlock
+                variant="loading"
+                title="Executing GraphQL query"
+                description="Resolving the selected document and formatting the response payload."
+              />
+            ) : graphError ? (
+              <StateBlock
+                variant="error"
+                title="Resolver error"
+                description={graphError}
+                actionLabel="Retry query"
+                onAction={() => void runGraphQuery()}
+              />
+            ) : (
+              <CodePanel label="GraphQL response" value={formatJson(graphResponse)} />
+            )}
           </View>
         </View>
 
@@ -634,30 +686,48 @@ export default function NetworkScreen() {
                 <Text style={styles.smallActionTextActive}>Send</Text>
               </Pressable>
             </View>
-            {chatMessages.map(message => (
-              <View key={message.id} style={styles.chatRow}>
-                <View style={[styles.chatBadge, {backgroundColor: message.tone}]} />
-                <View style={styles.chatCopy}>
-                  <Text style={styles.chatAuthor}>{message.author}</Text>
-                  <Text style={styles.chatText}>{message.text}</Text>
+            {chatMessages.length > 0 ? (
+              chatMessages.map(message => (
+                <View key={message.id} style={styles.chatRow}>
+                  <View style={[styles.chatBadge, {backgroundColor: message.tone}]} />
+                  <View style={styles.chatCopy}>
+                    <Text style={styles.chatAuthor}>{message.author}</Text>
+                    <Text style={styles.chatText}>{message.text}</Text>
+                  </View>
+                  <Text style={styles.chatTime}>{message.time}</Text>
                 </View>
-                <Text style={styles.chatTime}>{message.time}</Text>
-              </View>
-            ))}
+              ))
+            ) : (
+              <StateBlock
+                variant="empty"
+                title="Socket feed is empty"
+                description="Reconnect or send a message to seed the realtime stream again."
+                compact
+              />
+            )}
           </View>
 
           <View style={[styles.card, {width: cardWidth}]}>
             <Text style={styles.cardTitle}>Activity Feed</Text>
             <Text style={styles.cardSubtitle}>Unified log for REST, transfer, GraphQL and socket events.</Text>
-            {activityLog.map(item => (
-              <View key={item.id} style={styles.logRow}>
-                <View style={[styles.logTone, {backgroundColor: item.tone}]} />
-                <View style={styles.logCopy}>
-                  <Text style={styles.logTitle}>{item.title}</Text>
-                  <Text style={styles.logDetail}>{item.detail}</Text>
+            {activityLog.length > 0 ? (
+              activityLog.map(item => (
+                <View key={item.id} style={styles.logRow}>
+                  <View style={[styles.logTone, {backgroundColor: item.tone}]} />
+                  <View style={styles.logCopy}>
+                    <Text style={styles.logTitle}>{item.title}</Text>
+                    <Text style={styles.logDetail}>{item.detail}</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))
+            ) : (
+              <StateBlock
+                variant="empty"
+                title="No network events yet"
+                description="Run a request, transfer or socket action to populate this timeline."
+                compact
+              />
+            )}
           </View>
         </View>
       </View>

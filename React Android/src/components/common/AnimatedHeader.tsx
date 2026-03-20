@@ -60,7 +60,10 @@ export default function AnimatedHeader({title, onBack}: AnimatedHeaderProps) {
             onPressIn={onBackPressIn}
             onPressOut={onBackPressOut}
             style={styles.backButton}
-            hitSlop={{top: 0, bottom: 0, left: 0, right: 0}}>
+            hitSlop={{top: 0, bottom: 0, left: 0, right: 0}}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            accessibilityHint="Returns to the previous screen">
             <Text style={styles.backArrow}>{'\u2190'}</Text>
           </Pressable>
         </Animated.View>
@@ -72,6 +75,7 @@ export default function AnimatedHeader({title, onBack}: AnimatedHeaderProps) {
               transform: [{translateX: titleTranslateX}],
             },
           ]}
+          accessibilityRole="header"
           numberOfLines={1}>
           {title}
         </Animated.Text>

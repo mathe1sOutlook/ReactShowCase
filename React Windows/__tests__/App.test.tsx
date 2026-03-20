@@ -1,17 +1,48 @@
-/**
- * @format
- */
+import {describe, expect, it, jest} from '@jest/globals';
+import renderer from 'react-test-renderer';
 
-import 'react-native';
+jest.mock('../src/navigation/AppNavigator', () => {
+  const React = require('react');
+  const {Text} = require('react-native');
+
+  return function MockAppNavigator() {
+    return <Text testID="mock-app-navigator">Navigator</Text>;
+  };
+});
+
+jest.mock('../src/quality/PerformanceOverlay', () => {
+  return function MockPerformanceOverlay() {
+    return null;
+  };
+});
+
+jest.mock('@react-navigation/native', () => {
+  const React = require('react');
+
+  return {
+    NavigationContainer: ({children}: {children: React.ReactNode}) => children,
+  };
+});
+
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaProvider: ({children}: {children: React.ReactNode}) => children,
+}));
+
+jest.mock('react-native-screens', () => ({
+  enableFreeze: jest.fn(),
+}));
+
 import React from 'react';
 import App from '../App';
 
-// Note: import explicitly to use the types shipped with jest.
-import {it} from '@jest/globals';
+describe('App shell', () => {
+  it('renders the navigation container shell', () => {
+    let tree: renderer.ReactTestRenderer;
 
-// Note: test renderer must be required after react-native.
-import renderer from 'react-test-renderer';
+    renderer.act(() => {
+      tree = renderer.create(<App />);
+    });
 
-it('renders correctly', () => {
-  renderer.create(<App />);
+    expect(tree!.toJSON()).toMatchSnapshot();
+  });
 });

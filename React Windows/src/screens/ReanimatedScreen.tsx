@@ -1,35 +1,18 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
-import type {ComponentType} from 'react';
-import {PanResponder, Pressable, StyleSheet, Text, View} from 'react-native';
-import Animated, {
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {
+  Animated,
   Easing,
-  Extrapolation,
-  FadeInUp,
-  FadeOutDown,
-  Layout,
-  interpolate,
-  interpolateColor,
-  runOnJS,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withDecay,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+  LayoutAnimation,
+  PanResponder,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import {SectionWrapper} from '../components/common/SectionWrapper';
 import {Colors, Radius, Spacing, fluentShadow} from '../theme';
-
-/*
- * Typed wrappers for Animated components.
- * Works around react-native-reanimated v4 + @types/react@18.3 JSX mismatch
- * where AnimatedComponentType returns ReactNode instead of JSX.Element.
- */
-const AView = Animated.View as unknown as ComponentType<any>;
-const AText = Animated.Text as unknown as ComponentType<any>;
-const AScrollView = Animated.ScrollView as unknown as ComponentType<any>;
 
 /* ─── constants ─── */
 const SLIDER_W = 320;
@@ -48,37 +31,80 @@ const ACCENT_COLORS = [
   '#e74c3c',
 ];
 
-/* ─── worklet functions ─── */
+/* ─── helper: snap to nearest step ─── */
 function snapToStep(value: number, step: number): number {
-  'worklet';
   return Math.round(value / step) * step;
 }
 
+/* ─── helper: custom cubic ease in-out ─── */
 function customEasing(t: number): number {
-  'worklet';
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
+/* ─── helper: linear interpolation ─── */
+function lerp(
+  value: number,
+  inMin: number,
+  inMax: number,
+  outMin: number,
+  outMax: number,
+): number {
+  const t = Math.max(0, Math.min(1, (value - inMin) / (inMax - inMin)));
+  return outMin + t * (outMax - outMin);
+}
+
+/* ─── helper: interpolate color (hex) ─── */
+function lerpColor(
+  value: number,
+  stops: number[],
+  colors: string[],
+): string {
+  let i = 0;
+  for (let s = 0; s < stops.length - 1; s++) {
+    if (value >= stops[s] && value <= stops[s + 1]) {
+      i = s;
+      break;
+    }
+    if (value > stops[s + 1]) {
+      i = s + 1;
+    }
+  }
+  i = Math.min(i, colors.length - 2);
+  const t = Math.max(
+    0,
+    Math.min(1, (value - stops[i]) / (stops[i + 1] - stops[i])),
+  );
+  const c1 = hexToRgb(colors[i]);
+  const c2 = hexToRgb(colors[i + 1]);
+  const r = Math.round(c1.r + (c2.r - c1.r) * t);
+  const g = Math.round(c1.g + (c2.g - c1.g) * t);
+  const b = Math.round(c1.b + (c2.b - c1.b) * t);
+  return `rgb(${r},${g},${b})`;
+}
+
+function hexToRgb(hex: string): {r: number; g: number; b: number} {
+  const h = hex.replace('#', '');
+  return {
+    r: parseInt(h.substring(0, 2), 16),
+    g: parseInt(h.substring(2, 4), 16),
+    b: parseInt(h.substring(4, 6), 16),
+  };
+}
+
 /* ════════════════════════════════════════════
-   1. Shared Values & useAnimatedStyle
+   1. Shared Values & Animated Style
    ════════════════════════════════════════════ */
 function SharedValuesDemo() {
-  const progress = useSharedValue(0.5);
+  const progress = useRef(new Animated.Value(0.5)).current;
   const renderCount = useRef(0);
   renderCount.current += 1;
 
-  const boxStyle = useAnimatedStyle(() => ({
-    transform: [
-      {scale: interpolate(progress.value, [0, 1], [0.4, 1.4])},
-      {rotate: `${interpolate(progress.value, [0, 1], [0, 360])}deg`},
-    ],
-    backgroundColor: interpolateColor(
-      progress.value,
-      [0, 0.5, 1],
-      [Colors.primary, Colors.secondary, Colors.error],
-    ),
-    borderRadius: interpolate(progress.value, [0, 1], [Radius.sm, 60]),
-  }));
+  const [progressVal, setProgressVal] = useState(0.5);
+
+  useEffect(() => {
+    const id = progress.addListener(({value}) => setProgressVal(value));
+    return () => progress.removeListener(id);
+  }, [progress]);
 
   const panResponder = useMemo(
     () =>
@@ -86,37 +112,52 @@ function SharedValuesDemo() {
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
         onPanResponderMove: (_, gesture) => {
-          progress.value = Math.max(
-            0,
-            Math.min(1, (gesture.moveX - 40) / SLIDER_W),
-          );
+          const v = Math.max(0, Math.min(1, (gesture.moveX - 40) / SLIDER_W));
+          progress.setValue(v);
         },
       }),
     [progress],
   );
 
-  const fillStyle = useAnimatedStyle(() => ({
-    width: `${progress.value * 100}%`,
-  }));
-
-  const thumbStyle = useAnimatedStyle(() => ({
-    transform: [{translateX: progress.value * (SLIDER_W - 24)}],
-  }));
+  const boxBg = lerpColor(
+    progressVal,
+    [0, 0.5, 1],
+    [Colors.primary, Colors.secondary, Colors.error],
+  );
+  const boxRadius = lerp(progressVal, 0, 1, Radius.sm, 60);
+  const boxScale = lerp(progressVal, 0, 1, 0.4, 1.4);
+  const boxRotate = `${lerp(progressVal, 0, 1, 0, 360)}deg`;
 
   return (
     <SectionWrapper
       title="Shared Values"
-      subtitle="Drag the slider — scale, rotation, color & radius update on the UI thread with zero component re-renders.">
+      subtitle="Drag the slider — scale, rotation, color & radius update reactively.">
       <View style={s.center}>
-        <AView style={[s.sharedBox, boxStyle]} />
+        <View
+          style={[
+            s.sharedBox,
+            {
+              backgroundColor: boxBg,
+              borderRadius: boxRadius,
+              transform: [{scale: boxScale}, {rotate: boxRotate}],
+            },
+          ]}
+        />
       </View>
       <View style={s.sliderTrack} {...panResponder.panHandlers}>
-        <AView style={[s.sliderFill, fillStyle]} />
-        <AView style={[s.sliderThumb, thumbStyle]} />
+        <View
+          style={[s.sliderFill, {width: `${progressVal * 100}%`}]}
+        />
+        <View
+          style={[
+            s.sliderThumb,
+            {transform: [{translateX: progressVal * (SLIDER_W - 24)}]},
+          ]}
+        />
       </View>
       <View style={s.badge}>
         <Text style={s.badgeText}>
-          Component renders: {renderCount.current} (only on mount)
+          Drag to control — built with RN Animated
         </Text>
       </View>
     </SectionWrapper>
@@ -127,9 +168,9 @@ function SharedValuesDemo() {
    2. Gesture-Driven Pan + Snap
    ════════════════════════════════════════════ */
 function GestureSnapDemo() {
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const active = useSharedValue(false);
+  const translateX = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
+  const [isActive, setIsActive] = useState(false);
   const offsetRef = useRef({x: 0, y: 0});
 
   const panResponder = useMemo(
@@ -138,39 +179,45 @@ function GestureSnapDemo() {
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
         onPanResponderGrant: () => {
-          offsetRef.current.x = translateX.value;
-          offsetRef.current.y = translateY.value;
-          active.value = true;
+          offsetRef.current.x = (translateX as any).__getValue();
+          offsetRef.current.y = (translateY as any).__getValue();
+          setIsActive(true);
         },
         onPanResponderMove: (_, gesture) => {
-          translateX.value = offsetRef.current.x + gesture.dx;
-          translateY.value = offsetRef.current.y + gesture.dy;
+          translateX.setValue(offsetRef.current.x + gesture.dx);
+          translateY.setValue(offsetRef.current.y + gesture.dy);
         },
         onPanResponderRelease: () => {
+          const curX = (translateX as any).__getValue();
+          const curY = (translateY as any).__getValue();
           const max = GRID_AREA - BALL_SIZE;
           const sx =
-            Math.round(
-              Math.max(0, Math.min(max, translateX.value)) / GRID_SIZE,
-            ) * GRID_SIZE;
+            Math.round(Math.max(0, Math.min(max, curX)) / GRID_SIZE) *
+            GRID_SIZE;
           const sy =
-            Math.round(
-              Math.max(0, Math.min(max, translateY.value)) / GRID_SIZE,
-            ) * GRID_SIZE;
-          translateX.value = withSpring(sx, {damping: 15, stiffness: 150});
-          translateY.value = withSpring(sy, {damping: 15, stiffness: 150});
-          active.value = false;
+            Math.round(Math.max(0, Math.min(max, curY)) / GRID_SIZE) *
+            GRID_SIZE;
+          Animated.parallel([
+            Animated.spring(translateX, {
+              toValue: sx,
+              damping: 15,
+              stiffness: 150,
+              mass: 1,
+              useNativeDriver: true,
+            }),
+            Animated.spring(translateY, {
+              toValue: sy,
+              damping: 15,
+              stiffness: 150,
+              mass: 1,
+              useNativeDriver: true,
+            }),
+          ]).start();
+          setIsActive(false);
         },
       }),
-    [translateX, translateY, active],
+    [translateX, translateY],
   );
-
-  const ballStyle = useAnimatedStyle(() => ({
-    transform: [
-      {translateX: translateX.value},
-      {translateY: translateY.value},
-    ],
-    backgroundColor: active.value ? Colors.secondary : Colors.primary,
-  }));
 
   const dots: {x: number; y: number}[] = [];
   for (let gx = 0; gx <= GRID_AREA - BALL_SIZE; gx += GRID_SIZE) {
@@ -190,9 +237,15 @@ function GestureSnapDemo() {
             style={[s.dot, {left: d.x - 3, top: d.y - 3}]}
           />
         ))}
-        <AView
+        <Animated.View
           {...panResponder.panHandlers}
-          style={[s.ball, ballStyle]}
+          style={[
+            s.ball,
+            {
+              backgroundColor: isActive ? Colors.secondary : Colors.primary,
+              transform: [{translateX}, {translateY}],
+            },
+          ]}
         />
       </View>
     </SectionWrapper>
@@ -203,84 +256,77 @@ function GestureSnapDemo() {
    3. Scroll-Driven Animations
    ════════════════════════════════════════════ */
 function ScrollDrivenDemo() {
-  const scrollY = useSharedValue(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: e => {
-      scrollY.value = e.contentOffset.y;
-    },
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [SCROLL_H_MAX, SCROLL_H_MIN],
+    extrapolate: 'clamp',
   });
 
-  const headerStyle = useAnimatedStyle(() => ({
-    height: interpolate(
-      scrollY.value,
-      [0, 100],
-      [SCROLL_H_MAX, SCROLL_H_MIN],
-      Extrapolation.CLAMP,
-    ),
-  }));
+  const titleScale = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [1, 0.65],
+    extrapolate: 'clamp',
+  });
 
-  const titleStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        scale: interpolate(
-          scrollY.value,
-          [0, 100],
-          [1, 0.65],
-          Extrapolation.CLAMP,
-        ),
-      },
-      {
-        translateY: interpolate(
-          scrollY.value,
-          [0, 100],
-          [0, -8],
-          Extrapolation.CLAMP,
-        ),
-      },
-    ],
-    opacity: interpolate(
-      scrollY.value,
-      [0, 60],
-      [1, 0.8],
-      Extrapolation.CLAMP,
-    ),
-  }));
+  const titleTranslateY = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [0, -8],
+    extrapolate: 'clamp',
+  });
 
-  const parallaxStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: interpolate(
-          scrollY.value,
-          [0, 200],
-          [0, -40],
-          Extrapolation.CLAMP,
-        ),
-      },
-    ],
-    opacity: interpolate(
-      scrollY.value,
-      [0, 150],
-      [0.5, 0],
-      Extrapolation.CLAMP,
-    ),
-  }));
+  const titleOpacity = scrollY.interpolate({
+    inputRange: [0, 60],
+    outputRange: [1, 0.8],
+    extrapolate: 'clamp',
+  });
+
+  const parallaxTranslateY = scrollY.interpolate({
+    inputRange: [0, 200],
+    outputRange: [0, -40],
+    extrapolate: 'clamp',
+  });
+
+  const parallaxOpacity = scrollY.interpolate({
+    inputRange: [0, 150],
+    outputRange: [0.5, 0],
+    extrapolate: 'clamp',
+  });
 
   const ITEMS = Array.from({length: 15}, (_, i) => `Scroll item ${i + 1}`);
 
   return (
     <SectionWrapper
       title="Scroll-Driven"
-      subtitle="Scroll the list — header height, title scale & parallax respond entirely on the UI thread.">
+      subtitle="Scroll the list — header height, title scale & parallax respond to scroll position.">
       <View style={s.scrollBox}>
-        <AView style={[s.scrollHeader, headerStyle]}>
-          <AView style={[s.parallaxCircle, parallaxStyle]} />
-          <AText style={[s.scrollTitle, titleStyle]}>
+        <Animated.View style={[s.scrollHeader, {height: headerHeight}]}>
+          <Animated.View
+            style={[
+              s.parallaxCircle,
+              {
+                opacity: parallaxOpacity,
+                transform: [{translateY: parallaxTranslateY}],
+              },
+            ]}
+          />
+          <Animated.Text
+            style={[
+              s.scrollTitle,
+              {
+                opacity: titleOpacity,
+                transform: [{scale: titleScale}, {translateY: titleTranslateY}],
+              },
+            ]}>
             {'\u2728'} Scroll Me
-          </AText>
-        </AView>
-        <AScrollView
-          onScroll={scrollHandler}
+          </Animated.Text>
+        </Animated.View>
+        <Animated.ScrollView
+          onScroll={Animated.event(
+            [{nativeEvent: {contentOffset: {y: scrollY}}}],
+            {useNativeDriver: false},
+          )}
           scrollEventThrottle={16}
           style={s.scrollList}
           contentContainerStyle={{paddingTop: SCROLL_H_MAX}}
@@ -297,7 +343,7 @@ function ScrollDrivenDemo() {
               <Text style={s.scrollItemText}>{t}</Text>
             </View>
           ))}
-        </AScrollView>
+        </Animated.ScrollView>
       </View>
     </SectionWrapper>
   );
@@ -312,11 +358,12 @@ function LayoutAnimationsDemo() {
   const [items, setItems] = useState([
     {id: 1, label: 'React', color: Colors.primary},
     {id: 2, label: 'Native', color: Colors.secondary},
-    {id: 3, label: 'Reanimated', color: Colors.success},
-    {id: 4, label: 'Worklets', color: Colors.warning},
+    {id: 3, label: 'Animated', color: Colors.success},
+    {id: 4, label: 'API', color: Colors.warning},
   ]);
 
   const addItem = useCallback(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     const id = _nextId++;
     setItems(prev => [
       {
@@ -329,17 +376,19 @@ function LayoutAnimationsDemo() {
   }, []);
 
   const removeItem = useCallback((id: number) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setItems(prev => prev.filter(it => it.id !== id));
   }, []);
 
   const shuffle = useCallback(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
     setItems(prev => [...prev].sort(() => Math.random() - 0.5));
   }, []);
 
   return (
     <SectionWrapper
       title="Layout Animations"
-      subtitle="Items enter with FadeInUp, exit with FadeOutDown, and reorder with Layout.springify().">
+      subtitle="Items enter, exit, and reorder with LayoutAnimation transitions.">
       <View style={s.layoutBtns}>
         <Pressable
           style={[s.pillBtn, {backgroundColor: Colors.success + '20'}]}
@@ -355,17 +404,14 @@ function LayoutAnimationsDemo() {
         </Pressable>
       </View>
       {items.map(it => (
-        <AView
+        <View
           key={it.id}
-          entering={FadeInUp.springify().damping(15)}
-          exiting={FadeOutDown.duration(300)}
-          layout={Layout.springify()}
           style={[s.layoutCard, {borderLeftColor: it.color}]}>
           <Text style={s.layoutLabel}>{it.label}</Text>
           <Pressable onPress={() => removeItem(it.id)} hitSlop={8}>
             <Text style={s.removeX}>{'\u2715'}</Text>
           </Pressable>
-        </AView>
+        </View>
       ))}
     </SectionWrapper>
   );
@@ -375,40 +421,36 @@ function LayoutAnimationsDemo() {
    5. Animation Builders
    ════════════════════════════════════════════ */
 function AnimationBuildersDemo() {
-  const springY = useSharedValue(0);
-  const timingY = useSharedValue(0);
-  const decayY = useSharedValue(0);
+  const springY = useRef(new Animated.Value(0)).current;
+  const timingY = useRef(new Animated.Value(0)).current;
+  const decayY = useRef(new Animated.Value(0)).current;
 
   const animate = useCallback(() => {
-    springY.value = 0;
-    timingY.value = 0;
-    decayY.value = 0;
+    springY.setValue(0);
+    timingY.setValue(0);
+    decayY.setValue(0);
 
-    springY.value = withSpring(TRAVEL, {
+    Animated.spring(springY, {
+      toValue: TRAVEL,
       damping: 4,
       stiffness: 80,
       mass: 1,
-    });
-    timingY.value = withTiming(TRAVEL, {
+      useNativeDriver: true,
+    }).start();
+
+    Animated.timing(timingY, {
+      toValue: TRAVEL,
       duration: 1200,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    });
-    decayY.value = withDecay({
-      velocity: 800,
-      deceleration: 0.997,
-      clamp: [0, TRAVEL],
-    });
-  }, [springY, timingY, decayY]);
+      useNativeDriver: true,
+    }).start();
 
-  const sStyle = useAnimatedStyle(() => ({
-    transform: [{translateY: springY.value}],
-  }));
-  const tStyle = useAnimatedStyle(() => ({
-    transform: [{translateY: timingY.value}],
-  }));
-  const dStyle = useAnimatedStyle(() => ({
-    transform: [{translateY: decayY.value}],
-  }));
+    Animated.decay(decayY, {
+      velocity: 1.5,
+      deceleration: 0.997,
+      useNativeDriver: true,
+    }).start();
+  }, [springY, timingY, decayY]);
 
   return (
     <SectionWrapper
@@ -430,15 +472,21 @@ function AnimationBuildersDemo() {
       </Pressable>
       <View style={s.buildersRow}>
         {[
-          {label: 'Spring', anim: sStyle, color: Colors.primary},
-          {label: 'Timing', anim: tStyle, color: Colors.secondary},
-          {label: 'Decay', anim: dStyle, color: Colors.error},
+          {label: 'Spring', anim: springY, color: Colors.primary},
+          {label: 'Timing', anim: timingY, color: Colors.secondary},
+          {label: 'Decay', anim: decayY, color: Colors.error},
         ].map(b => (
           <View key={b.label} style={s.builderCol}>
             <Text style={[s.builderLabel, {color: b.color}]}>{b.label}</Text>
             <View style={s.builderTrack}>
-              <AView
-                style={[s.builderBall, {backgroundColor: b.color}, b.anim]}
+              <Animated.View
+                style={[
+                  s.builderBall,
+                  {
+                    backgroundColor: b.color,
+                    transform: [{translateY: b.anim}],
+                  },
+                ]}
               />
             </View>
           </View>
@@ -452,8 +500,14 @@ function AnimationBuildersDemo() {
    6. Interpolation Showcase
    ════════════════════════════════════════════ */
 function InterpolationDemo() {
-  const progress = useSharedValue(0);
+  const progress = useRef(new Animated.Value(0)).current;
   const startRef = useRef(0);
+  const [progressVal, setProgressVal] = useState(0);
+
+  useEffect(() => {
+    const id = progress.addListener(({value}) => setProgressVal(value));
+    return () => progress.removeListener(id);
+  }, [progress]);
 
   const panResponder = useMemo(
     () =>
@@ -461,58 +515,61 @@ function InterpolationDemo() {
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
         onPanResponderGrant: () => {
-          startRef.current = progress.value;
+          startRef.current = (progress as any).__getValue();
         },
         onPanResponderMove: (_, gesture) => {
-          progress.value = Math.max(
+          const v = Math.max(
             0,
             Math.min(1, startRef.current + gesture.dx / SLIDER_W),
           );
+          progress.setValue(v);
         },
       }),
     [progress],
   );
 
-  const boxStyle = useAnimatedStyle(() => ({
-    transform: [
-      {rotate: `${interpolate(progress.value, [0, 1], [0, 360])}deg`},
-      {
-        scale: interpolate(progress.value, [0, 0.5, 1], [0.5, 1.3, 0.8]),
-      },
-    ],
-    backgroundColor: interpolateColor(
-      progress.value,
-      [0, 0.25, 0.5, 0.75, 1],
-      [
-        Colors.primary,
-        Colors.success,
-        Colors.secondary,
-        Colors.warning,
-        Colors.error,
-      ],
-    ),
-    borderRadius: interpolate(
-      progress.value,
-      [0, 0.5, 1],
-      [Radius.sm, 60, 16],
-    ),
-    width: interpolate(progress.value, [0, 1], [70, 130]),
-    height: interpolate(progress.value, [0, 1], [70, 130]),
-  }));
-
-  const thumbStyle = useAnimatedStyle(() => ({
-    transform: [{translateX: progress.value * (SLIDER_W - 32)}],
-  }));
+  const boxBg = lerpColor(
+    progressVal,
+    [0, 0.25, 0.5, 0.75, 1],
+    [Colors.primary, Colors.success, Colors.secondary, Colors.warning, Colors.error],
+  );
+  const boxRotate = `${lerp(progressVal, 0, 1, 0, 360)}deg`;
+  const boxScale =
+    progressVal <= 0.5
+      ? lerp(progressVal, 0, 0.5, 0.5, 1.3)
+      : lerp(progressVal, 0.5, 1, 1.3, 0.8);
+  const boxRadius =
+    progressVal <= 0.5
+      ? lerp(progressVal, 0, 0.5, Radius.sm, 60)
+      : lerp(progressVal, 0.5, 1, 60, 16);
+  const boxW = lerp(progressVal, 0, 1, 70, 130);
+  const boxH = lerp(progressVal, 0, 1, 70, 130);
 
   return (
     <SectionWrapper
       title="Interpolation"
-      subtitle="Drag horizontally — one shared value drives color, size, rotation & border-radius simultaneously.">
+      subtitle="Drag horizontally — one value drives color, size, rotation & border-radius simultaneously.">
       <View style={s.center}>
-        <AView style={[s.interpBox, boxStyle]} />
+        <View
+          style={[
+            s.interpBox,
+            {
+              backgroundColor: boxBg,
+              borderRadius: boxRadius,
+              width: boxW,
+              height: boxH,
+              transform: [{rotate: boxRotate}, {scale: boxScale}],
+            },
+          ]}
+        />
       </View>
       <View style={s.interpTrack} {...panResponder.panHandlers}>
-        <AView style={[s.interpThumb, thumbStyle]} />
+        <View
+          style={[
+            s.interpThumb,
+            {transform: [{translateX: progressVal * (SLIDER_W - 32)}]},
+          ]}
+        />
       </View>
       <View style={s.interpLabels}>
         <Text style={s.interpLbl}>0.0</Text>
@@ -524,18 +581,22 @@ function InterpolationDemo() {
 }
 
 /* ════════════════════════════════════════════
-   7. Custom Worklet
+   7. Custom Easing Demo
    ════════════════════════════════════════════ */
 function CustomWorkletDemo() {
-  const raw = useSharedValue(0);
+  const raw = useRef(new Animated.Value(0)).current;
   const [pct, setPct] = useState(0);
+  const [easedVal, setEasedVal] = useState(0);
 
-  const snapped = useDerivedValue(() => snapToStep(raw.value, 0.25));
-  const eased = useDerivedValue(() => customEasing(snapped.value));
-
-  useDerivedValue(() => {
-    runOnJS(setPct)(Math.round(snapped.value * 100));
-  });
+  useEffect(() => {
+    const id = raw.addListener(({value}) => {
+      const snapped = snapToStep(value, 0.25);
+      const eased = customEasing(snapped);
+      setPct(Math.round(snapped * 100));
+      setEasedVal(eased);
+    });
+    return () => raw.removeListener(id);
+  }, [raw]);
 
   const panResponder = useMemo(
     () =>
@@ -543,41 +604,36 @@ function CustomWorkletDemo() {
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
         onPanResponderMove: (_, gesture) => {
-          raw.value = Math.max(
-            0,
-            Math.min(1, (gesture.moveX - 40) / SLIDER_W),
+          raw.setValue(
+            Math.max(0, Math.min(1, (gesture.moveX - 40) / SLIDER_W)),
           );
         },
       }),
     [raw],
   );
 
-  const fillStyle = useAnimatedStyle(() => ({
-    height: `${eased.value * 100}%`,
-  }));
-
-  const ringStyle = useAnimatedStyle(() => ({
-    transform: [{rotate: `${eased.value * 360}deg`}],
-  }));
-
   return (
     <SectionWrapper
-      title="Custom Worklet"
-      subtitle="Two worklet functions (snapToStep & customEasing) run on the UI thread — drag to see the snapped circular progress.">
+      title="Custom Easing"
+      subtitle="Two functions (snapToStep & customEasing) transform the value — drag to see the snapped circular progress.">
       <View style={s.center}>
         <View style={s.progressOuter}>
-          <AView style={[s.progressFill, fillStyle]} />
+          <View
+            style={[s.progressFill, {height: `${easedVal * 100}%`}]}
+          />
           <Text style={s.progressPct}>{pct}%</Text>
-          <AView style={[s.progressRing, ringStyle]}>
+          <View
+            style={[
+              s.progressRing,
+              {transform: [{rotate: `${easedVal * 360}deg`}]},
+            ]}>
             <View style={s.ringDot} />
-          </AView>
+          </View>
         </View>
       </View>
       <View style={s.workletTrack} {...panResponder.panHandlers}>
         {[0, 25, 50, 75, 100].map(p => (
-          <View
-            key={p}
-            style={[s.snapMark, {left: `${p}%`}]}>
+          <View key={p} style={[s.snapMark, {left: `${p}%`}]}>
             <View style={[s.snapDot, pct === p && s.snapDotActive]} />
             <Text style={s.snapLabel}>{p}</Text>
           </View>
@@ -599,9 +655,9 @@ export default function ReanimatedScreen() {
     <ScreenContainer>
       <View style={s.hero}>
         <Text style={s.heroIcon}>{'\u26A1'}</Text>
-        <Text style={s.heroTitle}>Reanimated Worklets</Text>
+        <Text style={s.heroTitle}>Animation Showcase</Text>
         <Text style={s.heroSub}>
-          High-performance animations running on the UI thread
+          High-performance animations using React Native Animated API
         </Text>
       </View>
       <SharedValuesDemo />
@@ -614,7 +670,7 @@ export default function ReanimatedScreen() {
       <View style={s.footer}>
         <View style={s.footerLine} />
         <Text style={s.footerText}>
-          Powered by react-native-reanimated {'\u2022'} UI Thread
+          Powered by React Native Animated {'\u2022'} Cross-Platform
         </Text>
       </View>
     </ScreenContainer>

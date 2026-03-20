@@ -3,6 +3,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Colors} from '../theme';
 import type {HomeStackParamList} from './types';
 import AnimatedHeader from '../components/common/AnimatedHeader';
+import {withScreenQuality} from '../quality/withScreenQuality';
 
 import HomeScreen from '../screens/HomeScreen';
 import LayoutsScreen from '../screens/LayoutsScreen';
@@ -32,6 +33,50 @@ import WindowControlsScreen from '../screens/WindowControlsScreen';
 import ReanimatedScreen from '../screens/ReanimatedScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
+const HomeScreenMonitored = withScreenQuality('Home', HomeScreen);
+const LayoutsScreenMonitored = withScreenQuality('Layouts', LayoutsScreen);
+const ListsScreenMonitored = withScreenQuality('Lists', ListsScreen);
+const NavigationScreenMonitored = withScreenQuality(
+  'Navigation',
+  NavigationScreen,
+);
+const AnimationsScreenMonitored = withScreenQuality(
+  'Animations',
+  AnimationsScreen,
+);
+const CanvasScreenMonitored = withScreenQuality('Canvas', CanvasScreen);
+const ThreeDScreenMonitored = withScreenQuality('ThreeD', ThreeDScreen);
+const ChartsScreenMonitored = withScreenQuality('Charts', ChartsScreen);
+const SvgScreenMonitored = withScreenQuality('Svg', SvgScreen);
+const DataGridScreenMonitored = withScreenQuality(
+  'DataGrid',
+  DataGridScreen,
+);
+const MediaScreenMonitored = withScreenQuality('Media', MediaScreen);
+const AudioScreenMonitored = withScreenQuality('Audio', AudioScreen);
+const VideoScreenMonitored = withScreenQuality('Video', VideoScreen);
+const FilesScreenMonitored = withScreenQuality('Files', FilesScreen);
+const PlatformScreenMonitored = withScreenQuality('Platform', PlatformScreen);
+const WebScreenMonitored = withScreenQuality('Web', WebScreen);
+const NetworkScreenMonitored = withScreenQuality('Network', NetworkScreen);
+const StorageScreenMonitored = withScreenQuality('Storage', StorageScreen);
+const MapsScreenMonitored = withScreenQuality('Maps', MapsScreen);
+const AuthScreenMonitored = withScreenQuality('Auth', AuthScreen);
+const ThemesScreenMonitored = withScreenQuality('Themes', ThemesScreen);
+const CodesScreenMonitored = withScreenQuality('Codes', CodesScreen);
+const UtilitiesScreenMonitored = withScreenQuality(
+  'Utilities',
+  UtilitiesScreen,
+);
+const WidgetsScreenMonitored = withScreenQuality('Widgets', WidgetsScreen);
+const WindowControlsScreenMonitored = withScreenQuality(
+  'WindowControls',
+  WindowControlsScreen,
+);
+const ReanimatedScreenMonitored = withScreenQuality(
+  'Reanimated',
+  ReanimatedScreen,
+);
 
 export default function HomeStack() {
   return (
@@ -53,132 +98,132 @@ export default function HomeStack() {
       }}>
       <Stack.Screen
         name="Home"
-        component={HomeScreen}
+        component={HomeScreenMonitored}
         options={{headerShown: false}}
       />
       <Stack.Screen
         name="Layouts"
-        component={LayoutsScreen}
+        component={LayoutsScreenMonitored}
         options={{title: 'Layouts'}}
       />
       <Stack.Screen
         name="Lists"
-        component={ListsScreen}
+        component={ListsScreenMonitored}
         options={{title: 'Lists & Scroll'}}
       />
       <Stack.Screen
         name="Navigation"
-        component={NavigationScreen}
+        component={NavigationScreenMonitored}
         options={{title: 'Advanced Navigation'}}
       />
       <Stack.Screen
         name="Animations"
-        component={AnimationsScreen}
+        component={AnimationsScreenMonitored}
         options={{title: 'Animations'}}
       />
       <Stack.Screen
         name="Canvas"
-        component={CanvasScreen}
+        component={CanvasScreenMonitored}
         options={{title: 'Canvas 2D'}}
       />
       <Stack.Screen
         name="ThreeD"
-        component={ThreeDScreen}
+        component={ThreeDScreenMonitored}
         options={{title: '3D Transforms'}}
       />
       <Stack.Screen
         name="Charts"
-        component={ChartsScreen}
+        component={ChartsScreenMonitored}
         options={{title: 'Charts & Data'}}
       />
       <Stack.Screen
         name="Svg"
-        component={SvgScreen}
+        component={SvgScreenMonitored}
         options={{title: 'SVG & Vector'}}
       />
       <Stack.Screen
         name="DataGrid"
-        component={DataGridScreen}
+        component={DataGridScreenMonitored}
         options={{title: 'DataGrid Studio'}}
       />
       <Stack.Screen
         name="Media"
-        component={MediaScreen}
+        component={MediaScreenMonitored}
         options={{title: 'Camera & Photos'}}
       />
       <Stack.Screen
         name="Audio"
-        component={AudioScreen}
+        component={AudioScreenMonitored}
         options={{title: 'Audio Studio'}}
       />
       <Stack.Screen
         name="Video"
-        component={VideoScreen}
+        component={VideoScreenMonitored}
         options={{title: 'Video Studio'}}
       />
       <Stack.Screen
         name="Files"
-        component={FilesScreen}
+        component={FilesScreenMonitored}
         options={{title: 'Files & Documents'}}
       />
       <Stack.Screen
         name="Platform"
-        component={PlatformScreen}
+        component={PlatformScreenMonitored}
         options={{title: 'Device & System'}}
       />
       <Stack.Screen
         name="Web"
-        component={WebScreen}
+        component={WebScreenMonitored}
         options={{title: 'WebView & Browser'}}
       />
       <Stack.Screen
         name="Network"
-        component={NetworkScreen}
+        component={NetworkScreenMonitored}
         options={{title: 'Networking & APIs'}}
       />
       <Stack.Screen
         name="Storage"
-        component={StorageScreen}
+        component={StorageScreenMonitored}
         options={{title: 'Local Storage'}}
       />
       <Stack.Screen
         name="Maps"
-        component={MapsScreen}
+        component={MapsScreenMonitored}
         options={{title: 'Maps & Geospatial'}}
       />
       <Stack.Screen
         name="Auth"
-        component={AuthScreen}
+        component={AuthScreenMonitored}
         options={{title: 'Auth Demo'}}
       />
       <Stack.Screen
         name="Themes"
-        component={ThemesScreen}
+        component={ThemesScreenMonitored}
         options={{title: 'Themes & Appearance'}}
       />
       <Stack.Screen
         name="Codes"
-        component={CodesScreen}
+        component={CodesScreenMonitored}
         options={{title: 'QR & Barcode'}}
       />
       <Stack.Screen
         name="Utilities"
-        component={UtilitiesScreen}
+        component={UtilitiesScreenMonitored}
         options={{title: 'Advanced Utilities'}}
       />
       <Stack.Screen
         name="Widgets"
-        component={WidgetsScreen}
+        component={WidgetsScreenMonitored}
         options={{title: 'Desktop Widgets'}}
       />
       <Stack.Screen
         name="WindowControls"
-        component={WindowControlsScreen}
+        component={WindowControlsScreenMonitored}
         options={{title: 'Window & Grid'}}
       />
       <Stack.Screen
         name="Reanimated"
-        component={ReanimatedScreen}
+        component={ReanimatedScreenMonitored}
         options={{title: 'Reanimated Worklets'}}
       />
     </Stack.Navigator>

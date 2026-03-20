@@ -45,7 +45,7 @@ export default function SplashScreen({onFinish}: SplashScreenProps): React.JSX.E
     }).start();
 
     // Glow pulse: loop opacity between 0.5 and 1.0
-    Animated.loop(
+    const glowLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(glowOpacity, {
           toValue: 1.0,
@@ -58,7 +58,9 @@ export default function SplashScreen({onFinish}: SplashScreenProps): React.JSX.E
           useNativeDriver: true,
         }),
       ]),
-    ).start();
+    );
+
+    glowLoop.start();
 
     // Title fade in with delay 300ms
     Animated.timing(titleOpacity, {
@@ -94,16 +96,26 @@ export default function SplashScreen({onFinish}: SplashScreenProps): React.JSX.E
         ]),
       );
 
-    createDotAnimation(dot1Opacity, 0).start();
-    createDotAnimation(dot2Opacity, 200).start();
-    createDotAnimation(dot3Opacity, 400).start();
+    const dot1Loop = createDotAnimation(dot1Opacity, 0);
+    const dot2Loop = createDotAnimation(dot2Opacity, 200);
+    const dot3Loop = createDotAnimation(dot3Opacity, 400);
+
+    dot1Loop.start();
+    dot2Loop.start();
+    dot3Loop.start();
 
     // After 2000ms, call onFinish
     const timer = setTimeout(() => {
       onFinish();
     }, 2000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      glowLoop.stop();
+      dot1Loop.stop();
+      dot2Loop.stop();
+      dot3Loop.stop();
+    };
   }, [
     iconScale,
     glowOpacity,

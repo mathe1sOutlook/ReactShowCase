@@ -29,6 +29,8 @@ const config = {
       new RegExp(`${rnwPath}/build/.*`),
       new RegExp(`${rnwPath}/target/.*`),
       /.*\.ProjectImports\.zip/,
+      // Block react-native-screens src/ (use lib/commonjs/ instead, avoids codegen issues with RN 0.75)
+      new RegExp('.*node_modules[/\\\\]react-native-screens[/\\\\]src[/\\\\].*'),
     ]),
     //
   },

@@ -4,26 +4,32 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
   Pressable,
 } from 'react-native';
 import {Colors, fluentShadow} from '../theme';
 import type {RootTabParamList} from './types';
+import {withScreenQuality} from '../quality/withScreenQuality';
+import IconSymbol, {type IconName} from '../components/common/IconSymbol';
 
 import HomeStack from './HomeStack';
 import ComponentsScreen from '../screens/ComponentsScreen';
 import AboutScreen from '../screens/AboutScreen';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
+const ComponentsScreenMonitored = withScreenQuality(
+  'Components',
+  ComponentsScreen,
+);
+const AboutScreenMonitored = withScreenQuality('About', AboutScreen);
 
 const TAB_ITEMS: {
   key: keyof RootTabParamList;
   label: string;
-  icon: string;
+  icon: IconName;
 }[] = [
-  {key: 'HomeTab', label: 'Explore', icon: '\u{1F3E0}'},
-  {key: 'ComponentsTab', label: 'Components', icon: '\u{1F9E9}'},
-  {key: 'AboutTab', label: 'About', icon: '\u{2139}\uFE0F'},
+  {key: 'HomeTab', label: 'Explore', icon: 'home'},
+  {key: 'ComponentsTab', label: 'Components', icon: 'grid'},
+  {key: 'AboutTab', label: 'About', icon: 'info'},
 ];
 
 function SideNavigationRail({
@@ -41,7 +47,9 @@ function SideNavigationRail({
     <View style={styles.railContainer}>
       {/* App Logo / Name */}
       <View style={styles.railHeader}>
-        <Text style={styles.railLogo}>⊞</Text>
+        <View style={styles.railLogoWrap}>
+          <IconSymbol name="spark" size={20} color={Colors.primary} />
+        </View>
         <Text style={styles.railAppName}>Showcase</Text>
       </View>
 
@@ -52,7 +60,7 @@ function SideNavigationRail({
           const isFocused = state.index === index;
           const tabItem = TAB_ITEMS.find(t => t.key === route.name);
           const label = tabItem?.label || options.tabBarLabel || route.name;
-          const icon = tabItem?.icon || '●';
+          const icon = tabItem?.icon || 'grid';
           const isHovered = hoveredIndex === index;
 
           const onPress = () => {
@@ -79,7 +87,8 @@ function SideNavigationRail({
               ]}
               accessibilityRole="tab"
               accessibilityState={{selected: isFocused}}
-              accessibilityLabel={label}>
+              accessibilityLabel={label}
+              accessibilityHint={`Opens the ${label} tab`}>
               {/* Active indicator bar */}
               <View
                 style={[
@@ -88,13 +97,17 @@ function SideNavigationRail({
                 ]}
               />
 
-              <Text
+              <View
                 style={[
                   styles.railIcon,
                   isFocused && styles.railIconActive,
                 ]}>
-                {icon}
-              </Text>
+                <IconSymbol
+                  name={icon}
+                  size={20}
+                  color={isFocused ? Colors.primary : Colors.textMuted}
+                />
+              </View>
               <Text
                 style={[
                   styles.railLabel,
@@ -117,24 +130,36 @@ export default function AppNavigator() {
   return (
     <View style={styles.appContainer}>
       <Tab.Navigator
+        detachInactiveScreens
         tabBar={props => <SideNavigationRail {...props} />}
         screenOptions={{
           headerShown: false,
+          freezeOnBlur: true,
+          lazy: true,
         }}>
         <Tab.Screen
           name="HomeTab"
           component={HomeStack}
-          options={{tabBarLabel: 'Explore'}}
+          options={{
+            tabBarLabel: 'Explore',
+            tabBarAccessibilityLabel: 'Explore showcase screens',
+          }}
         />
         <Tab.Screen
           name="ComponentsTab"
-          component={ComponentsScreen}
-          options={{tabBarLabel: 'Components'}}
+          component={ComponentsScreenMonitored}
+          options={{
+            tabBarLabel: 'Components',
+            tabBarAccessibilityLabel: 'Open component showcase',
+          }}
         />
         <Tab.Screen
           name="AboutTab"
-          component={AboutScreen}
-          options={{tabBarLabel: 'About'}}
+          component={AboutScreenMonitored}
+          options={{
+            tabBarLabel: 'About',
+            tabBarAccessibilityLabel: 'Open about screen',
+          }}
         />
       </Tab.Navigator>
     </View>
@@ -160,9 +185,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginBottom: 12,
   },
-  railLogo: {
-    fontSize: 20,
-    color: Colors.primary,
+  railLogoWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 120, 212, 0.12)',
   },
   railAppName: {
     fontSize: 9,
@@ -201,8 +230,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
   },
   railIcon: {
-    fontSize: 20,
     marginBottom: 3,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   railIconActive: {
     transform: [{scale: 1.1}],

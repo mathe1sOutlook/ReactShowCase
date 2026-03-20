@@ -7,14 +7,21 @@
 ## Arquitetura Atual (pós Fase 1.5)
 
 ```
+docs/
+├── marketing/          screenshots PNG + demo reel GIF para README e distribuição
+├── plans/              notas técnicas e decisões de implementação
+scripts/                geração de branding + builds Android/Windows
 App.tsx → NavigationContainer (deep linking) + AppNavigator
 src/
 ├── theme/              colors.ts, spacing.ts, typography.ts, index.ts
 ├── hooks/              useAnimatedValue.ts
 ├── utils/              index.ts (shadeColor, clamp)
+├── quality/            ScreenErrorBoundary, withScreenQuality, PerformanceOverlay, performanceStore
 ├── components/common/
 │   ├── Section.tsx / SectionWrapper.tsx     Wrappers de seção com animação
 │   ├── ScreenContainer.tsx                 Container padrão ScrollView
+│   ├── IconSymbol.tsx                      Sistema de ícones SVG consistente
+│   ├── StateBlock.tsx                      Loading, empty e error states reutilizáveis
 │   ├── AnimatedHeader.tsx                  Header custom com back animado + breadcrumb (Win)
 │   └── AcrylicCard.tsx (Win)               Card com efeito Fluent acrylic
 ├── components/showcase/
@@ -54,6 +61,8 @@ src/
 **Android**: BottomTabs (3 abas) + Stack Navigator + Splash Screen + Deep Linking (`cfdandroid://`)
 **Windows**: Side Navigation Rail (72px, Fluent Design) + Stack com Breadcrumb + Deep Linking (`cfdwindows://`)
 **TypeScript**: Zero erros em ambos os projetos
+**Qualidade**: Error boundaries por tela, overlay dev de performance/FPS, freeze on blur, testes de snapshot e layout, shell visual compartilhado e estados reutilizáveis
+**Distribuição**: scripts de release, branding nativo, screenshots e demo reel em `docs/marketing`
 **Backup**: `App.original.tsx` preservado em ambos os projetos
 
 ---
@@ -500,33 +509,33 @@ src/
 ## 📋 FASE 9 — Qualidade e Deploy
 
 ### 9.1 Qualidade
-- [ ] Performance profiling e otimização
-- [ ] Memory leak detection e fix
-- [ ] FPS monitoring em animações
-- [ ] Testes unitários dos componentes principais
-- [ ] Testes de snapshot
-- [ ] Acessibilidade: labels, roles, hints em todos os componentes interativos
-- [ ] Responsividade testada em múltiplos tamanhos de tela
-- [ ] Error boundaries em todas as telas
+- [x] Performance profiling e otimização
+- [x] Memory leak detection e fix
+- [x] FPS monitoring em animações
+- [x] Testes unitários dos componentes principais
+- [x] Testes de snapshot
+- [x] Acessibilidade: labels, roles, hints em todos os componentes interativos
+- [x] Responsividade testada em múltiplos tamanhos de tela
+- [x] Error boundaries em todas as telas
 
 ### 9.2 Polish Visual
-- [ ] Consistência visual entre todas as telas
-- [ ] Animações suaves em todas as transições
-- [ ] Loading states em todas as operações assíncronas
-- [ ] Empty states em todas as listas
-- [ ] Error states com retry em toda chamada de API
-- [ ] Ícones consistentes (usar uma biblioteca: MaterialIcons, Feather, etc.)
+- [x] Consistência visual entre todas as telas
+- [x] Animações suaves em todas as transições
+- [x] Loading states em todas as operações assíncronas
+- [x] Empty states em todas as listas
+- [x] Error states com retry em toda chamada de API
+- [x] Ícones consistentes (sistema SVG compartilhado via `IconSymbol`)
 - [x] Typography scale consistente (Typography.ts em ambos projetos)
 - [x] Spacing system (4px, 8px, 12px, 16px, 24px, 32px, 48px) — Spacing.ts em ambos
 
 ### 9.3 Build e Distribuição
-- [ ] Build de release Android (APK e AAB)
-- [ ] Build de release Windows (MSIX/AppX)
-- [ ] App icons em todas as resoluções
-- [ ] Splash screen em todas as resoluções
-- [ ] Screenshots para marketing
-- [ ] Vídeo demo do app (screen recording)
-- [ ] README.md atualizado com instruções e screenshots
+- [ ] Build de release Android (APK e AAB) — script pronto, bloqueado neste ambiente sem `java`/Android SDK
+- [ ] Build de release Windows (MSIX/AppX) — script pronto, bloqueado neste ambiente sem `msbuild`/Visual Studio
+- [x] App icons em todas as resoluções
+- [x] Splash screen em todas as resoluções
+- [x] Screenshots para marketing
+- [x] Vídeo demo do app (demo reel GIF)
+- [x] README.md atualizado com instruções e screenshots
 
 ---
 
@@ -570,7 +579,7 @@ src/
 ### A Instalar (ambas plataformas)
 | Biblioteca | Uso |
 |---|---|
-| `react-native-vector-icons` | Ícones |
+| `react-native-vector-icons` | Opcional — substituído por `IconSymbol` + `react-native-svg` |
 | `react-native-chart-kit` ou `victory-native` | Gráficos |
 | `react-native-pdf` | Leitor de PDF |
 | `react-native-document-picker` | File picker |
@@ -621,8 +630,8 @@ src/
 | Fase 6 - Dispositivo | 52 | 52 | ################## 100% |
 | Fase 7 - Web/Conectividade | 22 | 22 | ################## 100% |
 | Fase 8 - Avancadas | 48 | 48 | ################## 100% |
-| Fase 9 - Qualidade | 23 | 2 | ##---------------- 9% |
-| **TOTAL** | **360** | **339** | **#################- 94%** |
+| Fase 9 - Qualidade | 23 | 21 | ################-- 91% |
+| **TOTAL** | **360** | **358** | **################## 99%** |
 
 ---
 

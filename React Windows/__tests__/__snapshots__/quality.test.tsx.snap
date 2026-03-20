@@ -1,0 +1,152 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`withScreenQuality shows a recovery fallback and retries the screen 1`] = `
+<View
+  accessibilityRole="alert"
+  style={
+    {
+      "alignItems": "center",
+      "backgroundColor": "#f3f3f3",
+      "flex": 1,
+      "justifyContent": "center",
+      "padding": 24,
+    }
+  }
+  testID="screen-error-boundary"
+>
+  <View
+    style={
+      {
+        "backgroundColor": "#ffffff",
+        "borderColor": "rgba(0,0,0,0.12)",
+        "borderRadius": 12,
+        "borderWidth": 1,
+        "elevation": 4,
+        "maxWidth": 460,
+        "padding": 24,
+        "shadowColor": "rgba(0,0,0,0.08)",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 1,
+        "shadowRadius": 8,
+        "width": "100%",
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#f59e0b",
+          "fontSize": 12,
+          "fontWeight": "800",
+          "letterSpacing": 1,
+          "marginBottom": 8,
+          "textTransform": "uppercase",
+        }
+      }
+    >
+      Screen Recovery
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#1a1a1a",
+          "fontSize": 22,
+          "fontWeight": "800",
+          "marginBottom": 8,
+        }
+      }
+    >
+      Flaky
+       crashed during render
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#616161",
+          "fontSize": 14,
+          "lineHeight": 20,
+          "marginBottom": 12,
+        }
+      }
+    >
+      The error boundary isolated this route so the shell stays usable. Retry remounts only the failing screen.
+    </Text>
+    <Text
+      numberOfLines={4}
+      style={
+        {
+          "color": "#1a1a1a",
+          "fontSize": 12,
+          "lineHeight": 18,
+          "marginBottom": 12,
+        }
+      }
+    >
+      boom
+    </Text>
+    <View
+      accessibilityHint="Remounts the current screen after an error"
+      accessibilityLabel="Retry Flaky"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "alignSelf": "flex-start",
+            "backgroundColor": "#0078d4",
+            "borderRadius": 999,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+          },
+          false,
+        ]
+      }
+      testID="screen-error-retry"
+    >
+      <Text
+        style={
+          {
+            "color": "#ffffff",
+            "fontSize": 13,
+            "fontWeight": "700",
+            "letterSpacing": 0.3,
+          }
+        }
+      >
+        Retry screen
+      </Text>
+    </View>
+  </View>
+</View>
+`;

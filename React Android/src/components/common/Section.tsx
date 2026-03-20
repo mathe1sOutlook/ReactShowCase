@@ -10,7 +10,9 @@ type SectionProps = {
 export function Section({title, children}: SectionProps) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">
+        {title}
+      </Text>
       <View style={styles.sectionDivider} />
       {children}
     </View>

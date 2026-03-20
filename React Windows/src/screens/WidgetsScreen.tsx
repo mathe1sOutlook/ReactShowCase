@@ -18,7 +18,7 @@ import {AcrylicCard} from '../components/common/AcrylicCard';
 function WeatherWidget() {
   const tempAnim = useAnimatedValue(0);
   useEffect(() => {
-    Animated.loop(
+    const tempLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(tempAnim, {
           toValue: 1,
@@ -33,7 +33,13 @@ function WeatherWidget() {
           useNativeDriver: true,
         }),
       ]),
-    ).start();
+    );
+
+    tempLoop.start();
+
+    return () => {
+      tempLoop.stop();
+    };
   }, [tempAnim]);
 
   const sunRotate = tempAnim.interpolate({
