@@ -1,9 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   AccessibilityInfo,
   AppState,
   Keyboard,
-  Linking,
   Platform,
   Pressable,
   Share,
@@ -45,8 +46,12 @@ import {
   type Vec3,
 } from './platform/model';
 import {PlatformCard as Card, PlatformMeter as Meter} from './platform/sections';
+import type {HomeStackParamList} from '../navigation/types';
+
+type Nav = NativeStackNavigationProp<HomeStackParamList>;
 
 export default function PlatformScreen() {
+  const navigation = useNavigation<Nav>();
   const {width, height, fontScale} = useWindowDimensions();
   const systemScheme = useColorScheme();
   const fullWidth = width - Spacing.lg * 2;
@@ -91,8 +96,8 @@ export default function PlatformScreen() {
   const [bioMode, setBioMode] = useState<'Fingerprint' | 'Face ID'>(
     Platform.OS === 'android' ? 'Fingerprint' : 'Face ID',
   );
-  const [clipboardText, setClipboardText] = useState('cfd://platform/resources');
-  const [clipboardCache, setClipboardCache] = useState('cfd://platform/resources');
+  const [clipboardText, setClipboardText] = useState('cfdandroid://files');
+  const [clipboardCache, setClipboardCache] = useState('cfdandroid://files');
   const [systemMessage, setSystemMessage] = useState('System resources ready.');
   const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
@@ -309,14 +314,14 @@ export default function PlatformScreen() {
     setClipboardCache(clipboardText);
     setSystemMessage(
       copied
-        ? 'Copied to the system clipboard.'
-        : 'Clipboard API unavailable. Stored in the local buffer.',
+        ? 'Preview buffer updated and clipboard synced when available.'
+        : 'Preview buffer updated locally because the clipboard API is unavailable.',
     );
   };
 
   const pasteClipboard = () => {
     setKeyboardText(clipboardCache);
-    setSystemMessage('Pasted the latest copied value into the keyboard field.');
+    setSystemMessage('Pasted the latest preview buffer into the keyboard field.');
   };
 
   const sharePayload = async (kind: 'text' | 'url' | 'image') => {
@@ -324,24 +329,20 @@ export default function PlatformScreen() {
       kind === 'text'
         ? {message: 'React ShowCase system resources are ready for QA handoff.'}
         : kind === 'url'
-          ? {message: 'Open the device lab route', url: Platform.OS === 'android' ? 'cfdandroid://platform' : 'cfdwindows://platform'}
+          ? {message: 'Open the device lab route', url: Platform.OS === 'android' ? 'cfdandroid://network' : 'cfdwindows://platform'}
           : {message: 'Image payload preview: https://showcase.cfd.dev/assets/device-lab.png'};
     await Share.share(payload);
     setSystemMessage(`Share sheet opened for ${kind}.`);
   };
 
-  const openDeepLink = async (target: 'files' | 'platform') => {
-    const url =
-      Platform.OS === 'android'
-        ? `cfdandroid://${target}`
-        : `cfdwindows://${target}`;
+  const openDeepLink = (target: 'files' | 'network') => {
+    const routeName = target === 'files' ? 'Files' : 'Network';
+    const url = Platform.OS === 'android' ? `cfdandroid://${target}` : `cfdwindows://${target}`;
 
-    try {
-      await Linking.openURL(url);
-      setSystemMessage(`Opened ${url}.`);
-    } catch {
-      setSystemMessage(`Deep link preview ready: ${url}`);
-    }
+    navigation.navigate(routeName);
+    setSystemMessage(
+      `Internal route preview opened for ${routeName}. Reference URL: ${url}`,
+    );
   };
 
   const pushNotification = (kind: 'Local' | 'Push') => {
@@ -629,7 +630,7 @@ export default function PlatformScreen() {
           <Text style={styles.sectionText}>Clipboard, sharing, deep links, notifications and permissions.</Text>
         </View>
         <View style={styles.grid}>
-          <Card title="Clipboard" subtitle="Copy to the native clipboard and paste from the local buffer." tone={Colors.primary} width={cardWidth}>
+          <Card title="Clipboard" subtitle="Keep a local preview buffer and sync the clipboard when available." tone={Colors.primary} width={cardWidth}>
             <TextInput
               style={styles.input}
               value={clipboardText}
@@ -651,7 +652,7 @@ export default function PlatformScreen() {
             <Text style={styles.note}>Last buffer: {clipboardCache}</Text>
           </Card>
 
-          <Card title="Share & Deep Links" subtitle="Open the share sheet and route the app through URL handling." tone={Colors.secondary} width={cardWidth}>
+          <Card title="Share & Deep Links" subtitle="Share payload previews and route internally while showing the matching deep link URL." tone={Colors.secondary} width={cardWidth}>
             <View style={styles.wrap}>
               <Pressable style={styles.smallAction} onPress={() => void sharePayload('text')}>
                 <Text style={styles.smallActionText}>Share text</Text>
@@ -662,15 +663,15 @@ export default function PlatformScreen() {
               <Pressable style={styles.smallAction} onPress={() => void sharePayload('image')}>
                 <Text style={styles.smallActionText}>Share image</Text>
               </Pressable>
-              <Pressable style={styles.smallAction} onPress={() => void openDeepLink('files')}>
-                <Text style={styles.smallActionText}>Open Files</Text>
+              <Pressable style={styles.smallAction} onPress={() => openDeepLink('files')}>
+                <Text style={styles.smallActionText}>Go Files</Text>
               </Pressable>
-              <Pressable style={styles.smallAction} onPress={() => void openDeepLink('platform')}>
-                <Text style={styles.smallActionText}>Open Platform</Text>
+              <Pressable style={styles.smallAction} onPress={() => openDeepLink('network')}>
+                <Text style={styles.smallActionText}>Go Network</Text>
               </Pressable>
             </View>
             <Text style={styles.note}>
-              Prefix: {Platform.OS === 'android' ? 'cfdandroid://' : 'cfdwindows://'}
+              Reference URLs: {Platform.OS === 'android' ? 'cfdandroid://files | cfdandroid://network' : 'cfdwindows://files | cfdwindows://network'}
             </Text>
           </Card>
 

@@ -1,7 +1,6 @@
 ﻿import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Animated,
-  Image,
   NativeModules,
   PanResponder,
   Pressable,
@@ -477,7 +476,9 @@ export default function DataGridScreen() {
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [contextCell, setContextCell] = useState<ContextCell | null>(null);
   const [exportPreview, setExportPreview] = useState<ExportPreview | null>(null);
-  const [feedback, setFeedback] = useState('Ready to inspect, edit and export the grid.');
+  const [feedback, setFeedback] = useState(
+    'Ready to inspect, edit and share preview payloads from the grid.',
+  );
   const [tableWidth, setTableWidth] = useState(0);
   const leftScrollRef = useRef<ScrollView>(null);
   const rightScrollRef = useRef<ScrollView>(null);
@@ -761,7 +762,11 @@ export default function DataGridScreen() {
 
   async function copyValue(value: string, label: string) {
     const copied = await tryCopyToClipboard(value);
-    setFeedback(copied ? `${label} copied to clipboard.` : `Clipboard API not available for ${label}.`);
+    setFeedback(
+      copied
+        ? `${label} copied and mirrored into the preview buffer.`
+        : `${label} stored in the preview buffer because the clipboard API is unavailable.`,
+    );
   }
 
   async function exportCsv() {
@@ -786,7 +791,9 @@ export default function DataGridScreen() {
         title: 'showcase-grid.csv',
         message: csv,
       });
-      setFeedback('CSV export prepared from the filtered dataset.');
+      setFeedback(
+        'CSV preview payload prepared and handed to the native share sheet.',
+      );
     } catch {
       setFeedback('CSV preview generated locally.');
     }
@@ -821,9 +828,11 @@ export default function DataGridScreen() {
       await Share.share({
         title: 'showcase-grid.pdf',
         url: pdfUri,
-        message: 'DataGrid PDF export ready',
+        message: 'DataGrid PDF preview ready',
       });
-      setFeedback('PDF export payload generated from the current view.');
+      setFeedback(
+        'PDF preview payload prepared and handed to the native share sheet.',
+      );
     } catch {
       setFeedback('PDF preview generated locally.');
     }
@@ -911,7 +920,18 @@ export default function DataGridScreen() {
           onLongPress={() => openContextMenu(row, 'owner')}
           onPress={() => startEditing(row, 'owner')}
           style={[styles.ownerCell, {width: columnWidths.owner}]}>
-          <Image source={{uri: row.avatarUri}} style={styles.avatar} />
+          <View
+            style={[
+              styles.avatar,
+              {
+                backgroundColor: row.avatarBackground,
+                borderColor: row.avatarTone,
+              },
+            ]}>
+            <Text style={[styles.avatarLabel, {color: row.avatarTone}]}>
+              {row.avatarLabel}
+            </Text>
+          </View>
           <View style={styles.ownerCopy}>
             {isEditing ? (
               <TextInput
@@ -1180,7 +1200,7 @@ export default function DataGridScreen() {
         <Text style={styles.title}>DataGrid Control Center</Text>
         <Text style={styles.subtitle}>
           Fixed headers, frozen columns, inline editing, drag resizing, drag-and-drop order,
-          context actions, export previews and a 10k-row virtualized feed.
+          context actions, share previews and a 10k-row virtualized feed.
         </Text>
 
         <View style={styles.metricsRow}>
@@ -1523,10 +1543,10 @@ export default function DataGridScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.cardTitle}>Context Menu & Export</Text>
+        <Text style={styles.cardTitle}>Context Menu & Share Preview</Text>
         <Text style={styles.cardSubtitle}>
-          Long-press cells to open contextual actions, then export the filtered view to CSV or PDF,
-          or copy the current preview.
+          Long-press cells to open contextual actions, then prepare CSV or PDF share previews,
+          or copy the current preview payload.
         </Text>
 
         <View style={styles.contextGrid}>
@@ -1572,17 +1592,17 @@ export default function DataGridScreen() {
           </View>
 
           <View style={styles.contextCard}>
-            <Text style={styles.contextTitle}>Export preview</Text>
-            <Text style={styles.contextValue}>{exportPreview?.title ?? 'No export prepared yet'}</Text>
+            <Text style={styles.contextTitle}>Share preview</Text>
+            <Text style={styles.contextValue}>{exportPreview?.title ?? 'No preview prepared yet'}</Text>
             <Text style={styles.contextBody} numberOfLines={8}>
-              {exportPreview?.content ?? 'Generate CSV or PDF to preview the payload here.'}
+              {exportPreview?.content ?? 'Generate CSV or PDF to inspect the payload that will be shared.'}
             </Text>
             <View style={styles.contextActions}>
               <Pressable onPress={exportCsv} style={styles.toolbarButton}>
-                <Text style={styles.toolbarButtonText}>Export CSV</Text>
+                <Text style={styles.toolbarButtonText}>Share CSV preview</Text>
               </Pressable>
               <Pressable onPress={exportPdf} style={styles.toolbarButton}>
-                <Text style={styles.toolbarButtonText}>Export PDF</Text>
+                <Text style={styles.toolbarButtonText}>Share PDF preview</Text>
               </Pressable>
               <Pressable
                 disabled={!exportPreview}
@@ -1592,7 +1612,7 @@ export default function DataGridScreen() {
                   }
                 }}
                 style={[styles.toolbarButton, !exportPreview && styles.disabledButton]}>
-                <Text style={styles.toolbarButtonText}>Copy preview</Text>
+                <Text style={styles.toolbarButtonText}>Copy preview buffer</Text>
               </Pressable>
             </View>
           </View>
@@ -1945,7 +1965,14 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surfaceElevated,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarLabel: {
+    ...Typography.caption,
+    fontWeight: '800',
+    letterSpacing: 0.4,
   },
   ownerCopy: {
     flex: 1,

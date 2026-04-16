@@ -1,10 +1,14 @@
+import {Colors} from '../../theme';
+
 export type RowStatus = 'Active' | 'Pending' | 'Blocked' | 'Review';
 
 export type GridRow = {
   id: number;
   owner: string;
   email: string;
-  avatarUri: string;
+  avatarLabel: string;
+  avatarTone: string;
+  avatarBackground: string;
   team: string;
   city: string;
   score: number;
@@ -40,9 +44,24 @@ export const CITY_OPTIONS = [
   'Toronto',
 ];
 export const REGION_OPTIONS = ['LATAM', 'EMEA', 'NA', 'APAC'];
+const AVATAR_PALETTE = [
+  {tone: Colors.primary, background: `${Colors.primary}20`},
+  {tone: Colors.secondary, background: `${Colors.secondary}20`},
+  {tone: Colors.accent, background: `${Colors.accent}20`},
+  {tone: Colors.success, background: `${Colors.success}20`},
+  {tone: Colors.warning, background: `${Colors.warning}20`},
+];
 
 function slugify(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}
+
+function toAvatarLabel(value: string) {
+  return value
+    .split(' ')
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() ?? '')
+    .join('');
 }
 
 export function buildRows(count: number) {
@@ -64,12 +83,15 @@ export function buildRows(count: number) {
     const progress = 18 + ((index * 13) % 82);
     const score = 54 + ((index * 7) % 46);
     const slug = slugify(owner);
+    const avatar = AVATAR_PALETTE[index % AVATAR_PALETTE.length];
 
     return {
       id,
       owner,
       email: `${slug}@${team.toLowerCase()}.showcase.dev`,
-      avatarUri: `https://i.pravatar.cc/80?u=showcase-${id}`,
+      avatarLabel: toAvatarLabel(owner),
+      avatarTone: avatar.tone,
+      avatarBackground: avatar.background,
       team,
       city,
       score,
