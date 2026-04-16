@@ -520,7 +520,7 @@ function getPlainCellValue(row: GridRow, column: ColumnId) {
 
 export default function DataGridScreen() {
   const initialRows = useMemo(() => buildRows(160), []);
-  const virtualRows = useMemo(() => buildVirtualRows(10000), []);
+  const virtualRows = useMemo<VirtualRow[]>(() => buildVirtualRows(10000), []);
   const [rows, setRows] = useState(initialRows);
   const [filters, setFilters] = useState<Filters>({
     global: '',

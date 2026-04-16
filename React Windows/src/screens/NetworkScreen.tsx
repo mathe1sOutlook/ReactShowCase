@@ -174,7 +174,6 @@ function CodePanel({label, value}: {label: string; value: string}) {
 export default function NetworkScreen() {
   const {width} = useWindowDimensions();
   const cardWidth = width >= 1080 ? (width - Spacing.lg * 2 - Spacing.md) / 2 : width - Spacing.lg * 2;
-  const fullWidth = width - Spacing.lg * 2;
   const [method, setMethod] = useState<RestMethod>('GET');
   const [restPresetId, setRestPresetId] = useState('projects');
   const [requestBody, setRequestBody] = useState('{"includeMetrics": true, "limit": 3}');

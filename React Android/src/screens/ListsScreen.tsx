@@ -7,7 +7,6 @@ import {
   NativeSyntheticEvent,
   Pressable,
   RefreshControl,
-  ScrollView,
   SectionList,
   StatusBar,
   StyleSheet,

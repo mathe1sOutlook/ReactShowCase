@@ -13,5 +13,5 @@
       "@utils": ["src/utils"]
     }
   },
-  "exclude": ["App.original.tsx", "node_modules"]
+  "exclude": ["node_modules", "App.original.tsx", "**/*.original.tsx"]
 }

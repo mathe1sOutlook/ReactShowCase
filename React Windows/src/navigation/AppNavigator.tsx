@@ -1,5 +1,8 @@
 import React, {useState} from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  createBottomTabNavigator,
+  type BottomTabBarProps,
+} from '@react-navigation/bottom-tabs';
 import {
   StyleSheet,
   Text,
@@ -36,11 +39,7 @@ function SideNavigationRail({
   state,
   descriptors,
   navigation,
-}: {
-  state: any;
-  descriptors: any;
-  navigation: any;
-}) {
+}: BottomTabBarProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
@@ -126,12 +125,16 @@ function SideNavigationRail({
   );
 }
 
+function renderSideNavigationRail(props: BottomTabBarProps) {
+  return <SideNavigationRail {...props} />;
+}
+
 export default function AppNavigator() {
   return (
     <View style={styles.appContainer}>
       <Tab.Navigator
         detachInactiveScreens
-        tabBar={props => <SideNavigationRail {...props} />}
+        tabBar={renderSideNavigationRail}
         screenOptions={{
           headerShown: false,
           freezeOnBlur: true,

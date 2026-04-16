@@ -6,12 +6,15 @@
  */
 
 import React, {useState} from 'react';
-import {Platform, UIManager} from 'react-native';
+import {Platform, StyleSheet, UIManager} from 'react-native';
 import {NavigationContainer, type LinkingOptions} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {enableFreeze} from 'react-native-screens';
 import AppNavigator from './src/navigation/AppNavigator';
+import {
+  showcaseLinkingScreens,
+} from './src/navigation/showcaseRegistry';
 import SplashScreen from './src/screens/SplashScreen';
 import type {RootTabParamList} from './src/navigation/types';
 import PerformanceOverlay from './src/quality/PerformanceOverlay';
@@ -36,31 +39,7 @@ const linking: LinkingOptions<RootTabParamList> = {
       HomeTab: {
         screens: {
           Home: '',
-          Layouts: 'layouts',
-          Lists: 'lists',
-          Navigation: 'navigation',
-          Animations: 'animations',
-          Canvas: 'canvas',
-          ThreeD: '3d',
-          Charts: 'charts',
-          Svg: 'svg',
-          DataGrid: 'datagrid',
-          Media: 'media',
-          Audio: 'audio',
-          Video: 'video',
-          Files: 'files',
-          Platform: 'platform',
-          Web: 'web',
-          Network: 'network',
-          Storage: 'storage',
-          Maps: 'maps',
-          Auth: 'auth',
-          Themes: 'themes',
-          Codes: 'codes',
-          Utilities: 'utilities',
-          Particles: 'particles',
-          Colors: 'colors',
-          Reanimated: 'reanimated',
+          ...showcaseLinkingScreens,
         },
       },
       ComponentsTab: 'components',
@@ -77,7 +56,7 @@ export default function App(): React.JSX.Element {
   }
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
+    <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <NavigationContainer linking={linking}>
           <AppNavigator />
@@ -87,3 +66,9 @@ export default function App(): React.JSX.Element {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});

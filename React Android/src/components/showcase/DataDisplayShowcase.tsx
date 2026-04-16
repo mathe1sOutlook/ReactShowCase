@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Colors, Radius, Spacing, Typography, neonShadow} from '../../theme';
+import {Colors, Radius, Spacing, Typography} from '../../theme';
 
 // ─── DemoCard wrapper (same pattern as other showcases) ─────────────────────
 

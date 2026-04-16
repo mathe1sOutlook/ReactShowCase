@@ -12,8 +12,9 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {Colors, Neon, Spacing} from '../theme';
+import {Colors, Spacing} from '../theme';
 import type {HomeStackParamList, ScreenCategory} from '../navigation/types';
+import {showcaseRegistry} from '../navigation/showcaseRegistry';
 import {getHomeGridMetrics} from '../utils/layout';
 import IconSymbol, {type IconName} from '../components/common/IconSymbol';
 import StateBlock from '../components/common/StateBlock';
@@ -22,267 +23,25 @@ const CARD_MARGIN = Spacing.md;
 
 type Nav = NativeStackNavigationProp<HomeStackParamList>;
 
-const CATEGORIES: ScreenCategory[] = [
-  {
-    key: 'Layouts',
-    title: 'Layouts',
-    subtitle: 'Flexbox, responsive grid, masonry & safe area',
-    icon: '\u25A6',
-    color: Colors.success,
-    demoCount: 6,
-    isNew: true,
-  },
-  {
-    key: 'Lists',
-    title: 'Lists & Scroll',
-    subtitle: 'FlatList, sticky sections, snap, parallax & refresh',
-    icon: '\u2630',
-    color: Colors.primary,
-    demoCount: 10,
-    isNew: true,
-  },
-  {
-    key: 'Navigation',
-    title: 'Navigation',
-    subtitle: 'Swipe tabs, drawer, sheet routes & dots',
-    icon: '\u21F2',
-    color: Colors.accent,
-    demoCount: 6,
-    isNew: true,
-  },
-  {
-    key: 'Animations',
-    title: 'Animations',
-    subtitle: 'Spring, bounce, fade, shimmer & interactive',
-    icon: '\u2728',
-    color: Colors.secondary,
-    demoCount: 15,
-  },
-  {
-    key: 'Canvas',
-    title: 'Canvas 2D',
-    subtitle: 'Drawing, text, shapes, export & snap grid',
-    icon: '\u{1F3A8}',
-    color: Colors.orange,
-    demoCount: 10,
-  },
-  {
-    key: 'ThreeD',
-    title: '3D Transforms',
-    subtitle: 'OBJ parser, sphere shading, lighting & shader surface',
-    icon: '\u{1F4A0}',
-    color: Colors.accent,
-    demoCount: 7,
-  },
-  {
-    key: 'Charts',
-    title: 'Charts & Data',
-    subtitle: 'Realtime analytics, treemap, funnel, radar & finance views',
-    icon: '\u{1F4CA}',
-    color: Colors.warning,
-    demoCount: 17,
-  },
-  {
-    key: 'Svg',
-    title: 'SVG & Vector',
-    subtitle: 'Morphing, path draw, animated icons & pure SVG charts',
-    icon: '\u25C8',
-    color: Colors.primary,
-    demoCount: 6,
-    isNew: true,
-  },
-  {
-    key: 'DataGrid',
-    title: 'DataGrid',
-    subtitle: 'Frozen columns, filters, edit, export & 10k-row virtualization',
-    icon: '\u25A4',
-    color: Colors.success,
-    demoCount: 26,
-    isNew: true,
-  },
-  {
-    key: 'Media',
-    title: 'Camera & Photos',
-    subtitle: 'Live preview, capture, gallery, zoom, crop and filters',
-    icon: '\u{1F4F7}',
-    color: Colors.orange,
-    demoCount: 10,
-    isNew: true,
-  },
-  {
-    key: 'Audio',
-    title: 'Audio',
-    subtitle: 'Record, visualize waveform, play, seek and manage clips',
-    icon: '\u{1F3A4}',
-    color: Colors.secondary,
-    demoCount: 6,
-    isNew: true,
-  },
-  {
-    key: 'Video',
-    title: 'Video',
-    subtitle: 'Player controls, seek, fullscreen, PiP and generated thumbnails',
-    icon: '\u{1F3AC}',
-    color: Colors.primary,
-    demoCount: 5,
-    isNew: true,
-  },
-  {
-    key: 'Files',
-    title: 'Files & Documents',
-    subtitle: 'Picker, PDF reader, search, cache, share and image previews',
-    icon: '\u{1F4C1}',
-    color: Colors.warning,
-    demoCount: 10,
-    isNew: true,
-  },
-  {
-    key: 'Platform',
-    title: 'Device & System',
-    subtitle: 'Sensors, Material You, shortcuts, PiP, channels and runtime APIs',
-    icon: '\u{1F4F1}',
-    color: Colors.warning,
-    demoCount: 38,
-    isNew: true,
-  },
-  {
-    key: 'Web',
-    title: 'WebView & Browser',
-    subtitle: 'Custom URLs, bridge messaging, JS injection and special link handling',
-    icon: '\u{1F310}',
-    color: Colors.primary,
-    demoCount: 7,
-    isNew: true,
-  },
-  {
-    key: 'Network',
-    title: 'Networking & APIs',
-    subtitle: 'REST, GraphQL, WebSocket, cache, retries and transfer progress',
-    icon: '\u{1F4E1}',
-    color: Colors.success,
-    demoCount: 10,
-    isNew: true,
-  },
-  {
-    key: 'Storage',
-    title: 'Local Storage',
-    subtitle: 'AsyncStorage, SQLite-style data, MMKV-style hot store, vault and cache',
-    icon: '\u{1F5C3}\uFE0F',
-    color: Colors.accent,
-    demoCount: 5,
-    isNew: true,
-  },
-  {
-    key: 'Maps',
-    title: 'Maps & Geospatial',
-    subtitle: 'Interactive map, route, geofence, geocoding, clustering and styles',
-    icon: '\u{1F5FA}\uFE0F',
-    color: Colors.success,
-    demoCount: 8,
-    isNew: true,
-  },
-  {
-    key: 'Auth',
-    title: 'Auth Demo',
-    subtitle: 'Login, signup, biometrics, PIN lock, social providers and 2FA',
-    icon: '\u{1F512}',
-    color: Colors.secondary,
-    demoCount: 7,
-    isNew: true,
-  },
-  {
-    key: 'Themes',
-    title: 'Themes & Appearance',
-    subtitle: 'Dark, light, system sync, custom palettes, font scale and contrast',
-    icon: '\u25D0',
-    color: Colors.primary,
-    demoCount: 8,
-    isNew: true,
-  },
-  {
-    key: 'Codes',
-    title: 'QR & Barcode',
-    subtitle: 'Camera-style scanning, QR generation, barcode formats and history',
-    icon: '\u29C9',
-    color: Colors.warning,
-    demoCount: 5,
-    isNew: true,
-  },
-  {
-    key: 'Utilities',
-    title: 'Advanced Utilities',
-    subtitle: 'Calendar, drag-and-drop, markdown, timers, flows and dashboard demos',
-    icon: '\u2699',
-    color: Colors.success,
-    demoCount: 20,
-    isNew: true,
-  },
-  {
-    key: 'Particles',
-    title: 'Particles',
-    subtitle: 'Floating neon particle system',
-    icon: '\u{1F30C}',
-    color: Colors.orange,
-    demoCount: 1,
-    isNew: true,
-  },
-  {
-    key: 'Colors',
-    title: 'Color Picker',
-    subtitle: 'HSL palette with 120+ swatches',
-    icon: '\u{1F308}',
-    color: Colors.pink,
-    demoCount: 1,
-    isNew: true,
-  },
-  {
-    key: 'Reanimated',
-    title: 'Reanimated',
-    subtitle: 'Worklets, shared values & UI thread animations',
-    icon: '\u26A1',
-    color: Colors.warning,
-    demoCount: 7,
-    isNew: true,
-  },
-];
-
-function getScreenIconName(key: ScreenCategory['key']) {
-  const icons: Record<ScreenCategory['key'], IconName> = {
-    Layouts: 'layout',
-    Lists: 'list',
-    Navigation: 'navigation',
-    Animations: 'spark',
-    Canvas: 'canvas',
-    ThreeD: 'cube',
-    Charts: 'chart',
-    Svg: 'vector',
-    DataGrid: 'table',
-    Media: 'camera',
-    Audio: 'audio',
-    Video: 'video',
-    Files: 'file',
-    Platform: 'device',
-    Web: 'browser',
-    Network: 'network',
-    Storage: 'storage',
-    Maps: 'map',
-    Auth: 'lock',
-    Themes: 'theme',
-    Codes: 'code',
-    Utilities: 'tools',
-    Particles: 'particles',
-    Colors: 'palette',
-    Reanimated: 'bolt',
-    Home: 'home',
-  };
-
-  return icons[key];
-}
-
-function NewBadge() {
+function StatusBadge({
+  label,
+  tone,
+  containerStyle,
+  pulse = false,
+}: {
+  label: string;
+  tone: string;
+  containerStyle: object;
+  pulse?: boolean;
+}) {
   const pulseAnim = useRef(new Animated.Value(0.7)).current;
 
   useEffect(() => {
+    if (!pulse) {
+      pulseAnim.setValue(1);
+      return;
+    }
+
     const pulseLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
@@ -305,11 +64,16 @@ function NewBadge() {
     return () => {
       pulseLoop.stop();
     };
-  }, [pulseAnim]);
+  }, [pulse, pulseAnim]);
 
   return (
-    <Animated.View style={[styles.newBadge, {opacity: pulseAnim}]}>
-      <Text style={styles.newBadgeText}>NEW</Text>
+    <Animated.View
+      style={[
+        styles.statusBadge,
+        containerStyle,
+        {backgroundColor: `${tone}33`, opacity: pulseAnim},
+      ]}>
+      <Text style={[styles.statusBadgeText, {color: tone}]}>{label}</Text>
     </Animated.View>
   );
 }
@@ -373,21 +137,38 @@ function CategoryCard({
       ]}>
       <Pressable
         style={styles.card}
-        onPress={() => navigation.navigate(item.key as never)}
+        onPress={() => navigation.navigate(item.routeKey)}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         accessibilityRole="button"
-        accessibilityLabel={`${item.title}, ${item.demoCount} demos`}
+        accessibilityLabel={`${item.title}, ${item.demoCount} demos, ${item.status}`}
         accessibilityHint={`Open the ${item.title} showcase`}>
         <View style={[styles.cardAccent, {backgroundColor: item.color}]} />
         <View style={[styles.cardGlow, {backgroundColor: item.color}]} />
-        {item.isNew && <NewBadge />}
-        <View style={[styles.cardIcon, {borderColor: `${item.color}28`, backgroundColor: `${item.color}14`}]}>
-          <IconSymbol
-            name={getScreenIconName(item.key)}
-            size={22}
-            color={item.color}
+        {'isNew' in item && item.isNew ? (
+          <StatusBadge
+            label="NEW"
+            tone={Colors.success}
+            containerStyle={styles.newBadge}
+            pulse
           />
+        ) : null}
+        {item.status === 'lab' ? (
+          <StatusBadge
+            label="LAB"
+            tone={Colors.warning}
+            containerStyle={styles.labBadge}
+          />
+        ) : null}
+        <View
+          style={[
+            styles.cardIcon,
+            {
+              borderColor: `${item.color}28`,
+              backgroundColor: `${item.color}14`,
+            },
+          ]}>
+          <IconSymbol name={item.icon as IconName} size={22} color={item.color} />
         </View>
         <Text style={[styles.cardTitle, {color: item.color}]}>{item.title}</Text>
         <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
@@ -514,7 +295,7 @@ export default function HomeScreen() {
   const {width} = useWindowDimensions();
   const {cardWidth} = getHomeGridMetrics(width);
 
-  const filteredCategories = CATEGORIES.filter(cat => {
+  const filteredCategories = showcaseRegistry.filter(cat => {
     if (!searchText.trim()) {
       return true;
     }
@@ -524,6 +305,10 @@ export default function HomeScreen() {
       cat.subtitle.toLowerCase().includes(query)
     );
   });
+  const readyCategories = filteredCategories.filter(
+    cat => cat.status === 'ready',
+  );
+  const labCategories = filteredCategories.filter(cat => cat.status === 'lab');
 
   return (
     <View style={styles.root}>
@@ -535,36 +320,62 @@ export default function HomeScreen() {
         keyboardShouldPersistTaps="handled">
         <HeroHeader />
         <SearchBar value={searchText} onChangeText={setSearchText} />
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle} accessibilityRole="header">
-            EXPLORE DEMOS
-          </Text>
-          <Text style={styles.sectionSubtitle}>
-            Tap any category to see it in action
-          </Text>
-        </View>
-        <View style={styles.grid}>
-          {filteredCategories.length > 0 ? (
-            filteredCategories.map((cat, i) => (
-              <CategoryCard
-                key={cat.key}
-                item={cat}
-                index={i}
-                cardWidth={cardWidth}
-              />
-            ))
-          ) : (
+        {filteredCategories.length > 0 ? (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle} accessibilityRole="header">
+                EXPLORE DEMOS
+              </Text>
+              <Text style={styles.sectionSubtitle}>
+                Ready-to-demo Android features curated for the main walkthrough
+              </Text>
+            </View>
+            <View style={styles.grid}>
+              {readyCategories.map((cat, i) => (
+                <CategoryCard
+                  key={cat.routeKey}
+                  item={cat}
+                  index={i}
+                  cardWidth={cardWidth}
+                />
+              ))}
+            </View>
+            {labCategories.length > 0 ? (
+              <>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle} accessibilityRole="header">
+                    LAB PREVIEWS
+                  </Text>
+                  <Text style={styles.sectionSubtitle}>
+                    Broader experiments kept visible with explicit lab labeling
+                  </Text>
+                </View>
+                <View style={styles.grid}>
+                  {labCategories.map((cat, i) => (
+                    <CategoryCard
+                      key={cat.routeKey}
+                      item={cat}
+                      index={readyCategories.length + i}
+                      cardWidth={cardWidth}
+                    />
+                  ))}
+                </View>
+              </>
+            ) : null}
+          </>
+        ) : (
+          <View style={styles.grid}>
             <StateBlock
               variant="empty"
               title="No demos match this search"
-              description="Try a broader term or clear the search field to see the full showcase grid."
+              description="Try a broader term or clear the search field to see the curated Android showcase."
               actionLabel="Clear search"
               onAction={() => setSearchText('')}
               style={styles.emptySearch}
               iconName="search"
             />
-          )}
-        </View>
+          </View>
+        )}
         <View style={styles.footer}>
           <View style={styles.footerLine} />
           <Text style={styles.footerText}>
@@ -779,21 +590,26 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
 
-  // NEW Badge
-  newBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: Colors.success + '33',
+  // Status badges
+  statusBadge: {
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
     zIndex: 3,
   },
-  newBadgeText: {
-    color: Colors.success,
+  statusBadgeText: {
     fontSize: 8,
     fontWeight: '700',
+  },
+  newBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+  },
+  labBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 12,
   },
 
   // Footer

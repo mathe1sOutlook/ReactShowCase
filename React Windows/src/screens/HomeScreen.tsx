@@ -13,273 +13,29 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {Colors, Spacing, Radius} from '../theme';
-import type {HomeStackParamList, ScreenCategory} from '../navigation/types';
+import {Colors, Radius, Spacing} from '../theme';
+import type {HomeStackParamList} from '../navigation/types';
+import {
+  showcaseRegistry,
+  type ShowcaseScreenMeta,
+} from '../navigation/showcaseRegistry';
 import {getHomeGridMetrics} from '../utils/layout';
-import IconSymbol, {type IconName} from '../components/common/IconSymbol';
+import IconSymbol from '../components/common/IconSymbol';
 import StateBlock from '../components/common/StateBlock';
 
 const CARD_MARGIN = Spacing.md;
 
 type Nav = NativeStackNavigationProp<HomeStackParamList>;
 
-const CATEGORIES: ScreenCategory[] = [
-  {
-    key: 'Layouts',
-    title: 'Layouts',
-    subtitle: 'Flexbox, breakpoints, masonry & safe area',
-    icon: '\u25A6',
-    color: Colors.primary,
-    demoCount: 6,
-    isNew: true,
-  },
-  {
-    key: 'Lists',
-    title: 'Lists & Scroll',
-    subtitle: 'FlatList, sticky sections, snap, parallax & refresh',
-    icon: '\u2630',
-    color: Colors.secondary,
-    demoCount: 10,
-    isNew: true,
-  },
-  {
-    key: 'Navigation',
-    title: 'Navigation',
-    subtitle: 'Swipe tabs, drawer, sheet routes & dots',
-    icon: '\u21F2',
-    color: Colors.success,
-    demoCount: 6,
-    isNew: true,
-  },
-  {
-    key: 'Animations',
-    title: 'Animations',
-    subtitle: 'Spring, shimmer, pulse & interactive controls',
-    icon: '\u2728',
-    color: Colors.primary,
-    demoCount: 15,
-  },
-  {
-    key: 'Canvas',
-    title: 'Canvas 2D',
-    subtitle: 'Drawing, text, shapes, export & snap grid',
-    icon: '\u{1F3A8}',
-    color: '#e74c3c',
-    demoCount: 10,
-  },
-  {
-    key: 'ThreeD',
-    title: '3D Transforms',
-    subtitle: 'OBJ parser, sphere shading, lighting & shader surface',
-    icon: '\u{1F4A0}',
-    color: Colors.accent,
-    demoCount: 7,
-  },
-  {
-    key: 'Charts',
-    title: 'Charts & Data',
-    subtitle: 'Realtime analytics, treemap, funnel, radar & finance views',
-    icon: '\u{1F4CA}',
-    color: Colors.success,
-    demoCount: 17,
-  },
-  {
-    key: 'Svg',
-    title: 'SVG & Vector',
-    subtitle: 'Morphing, path draw, animated icons & pure SVG charts',
-    icon: '\u25C8',
-    color: Colors.primary,
-    demoCount: 6,
-    isNew: true,
-  },
-  {
-    key: 'DataGrid',
-    title: 'DataGrid',
-    subtitle: 'Frozen columns, filters, edit, export & 10k-row virtualization',
-    icon: '\u25A4',
-    color: Colors.success,
-    demoCount: 26,
-    isNew: true,
-  },
-  {
-    key: 'Media',
-    title: 'Camera & Photos',
-    subtitle: 'Live preview, capture, gallery, zoom, crop and filters',
-    icon: '\u{1F4F7}',
-    color: Colors.warning,
-    demoCount: 10,
-    isNew: true,
-  },
-  {
-    key: 'Audio',
-    title: 'Audio',
-    subtitle: 'Record, visualize waveform, play, seek and manage clips',
-    icon: '\u{1F3A4}',
-    color: Colors.secondary,
-    demoCount: 6,
-    isNew: true,
-  },
-  {
-    key: 'Video',
-    title: 'Video',
-    subtitle: 'Player controls, seek, fullscreen, PiP and generated thumbnails',
-    icon: '\u{1F3AC}',
-    color: Colors.primary,
-    demoCount: 5,
-    isNew: true,
-  },
-  {
-    key: 'Files',
-    title: 'Files & Documents',
-    subtitle: 'Picker, PDF reader, search, cache, share and image previews',
-    icon: '\u{1F4C1}',
-    color: Colors.warning,
-    demoCount: 10,
-    isNew: true,
-  },
-  {
-    key: 'Platform',
-    title: 'Device & System',
-    subtitle: 'Sensors, Fluent shell, tray, taskbar, file system and desktop actions',
-    icon: '\u{1F5A5}\uFE0F',
-    color: '#9b59b6',
-    demoCount: 41,
-    isNew: true,
-  },
-  {
-    key: 'Web',
-    title: 'WebView & Browser',
-    subtitle: 'Custom URLs, bridge messaging, JS injection and special link handling',
-    icon: '\u{1F310}',
-    color: Colors.primary,
-    demoCount: 7,
-    isNew: true,
-  },
-  {
-    key: 'Network',
-    title: 'Networking & APIs',
-    subtitle: 'REST, GraphQL, WebSocket, cache, retries and transfer progress',
-    icon: '\u{1F4E1}',
-    color: Colors.success,
-    demoCount: 10,
-    isNew: true,
-  },
-  {
-    key: 'Storage',
-    title: 'Local Storage',
-    subtitle: 'AsyncStorage, SQLite-style data, MMKV-style hot store, vault and cache',
-    icon: '\u{1F5C3}\uFE0F',
-    color: Colors.accent,
-    demoCount: 5,
-    isNew: true,
-  },
-  {
-    key: 'Maps',
-    title: 'Maps & Geospatial',
-    subtitle: 'Interactive map, route, geofence, geocoding, clustering and styles',
-    icon: '\u{1F5FA}\uFE0F',
-    color: Colors.success,
-    demoCount: 8,
-    isNew: true,
-  },
-  {
-    key: 'Auth',
-    title: 'Auth Demo',
-    subtitle: 'Login, signup, biometrics, PIN lock, social providers and 2FA',
-    icon: '\u{1F512}',
-    color: Colors.primary,
-    demoCount: 7,
-    isNew: true,
-  },
-  {
-    key: 'Themes',
-    title: 'Themes & Appearance',
-    subtitle: 'Dark, light, system sync, custom palettes, font scale and contrast',
-    icon: '\u25D0',
-    color: Colors.secondary,
-    demoCount: 8,
-    isNew: true,
-  },
-  {
-    key: 'Codes',
-    title: 'QR & Barcode',
-    subtitle: 'Camera-style scanning, QR generation, barcode formats and history',
-    icon: '\u29C9',
-    color: Colors.warning,
-    demoCount: 5,
-    isNew: true,
-  },
-  {
-    key: 'Utilities',
-    title: 'Advanced Utilities',
-    subtitle: 'Calendar, drag-and-drop, markdown, timers, flows and dashboard demos',
-    icon: '\u2699',
-    color: Colors.success,
-    demoCount: 20,
-    isNew: true,
-  },
-  {
-    key: 'Widgets',
-    title: 'Desktop Widgets',
-    subtitle: 'Weather, stocks & calendar widgets',
-    icon: '\u{1F4CB}',
-    color: Colors.warning,
-    demoCount: 3,
-    isNew: true,
-  },
-  {
-    key: 'WindowControls',
-    title: 'Window & Grid',
-    subtitle: 'Title bar, controls & responsive grid',
-    icon: '\u2B1C',
-    color: Colors.primaryDark,
-    demoCount: 3,
-  },
-  {
-    key: 'Reanimated',
-    title: 'Reanimated',
-    subtitle: 'Worklets, shared values & UI thread animations',
-    icon: '\u26A1',
-    color: Colors.warning,
-    demoCount: 7,
-    isNew: true,
-  },
-];
-
-function getScreenIconName(key: ScreenCategory['key']) {
-  const icons: Record<ScreenCategory['key'], IconName> = {
-    Layouts: 'layout',
-    Lists: 'list',
-    Navigation: 'navigation',
-    Animations: 'spark',
-    Canvas: 'canvas',
-    ThreeD: 'cube',
-    Charts: 'chart',
-    Svg: 'vector',
-    DataGrid: 'table',
-    Media: 'camera',
-    Audio: 'audio',
-    Video: 'video',
-    Files: 'file',
-    Platform: 'device',
-    Web: 'browser',
-    Network: 'network',
-    Storage: 'storage',
-    Maps: 'map',
-    Auth: 'lock',
-    Themes: 'theme',
-    Codes: 'code',
-    Utilities: 'tools',
-    Widgets: 'widgets',
-    WindowControls: 'window',
-    Reanimated: 'bolt',
-    Home: 'home',
-  };
-
-  return icons[key];
-}
-
-function NewBadge() {
+function CardBadge({
+  label,
+  backgroundColor,
+  textColor,
+}: {
+  label: string;
+  backgroundColor: string;
+  textColor: string;
+}) {
   const pulseAnim = useRef(new Animated.Value(0.7)).current;
 
   useEffect(() => {
@@ -308,8 +64,8 @@ function NewBadge() {
   }, [pulseAnim]);
 
   return (
-    <Animated.View style={[styles.newBadge, {opacity: pulseAnim}]}>
-      <Text style={styles.newBadgeText}>NEW</Text>
+    <Animated.View style={[styles.badge, {opacity: pulseAnim, backgroundColor}]}>
+      <Text style={[styles.badgeText, {color: textColor}]}>{label}</Text>
     </Animated.View>
   );
 }
@@ -319,7 +75,7 @@ function CategoryCard({
   index,
   cardWidth,
 }: {
-  item: ScreenCategory;
+  item: ShowcaseScreenMeta;
   index: number;
   cardWidth: number;
 }) {
@@ -345,7 +101,7 @@ function CategoryCard({
         useNativeDriver: true,
       }),
     ]).start();
-  }, [fadeAnim, slideAnim, index]);
+  }, [fadeAnim, index, slideAnim]);
 
   const onPressIn = () => {
     Animated.spring(pressAnim, {
@@ -375,20 +131,39 @@ function CategoryCard({
       ]}>
       <Pressable
         style={styles.card}
-        onPress={() => navigation.navigate(item.key as never)}
+        onPress={() => navigation.navigate(item.routeKey)}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         accessibilityRole="button"
         accessibilityLabel={`${item.title}, ${item.demoCount} demos`}
-        accessibilityHint={`Open the ${item.title} showcase`}>
+        accessibilityHint={
+          item.status === 'lab'
+            ? `Open the experimental ${item.title} showcase`
+            : `Open the ${item.title} showcase`
+        }>
         <View style={[styles.cardColorBar, {backgroundColor: item.color}]} />
-        {item.isNew && <NewBadge />}
-        <View style={[styles.cardIcon, {borderColor: `${item.color}24`, backgroundColor: `${item.color}12`}]}>
-          <IconSymbol
-            name={getScreenIconName(item.key)}
-            size={22}
-            color={item.color}
+        {item.status === 'lab' ? (
+          <CardBadge
+            label="LAB"
+            backgroundColor={Colors.warning + '22'}
+            textColor={Colors.warning}
           />
+        ) : 'isNew' in item && item.isNew ? (
+          <CardBadge
+            label="NEW"
+            backgroundColor={Colors.primary + '26'}
+            textColor={Colors.primary}
+          />
+        ) : null}
+        <View
+          style={[
+            styles.cardIcon,
+            {
+              borderColor: `${item.color}24`,
+              backgroundColor: `${item.color}12`,
+            },
+          ]}>
+          <IconSymbol name={item.icon} size={22} color={item.color} />
         </View>
         <Text style={styles.cardTitle}>{item.title}</Text>
         <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
@@ -423,7 +198,11 @@ function HeroHeader() {
     pulseLoop.start();
 
     Animated.parallel([
-      Animated.timing(titleFade, {toValue: 1, duration: 800, useNativeDriver: true}),
+      Animated.timing(titleFade, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
       Animated.timing(titleSlide, {
         toValue: 0,
         duration: 800,
@@ -470,11 +249,13 @@ export default function HomeScreen() {
   const {width} = useWindowDimensions();
   const {cardWidth} = getHomeGridMetrics(width);
 
-  const filteredCategories = CATEGORIES.filter(cat => {
+  const filteredCategories = showcaseRegistry.filter(cat => {
     if (!searchText.trim()) {
       return true;
     }
+
     const query = searchText.toLowerCase();
+
     return (
       cat.title.toLowerCase().includes(query) ||
       cat.subtitle.toLowerCase().includes(query)
@@ -490,7 +271,6 @@ export default function HomeScreen() {
         keyboardShouldPersistTaps="handled">
         <HeroHeader />
 
-        {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
             <View style={styles.searchIcon}>
@@ -524,16 +304,17 @@ export default function HomeScreen() {
             Explore Demos
           </Text>
           <Text style={styles.sectionSubtitle}>
-            Click any category to see it in action
+            Click any category to see it in action. LAB badges mark flows that
+            still need native validation.
           </Text>
         </View>
         <View style={styles.grid}>
           {filteredCategories.length > 0 ? (
-            filteredCategories.map((cat, i) => (
+            filteredCategories.map((cat, index) => (
               <CategoryCard
-                key={cat.key}
+                key={cat.routeKey}
                 item={cat}
-                index={i}
+                index={index}
                 cardWidth={cardWidth}
               />
             ))
@@ -574,8 +355,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 60,
   },
-
-  // Hero
   hero: {
     height: 200,
     justifyContent: 'center',
@@ -642,8 +421,6 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.55)',
     fontWeight: '500',
   },
-
-  // Search Bar
   searchContainer: {
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.lg,
@@ -681,7 +458,6 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
     padding: Spacing.xs,
   },
-  // Section
   sectionHeader: {
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.xl,
@@ -698,8 +474,6 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     marginTop: 4,
   },
-
-  // Grid
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -709,10 +483,7 @@ const styles = StyleSheet.create({
   emptySearch: {
     width: '100%',
   },
-
-  // Card
-  cardOuter: {
-  },
+  cardOuter: {},
   card: {
     backgroundColor: Colors.bgCard,
     borderRadius: Radius.lg,
@@ -777,25 +548,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-
-  // NEW Badge
-  newBadge: {
+  badge: {
     position: 'absolute',
     top: Spacing.sm,
     right: Spacing.sm,
-    backgroundColor: Colors.primary + '26',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
     zIndex: 3,
   },
-  newBadgeText: {
-    color: Colors.primary,
+  badgeText: {
     fontSize: 8,
     fontWeight: '600',
   },
-
-  // Footer
   footer: {
     alignItems: 'center',
     paddingVertical: Spacing.xxl,

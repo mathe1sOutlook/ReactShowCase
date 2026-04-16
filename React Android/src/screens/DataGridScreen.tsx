@@ -15,8 +15,17 @@ import {
 import {FlashList} from '@shopify/flash-list';
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import {Colors, Radius, Spacing, Typography} from '../theme';
+import {
+  CITY_OPTIONS,
+  STATUS_OPTIONS,
+  TEAM_OPTIONS,
+  buildRows,
+  buildVirtualRows,
+  type GridRow,
+  type RowStatus,
+  type VirtualRow,
+} from './dataGrid/model';
 
-type RowStatus = 'Active' | 'Pending' | 'Blocked' | 'Review';
 type GroupById = 'none' | 'team' | 'status' | 'city';
 type ColumnId =
   | 'id'
@@ -30,30 +39,6 @@ type ColumnId =
   | 'website'
   | 'status';
 type CenterColumnId = Exclude<ColumnId, 'id' | 'owner' | 'status'>;
-
-type GridRow = {
-  id: number;
-  owner: string;
-  email: string;
-  avatarUri: string;
-  team: string;
-  city: string;
-  score: number;
-  progress: number;
-  joined: string;
-  revenue: number;
-  website: string;
-  status: RowStatus;
-  region: string;
-  notes: string;
-};
-
-type VirtualRow = {
-  id: number;
-  owner: string;
-  status: RowStatus;
-  score: number;
-};
 
 type SortState = {
   column: ColumnId;
@@ -143,10 +128,6 @@ const GROUP_HEIGHT = 44;
 const DETAIL_HEIGHT = 92;
 const BODY_HEIGHT = 360;
 const PAGE_SIZES = [8, 12, 20];
-const STATUS_OPTIONS: RowStatus[] = ['Active', 'Pending', 'Blocked', 'Review'];
-const TEAM_OPTIONS = ['Atlas', 'Nova', 'Pulse', 'Orbit'];
-const CITY_OPTIONS = ['Sao Paulo', 'Lisbon', 'Austin', 'Berlin', 'Tokyo', 'Toronto'];
-const REGION_OPTIONS = ['LATAM', 'EMEA', 'NA', 'APAC'];
 const CENTER_DEFAULT_ORDER: CenterColumnId[] = [
   'team',
   'city',
@@ -178,10 +159,6 @@ function moveItem<T>(items: T[], from: number, to: number) {
   const [picked] = next.splice(from, 1);
   next.splice(to, 0, picked);
   return next;
-}
-
-function slugify(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
 function formatCurrency(value: number) {
@@ -273,61 +250,6 @@ function buildPdfDocument(lines: string[]) {
   document += `startxref\n${xrefPosition}\n%%EOF`;
 
   return `data:application/pdf;base64,${base64Encode(document)}`;
-}
-
-function buildRows(count: number) {
-  const firstNames = ['Ava', 'Noah', 'Mia', 'Liam', 'Nina', 'Ezra', 'Iris', 'Owen'];
-  const lastNames = ['Stone', 'Parker', 'Reed', 'Lopez', 'Shaw', 'Diaz', 'King', 'Frost'];
-
-  return Array.from({length: count}, (_, index) => {
-    const id = index + 1;
-    const owner = `${firstNames[index % firstNames.length]} ${
-      lastNames[(index * 3) % lastNames.length]
-    }`;
-    const team = TEAM_OPTIONS[index % TEAM_OPTIONS.length];
-    const city = CITY_OPTIONS[index % CITY_OPTIONS.length];
-    const status = STATUS_OPTIONS[index % STATUS_OPTIONS.length];
-    const joinedMonth = `${((index % 9) + 1).toString().padStart(2, '0')}`;
-    const joinedDay = `${((index * 5) % 27) + 1}`.padStart(2, '0');
-    const joined = `2025-${joinedMonth}-${joinedDay}`;
-    const revenue = 24000 + index * 1875 + (index % 5) * 4200;
-    const progress = 18 + ((index * 13) % 82);
-    const score = 54 + ((index * 7) % 46);
-    const slug = slugify(owner);
-
-    return {
-      id,
-      owner,
-      email: `${slug}@${team.toLowerCase()}.showcase.dev`,
-      avatarUri: `https://i.pravatar.cc/80?u=showcase-${id}`,
-      team,
-      city,
-      score,
-      progress,
-      joined,
-      revenue,
-      website: `https://showcase.dev/${slug}`,
-      status,
-      region: REGION_OPTIONS[index % REGION_OPTIONS.length],
-      notes:
-        status === 'Blocked'
-          ? 'Waiting on dependency review before moving the contract to active delivery.'
-          : status === 'Review'
-            ? 'QA and client feedback are in progress with inline edits enabled for handoff.'
-            : status === 'Pending'
-              ? 'Pipeline is staffed and scheduled, pending the final go-live confirmation.'
-              : 'Delivery is on track with healthy engagement and consistent weekly output.',
-    } satisfies GridRow;
-  });
-}
-
-function buildVirtualRows(count: number) {
-  return Array.from({length: count}, (_, index) => ({
-    id: index + 1,
-    owner: `Record ${String(index + 1).padStart(5, '0')}`,
-    status: STATUS_OPTIONS[index % STATUS_OPTIONS.length],
-    score: 48 + ((index * 11) % 52),
-  }));
 }
 
 function compareByColumn(a: GridRow, b: GridRow, column: ColumnId) {
@@ -520,7 +442,7 @@ function getPlainCellValue(row: GridRow, column: ColumnId) {
 
 export default function DataGridScreen() {
   const initialRows = useMemo(() => buildRows(160), []);
-  const virtualRows = useMemo(() => buildVirtualRows(10000), []);
+  const virtualRows = useMemo<VirtualRow[]>(() => buildVirtualRows(10000), []);
   const [rows, setRows] = useState(initialRows);
   const [filters, setFilters] = useState<Filters>({
     global: '',

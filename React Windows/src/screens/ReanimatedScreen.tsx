@@ -5,7 +5,6 @@ import {
   LayoutAnimation,
   PanResponder,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,

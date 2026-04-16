@@ -10,6 +10,7 @@ import {NavigationContainer, type LinkingOptions} from '@react-navigation/native
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {enableFreeze} from 'react-native-screens';
 import AppNavigator from './src/navigation/AppNavigator';
+import {showcaseLinkingScreens} from './src/navigation/showcaseRegistry';
 import type {RootTabParamList} from './src/navigation/types';
 import PerformanceOverlay from './src/quality/PerformanceOverlay';
 
@@ -22,31 +23,7 @@ const linking: LinkingOptions<RootTabParamList> = {
       HomeTab: {
         screens: {
           Home: '',
-          Layouts: 'layouts',
-          Lists: 'lists',
-          Navigation: 'navigation',
-          Animations: 'animations',
-          Canvas: 'canvas',
-          ThreeD: '3d',
-          Charts: 'charts',
-          Svg: 'svg',
-          DataGrid: 'datagrid',
-          Media: 'media',
-          Audio: 'audio',
-          Video: 'video',
-          Files: 'files',
-          Platform: 'platform',
-          Web: 'web',
-          Network: 'network',
-          Storage: 'storage',
-          Maps: 'maps',
-          Auth: 'auth',
-          Themes: 'themes',
-          Codes: 'codes',
-          Utilities: 'utilities',
-          Widgets: 'widgets',
-          WindowControls: 'window-controls',
-          Reanimated: 'reanimated',
+          ...showcaseLinkingScreens,
         },
       },
       ComponentsTab: 'components',

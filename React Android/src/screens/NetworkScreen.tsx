@@ -10,157 +10,23 @@ import {
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import StateBlock from '../components/common/StateBlock';
 import {Colors, Radius, Spacing} from '../theme';
-
-type RestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
-type RestStatus = 'idle' | 'loading' | 'success' | 'error';
-type TransferKind = 'upload' | 'download';
-
-type RestPreset = {
-  id: string;
-  label: string;
-  path: string;
-  tone: string;
-};
-
-type GraphPreset = {
-  id: string;
-  label: string;
-  tone: string;
-  query: string;
-};
-
-type LogItem = {
-  id: string;
-  title: string;
-  detail: string;
-  tone: string;
-};
-
-type ChatMessage = {
-  id: string;
-  author: 'You' | 'Socket';
-  text: string;
-  time: string;
-  tone: string;
-};
-
-type ApiEnvelope = {
-  source: 'network' | 'cache' | 'retry';
-  status: number;
-  method: RestMethod;
-  endpoint: string;
-  latencyMs: number;
-  data: unknown;
-};
-
-const REST_PRESETS: RestPreset[] = [
-  {id: 'projects', label: 'Projects', path: '/v1/projects', tone: Colors.primary},
-  {id: 'deployments', label: 'Deployments', path: '/v1/deployments', tone: Colors.secondary},
-  {id: 'profile', label: 'Profile', path: '/v1/profile', tone: Colors.success},
-  {id: 'unstable', label: 'Unstable', path: '/v1/unstable', tone: Colors.error},
-];
-
-const GRAPH_PRESETS: GraphPreset[] = [
-  {
-    id: 'workspace',
-    label: 'Workspace',
-    tone: Colors.primary,
-    query: `query WorkspaceOverview {\n  workspace {\n    name\n    activeUsers\n    regions\n  }\n}`,
-  },
-  {
-    id: 'release',
-    label: 'Release Status',
-    tone: Colors.secondary,
-    query: `query ReleaseStatus {\n  release(id: "beta-42") {\n    version\n    status\n    blockers\n  }\n}`,
-  },
-  {
-    id: 'billing',
-    label: 'Billing',
-    tone: Colors.warning,
-    query: `query BillingSummary {\n  billing {\n    plan\n    invoicesDue\n    spendThisMonth\n  }\n}`,
-  },
-];
-
-function stamp() {
-  return new Date().toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-}
-
-function wait(ms: number) {
-  return new Promise<void>(resolve => {
-    setTimeout(() => resolve(), ms);
-  });
-}
-
-function makeLog(title: string, detail: string, tone: string): LogItem {
-  return {
-    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    title,
-    detail,
-    tone,
-  };
-}
-
-function parseBody(value: string) {
-  try {
-    return JSON.parse(value);
-  } catch {
-    return {raw: value};
-  }
-}
-
-function formatJson(value: unknown) {
-  return JSON.stringify(value, null, 2);
-}
-
-function buildRestData(
-  preset: RestPreset,
-  method: RestMethod,
-  body: unknown,
-  mode: 'network' | 'retry',
-) {
-  if (preset.id === 'projects') {
-    return {
-      items: [
-        {id: 'p-101', name: 'Showcase Android', status: 'Shipping'},
-        {id: 'p-102', name: 'Windows Desktop', status: 'QA'},
-        {id: 'p-103', name: 'Marketing Site', status: 'Design'},
-      ],
-      filters: {method, mode},
-    };
-  }
-
-  if (preset.id === 'deployments') {
-    return {
-      deployment: {
-        id: `dep-${Date.now().toString().slice(-4)}`,
-        status: method === 'DELETE' ? 'Rolled back' : 'Queued',
-        channel: method === 'POST' ? 'beta' : 'stable',
-      },
-      payload: body,
-    };
-  }
-
-  if (preset.id === 'profile') {
-    return {
-      profile: {
-        owner: 'Mathe',
-        role: method === 'PUT' ? 'Owner' : 'Admin',
-        locale: 'pt-BR',
-      },
-      payload: body,
-    };
-  }
-
-  return {
-    service: 'unstable-edge',
-    note: 'Recovered after exponential backoff.',
-    payload: body,
-  };
-}
+import {
+  GRAPH_PRESETS,
+  REST_PRESETS,
+  buildRestData,
+  formatJson,
+  makeLog,
+  parseBody,
+  stamp,
+  wait,
+  type ApiEnvelope,
+  type ChatMessage,
+  type LogItem,
+  type RestMethod,
+  type RestStatus,
+  type TransferKind,
+} from './network/model';
+import {useTimeoutRegistry} from './network/useTimeoutRegistry';
 
 function CodePanel({label, value}: {label: string; value: string}) {
   return (
@@ -174,7 +40,6 @@ function CodePanel({label, value}: {label: string; value: string}) {
 export default function NetworkScreen() {
   const {width} = useWindowDimensions();
   const cardWidth = width >= 1080 ? (width - Spacing.lg * 2 - Spacing.md) / 2 : width - Spacing.lg * 2;
-  const fullWidth = width - Spacing.lg * 2;
   const [method, setMethod] = useState<RestMethod>('GET');
   const [restPresetId, setRestPresetId] = useState('projects');
   const [requestBody, setRequestBody] = useState('{"includeMetrics": true, "limit": 3}');
@@ -208,20 +73,18 @@ export default function NetworkScreen() {
   const [activityLog, setActivityLog] = useState<LogItem[]>([
     makeLog('Network lab ready', 'REST, GraphQL, WebSocket and transfers are standing by.', Colors.primary),
   ]);
-  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const graphFailureRef = useRef<Record<string, boolean>>({billing: true});
+  const {scheduleTimeout} = useTimeoutRegistry();
   const restPreset = REST_PRESETS.find(item => item.id === restPresetId) ?? REST_PRESETS[0];
   const graphPreset = GRAPH_PRESETS.find(item => item.id === graphPresetId) ?? GRAPH_PRESETS[0];
   const cacheKey = `${method}:${restPreset.path}`;
-
-  useEffect(() => () => timersRef.current.forEach(timer => clearTimeout(timer)), []);
 
   useEffect(() => {
     if (!socketConnected) {
       return;
     }
 
-    const timer = setTimeout(() => {
+    const timer = scheduleTimeout(() => {
       const heartbeat: ChatMessage = {
         id: `hb-${Date.now()}`,
         author: 'Socket',
@@ -236,9 +99,8 @@ export default function NetworkScreen() {
       ].slice(0, 8));
     }, 5200);
 
-    timersRef.current.push(timer);
     return () => clearTimeout(timer);
-  }, [socketConnected, chatMessages.length]);
+  }, [chatMessages.length, scheduleTimeout, socketConnected]);
 
   const pushLog = (title: string, detail: string, tone: string) => {
     setActivityLog(previous => [makeLog(title, detail, tone), ...previous].slice(0, 8));
@@ -349,14 +211,12 @@ export default function NetworkScreen() {
           );
           return 100;
         }
-        const timer = setTimeout(step, 220);
-        timersRef.current.push(timer);
+        scheduleTimeout(step, 220);
         return next;
       });
     };
 
-    const timer = setTimeout(step, 220);
-    timersRef.current.push(timer);
+    scheduleTimeout(step, 220);
   };
 
   const runGraphQuery = async () => {
@@ -434,7 +294,7 @@ export default function NetworkScreen() {
     setChatInput('');
     pushLog('Socket send', outbound.text, Colors.primary);
 
-    const timer = setTimeout(() => {
+    scheduleTimeout(() => {
       const inbound: ChatMessage = {
         id: `socket-${Date.now()}`,
         author: 'Socket',
@@ -444,7 +304,6 @@ export default function NetworkScreen() {
       };
       setChatMessages(previous => [inbound, ...previous].slice(0, 8));
     }, 720);
-    timersRef.current.push(timer);
   };
 
   return (

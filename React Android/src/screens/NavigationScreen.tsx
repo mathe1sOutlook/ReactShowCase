@@ -10,7 +10,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {Colors, Neon, Radius, Spacing, Typography} from '../theme';
+import {Colors, Radius, Spacing, Typography} from '../theme';
 
 const TABS = [
   {
