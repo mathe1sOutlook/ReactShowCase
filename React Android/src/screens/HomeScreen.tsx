@@ -16,6 +16,12 @@ import {Colors, Spacing} from '../theme';
 import type {HomeStackParamList, ScreenCategory} from '../navigation/types';
 import {showcaseRegistry} from '../navigation/showcaseRegistry';
 import {getHomeGridMetrics} from '../utils/layout';
+import {
+  getShowcaseCurationCopy,
+  getShowcaseEmptySearchCopy,
+  getShowcaseHeroSubtitle,
+  getShowcaseOptimizedLabel,
+} from '../utils/platformShowcase';
 import IconSymbol, {type IconName} from '../components/common/IconSymbol';
 import StateBlock from '../components/common/StateBlock';
 
@@ -240,7 +246,7 @@ function HeroHeader() {
           <IconSymbol name="spark" size={30} color={Colors.white} />
         </View>
         <Text style={styles.heroTitle}>React Native</Text>
-        <Text style={styles.heroSubtitle}>Android ShowCase</Text>
+        <Text style={styles.heroSubtitle}>{getShowcaseHeroSubtitle()}</Text>
         <View style={styles.heroDivider} />
         <Text style={styles.heroVersion}>
           RN 0.84 {'\u2022'} Full Feature Demo
@@ -327,7 +333,7 @@ export default function HomeScreen() {
                 EXPLORE DEMOS
               </Text>
               <Text style={styles.sectionSubtitle}>
-                Ready-to-demo Android features curated for the main walkthrough
+                {getShowcaseCurationCopy()}
               </Text>
             </View>
             <View style={styles.grid}>
@@ -368,7 +374,7 @@ export default function HomeScreen() {
             <StateBlock
               variant="empty"
               title="No demos match this search"
-              description="Try a broader term or clear the search field to see the curated Android showcase."
+              description={getShowcaseEmptySearchCopy()}
               actionLabel="Clear search"
               onAction={() => setSearchText('')}
               style={styles.emptySearch}
@@ -382,7 +388,7 @@ export default function HomeScreen() {
             Built with React Native {'\u2022'} Pure Animated API
           </Text>
           <Text style={styles.footerSubText}>
-            Tap a category to explore {'\u2022'} Android Optimized
+            Tap a category to explore {'\u2022'} {getShowcaseOptimizedLabel()}
           </Text>
         </View>
       </Animated.ScrollView>

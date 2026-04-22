@@ -1,5 +1,6 @@
 import type {IconName} from '../components/common/IconSymbol';
 import {Colors} from '../theme';
+import {getShowcasePlatformLabel} from '../utils/platformShowcase';
 
 export type ShowcaseStatus = 'ready' | 'lab' | 'parked';
 
@@ -169,7 +170,7 @@ export const showcaseRegistry = [
     routeKey: 'Platform',
     title: 'Device & System',
     headerTitle: 'Device & System',
-    subtitle: 'Sensors, Material You, shortcuts, PiP, channels and runtime APIs',
+    subtitle: `${getShowcasePlatformLabel()} surfaces, shortcuts, PiP, deep links and runtime APIs`,
     icon: 'device',
     color: Colors.warning,
     demoCount: 38,

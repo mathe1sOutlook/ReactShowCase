@@ -1,5 +1,6 @@
 import {NativeModules} from 'react-native';
 import {Colors} from '../../theme';
+import {createShowcaseDeepLink} from '../../utils/platformShowcase';
 
 export type Vec3 = {x: number; y: number; z: number};
 export type RoutePoint = {x: number; y: number};
@@ -99,19 +100,19 @@ export const ANDROID_SHORTCUTS: AndroidShortcut[] = [
   {
     id: 'capture',
     label: 'Quick Capture',
-    route: 'cfdandroid://media',
+    route: createShowcaseDeepLink('media'),
     tone: Colors.primary,
   },
   {
     id: 'scan',
     label: 'Scan QR',
-    route: 'cfdandroid://files',
+    route: createShowcaseDeepLink('files'),
     tone: Colors.warning,
   },
   {
     id: 'sync',
     label: 'Resume Sync',
-    route: 'cfdandroid://platform',
+    route: createShowcaseDeepLink('platform'),
     tone: Colors.success,
   },
 ];

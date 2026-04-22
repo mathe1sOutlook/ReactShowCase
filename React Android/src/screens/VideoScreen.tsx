@@ -1,7 +1,8 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {Platform, Pressable, StyleSheet, Text, type DimensionValue, View} from 'react-native';
+import {Pressable, StyleSheet, Text, type DimensionValue, View} from 'react-native';
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import {Colors, Radius, Spacing, Typography} from '../theme';
+import {getShowcasePlatformLabel} from '../utils/platformShowcase';
 
 type AspectPreset = '16:9' | '4:5' | '1:1';
 type SpeedPreset = 0.5 | 1 | 1.5 | 2;
@@ -195,6 +196,7 @@ function Thumbnail({asset, timeSec, active, onPress}: ThumbnailProps) {
 
 export default function VideoScreen() {
   const assets = useMemo(() => buildAssets(), []);
+  const platformLabel = getShowcasePlatformLabel();
   const [selectedId, setSelectedId] = useState(assets[0].id);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -301,9 +303,7 @@ export default function VideoScreen() {
     setPipEnabled(current => !current);
     setFeedback(
       !pipEnabled
-        ? Platform.OS === 'android'
-          ? 'Android PiP mini-player enabled.'
-          : 'Floating mini-player enabled.'
+        ? `${platformLabel} PiP mini-player enabled.`
         : 'Mini-player closed.',
     );
   }
@@ -453,9 +453,7 @@ export default function VideoScreen() {
               <Text style={styles.secondaryButtonText}>
                 {pipEnabled
                   ? 'Close mini-player'
-                  : Platform.OS === 'android'
-                    ? 'Open Android PiP'
-                    : 'Open mini-player'}
+                  : `Open ${platformLabel} PiP`}
               </Text>
             </Pressable>
           </View>

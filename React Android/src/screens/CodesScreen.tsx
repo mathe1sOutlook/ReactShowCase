@@ -11,6 +11,7 @@ import {
 import Svg, {Line, Rect} from 'react-native-svg';
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import {Colors, Radius, Spacing} from '../theme';
+import {createShowcaseDeepLink} from '../utils/platformShowcase';
 
 type ScanKind = 'qr' | 'barcode';
 type BarcodeFormat = 'CODE128' | 'EAN13' | 'UPCA';
@@ -45,7 +46,7 @@ const QR_CAMERA_SAMPLES: ScanSample[] = [
   },
   {
     label: 'App Deep Link',
-    payload: 'cfdandroid://codes?from=qr-demo',
+    payload: createShowcaseDeepLink('codes?from=qr-demo'),
   },
 ];
 

@@ -20,7 +20,7 @@ const AUTOCOMPLETE_OPTIONS = [
   'Learning analytics workspace',
 ];
 
-const PLATFORM_OPTIONS = ['Android', 'Windows', 'Dual release'] as const;
+const PLATFORM_OPTIONS = ['iOS', 'Android', 'Dual release'] as const;
 const TIMELINE_OPTIONS = ['2 weeks', '4 weeks', '8 weeks'] as const;
 const OTP_LENGTH = 6;
 
@@ -448,7 +448,7 @@ export function FormsShowcase() {
     projectName: 'Operations cockpit',
     platform: 'Dual release',
     timeline: '4 weeks',
-    objective: 'Unify Android field actions with a polished Windows back-office workspace.',
+    objective: 'Unify field actions with a polished cross-platform workspace.',
   });
   const [intakeState, setIntakeState] = useState<IntakeState>({
     name: '',

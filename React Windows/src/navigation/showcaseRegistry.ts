@@ -106,7 +106,7 @@ export const showcaseRegistry = [
     routeKey: 'DataGrid',
     title: 'DataGrid',
     headerTitle: 'DataGrid Studio',
-    subtitle: 'Frozen columns, filters, edit, export & 10k-row virtualization',
+    subtitle: 'Frozen columns, filters, edit, share previews & 10k-row virtualization',
     icon: 'table',
     color: Colors.success,
     demoCount: 26,
@@ -163,12 +163,12 @@ export const showcaseRegistry = [
   {
     routeKey: 'Platform',
     title: 'Device & System',
-    subtitle: 'Sensors, Fluent shell, tray, taskbar, file system and desktop actions',
+    subtitle: 'Sensors, clipboard, deep links and desktop shell previews',
     icon: 'device',
     color: '#9b59b6',
     demoCount: 41,
     deepLinkSlug: 'platform',
-    status: 'ready',
+    status: 'lab',
     isNew: true,
   },
   {

@@ -1,8 +1,8 @@
 /**
- * CFD Android - React Native ShowCase
+ * CFD Mobile - React Native ShowCase
  *
  * A comprehensive demonstration of React Native's graphical,
- * animation, and interactive capabilities on Android.
+ * animation, and interactive capabilities on mobile platforms.
  */
 
 import React, {useState} from 'react';
@@ -12,7 +12,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {enableFreeze} from 'react-native-screens';
 import AppNavigator from './src/navigation/AppNavigator';
-import {androidAppLinking} from './src/navigation/linking';
+import {appLinking} from './src/navigation/linking';
 import SplashScreen from './src/screens/SplashScreen';
 import PerformanceOverlay from './src/quality/PerformanceOverlay';
 import {withScreenQuality} from './src/quality/withScreenQuality';
@@ -39,7 +39,7 @@ export default function App(): React.JSX.Element {
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
-        <NavigationContainer linking={androidAppLinking}>
+        <NavigationContainer linking={appLinking}>
           <AppNavigator />
         </NavigationContainer>
         <PerformanceOverlay />

@@ -1,4 +1,5 @@
 import {Colors} from '../../theme';
+import {getShowcasePlatformLabel} from '../../utils/platformShowcase';
 
 export type RestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 export type RestStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -122,7 +123,11 @@ export function buildRestData(
   if (preset.id === 'projects') {
     return {
       items: [
-        {id: 'p-101', name: 'Showcase Android', status: 'Shipping'},
+        {
+          id: 'p-101',
+          name: `Showcase ${getShowcasePlatformLabel()}`,
+          status: 'Shipping',
+        },
         {id: 'p-102', name: 'Windows Desktop', status: 'QA'},
         {id: 'p-103', name: 'Marketing Site', status: 'Design'},
       ],

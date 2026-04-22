@@ -6,36 +6,19 @@
  */
 
 import React from 'react';
-import {NavigationContainer, type LinkingOptions} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {enableFreeze} from 'react-native-screens';
 import AppNavigator from './src/navigation/AppNavigator';
-import {showcaseLinkingScreens} from './src/navigation/showcaseRegistry';
-import type {RootTabParamList} from './src/navigation/types';
+import {windowsAppLinking} from './src/navigation/linking';
 import PerformanceOverlay from './src/quality/PerformanceOverlay';
 
 enableFreeze(true);
 
-const linking: LinkingOptions<RootTabParamList> = {
-  prefixes: ['cfdwindows://', 'https://showcase.cfd.dev/windows'],
-  config: {
-    screens: {
-      HomeTab: {
-        screens: {
-          Home: '',
-          ...showcaseLinkingScreens,
-        },
-      },
-      ComponentsTab: 'components',
-      AboutTab: 'about',
-    },
-  },
-};
-
 export default function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
-      <NavigationContainer linking={linking}>
+      <NavigationContainer linking={windowsAppLinking}>
         <AppNavigator />
       </NavigationContainer>
       <PerformanceOverlay />

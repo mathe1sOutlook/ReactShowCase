@@ -47,6 +47,13 @@ import {
 } from './platform/model';
 import {PlatformCard as Card, PlatformMeter as Meter} from './platform/sections';
 import type {HomeStackParamList} from '../navigation/types';
+import {
+  createShowcaseDeepLink,
+  createShowcaseExternalRouteUrl,
+  createShowcaseReferenceUrl,
+  getShowcasePlatformLabel,
+  supportsShowcaseHttpsLinks,
+} from '../utils/platformShowcase';
 
 type Nav = NativeStackNavigationProp<HomeStackParamList>;
 
@@ -57,6 +64,97 @@ export default function PlatformScreen() {
   const fullWidth = width - Spacing.lg * 2;
   const cardWidth = width >= 840 ? (fullWidth - Spacing.md) / 2 : fullWidth;
   const orientation = width > height ? 'Landscape' : 'Portrait';
+  const platformLabel = getShowcasePlatformLabel();
+  const isIOS = Platform.OS === 'ios';
+  const filesDeepLink = createShowcaseDeepLink('files');
+  const networkDeepLink = createShowcaseDeepLink('network');
+  const externalFilesUrl = createShowcaseExternalRouteUrl('files');
+  const externalNetworkUrl = createShowcaseExternalRouteUrl('network');
+  const supportsHttpsLinks = supportsShowcaseHttpsLinks();
+  const quickActionChoices = isIOS
+    ? ['Compose', 'Scan', 'Share']
+    : [...ANDROID_FAB_ACTIONS];
+  const bottomTabs = isIOS
+    ? ['Today', 'Search', 'Files', 'Profile']
+    : [...ANDROID_BOTTOM_TABS];
+  const splashModes = [...ANDROID_LAUNCH_STATES];
+  const notificationGroups = isIOS
+    ? [
+        {
+          id: 'updates',
+          label: 'Updates',
+          importance: 'Scheduled summary',
+          tone: Colors.primary,
+        },
+        {
+          id: 'messages',
+          label: 'Messages',
+          importance: 'Time Sensitive',
+          tone: Colors.secondary,
+        },
+        {
+          id: 'sync',
+          label: 'Background refresh',
+          importance: 'Passive',
+          tone: Colors.success,
+        },
+      ]
+    : ANDROID_CHANNELS;
+  const backgroundTaskLabels = isIOS
+    ? ['App refresh', 'Widget timeline', 'Upload queue']
+    : [...ANDROID_SERVICE_TASKS];
+  const platformSectionTitle = isIOS ? 'iOS Platform' : 'Android Platform';
+  const platformSectionCopy = isIOS
+    ? 'Semantic colors, quick actions, Picture-in-Picture and native iPhone runtime surfaces in one device lab.'
+    : 'Material You, edge-to-edge layouts, launcher shortcuts, PiP and notification plumbing.';
+  const designSystemTitle = isIOS ? 'Human Interface' : 'Material You';
+  const designSystemSubtitle = isIOS
+    ? 'Semantic colors, edge-safe layout and an iOS chrome preview.'
+    : 'Material 3 tokens, dynamic colors and an edge-to-edge chrome preview.';
+  const designSystemCopy = isIOS
+    ? 'System tint, translucent surfaces and semantic roles keep the iPhone shell cohesive.'
+    : 'Wallpaper extraction seeds the accent, tonal surfaces and controls for Android.';
+  const shellCardTitle = isIOS ? 'Quick Actions & Tab Bar' : 'FAB Menu & Bottom App Bar';
+  const shellCardSubtitle = isIOS
+    ? 'Primary actions stay close to the tab bar with a compact command tray.'
+    : 'Primary actions stay anchored to a Material bottom app bar.';
+  const shellKicker = isIOS ? 'Tab bar' : 'Bottom app bar';
+  const shellCardCopy = isIOS
+    ? 'Core navigation stays docked while a compact command tray expands over the tab bar.'
+    : 'Core navigation stays docked while the floating button expands into a compact action sheet.';
+  const swipeActionsNote = isIOS
+    ? 'Tap a row to reveal iOS-style trailing actions.'
+    : 'Tap a row to reveal Android-style swipe actions on the trailing edge.';
+  const shortcutsCardTitle = isIOS ? 'Quick Actions & PiP' : 'App Shortcuts & PiP';
+  const shortcutsCardSubtitle = isIOS
+    ? 'Home screen quick actions plus compact video playback.'
+    : 'Long-press launcher routes plus compact video playback.';
+  const splashCardSubtitle = isIOS
+    ? 'Launch screen handoff, icon plate and startup timing.'
+    : 'Android 12 launch icon mask, keep condition and handoff timing.';
+  const splashCardCopy = isIOS
+    ? 'Icon plate, brand background and handoff animation stay in sync with the startup mode.'
+    : 'Icon mask, brand background and exit animation stay in sync with the startup mode.';
+  const systemActionsCopy = isIOS
+    ? 'Clipboard, sharing, app-scheme links, notifications and permissions.'
+    : 'Clipboard, sharing, deep links, notifications and permissions.';
+  const hapticsCardTitle = isIOS ? 'Haptics preview' : 'Vibration / Haptics';
+  const hapticsCardSubtitle = isIOS
+    ? 'Single iPhone vibration fallback with labeled presets.'
+    : 'Preset pulse patterns.';
+  const linksNote = supportsHttpsLinks
+    ? `App and HTTPS routes: ${filesDeepLink} | ${networkDeepLink} | ${externalFilesUrl} | ${externalNetworkUrl}`
+    : `App schemes only in this iOS build: ${filesDeepLink} | ${networkDeepLink}`;
+  const notificationsCardTitle = isIOS
+    ? 'Notification Categories & Background Refresh'
+    : 'Notification Channels & Foreground Service';
+  const notificationsCardSubtitle = isIOS
+    ? 'Per-category routing plus background refresh state.'
+    : 'Per-channel routing plus an always-on service indicator.';
+  const notificationsMeterLabel = isIOS
+    ? 'Background refresh'
+    : 'Foreground service';
+  const notificationsNextLabel = isIOS ? 'Next refresh' : 'Next task';
 
   const [tracking, setTracking] = useState(true);
   const [accel, setAccel] = useState<Vec3>({x: 0.18, y: -0.42, z: 0.96});
@@ -90,14 +188,19 @@ export default function PlatformScreen() {
   const [nfcScanning, setNfcScanning] = useState(false);
   const [tags, setTags] = useState<Tag[]>([
     {id: 'TAG-27C4', type: 'MIFARE Ultralight', payload: 'https://showcase.cfd.dev/tour', seenAt: '09:12:08'},
-    {id: 'TAG-18F0', type: 'NTAG215', payload: 'device-profile:android-lab', seenAt: '09:08:44'},
+    {
+      id: 'TAG-18F0',
+      type: 'NTAG215',
+      payload: `device-profile:${Platform.OS}-lab`,
+      seenAt: '09:08:44',
+    },
   ]);
   const [bioState, setBioState] = useState<'idle' | 'success' | 'denied'>('idle');
   const [bioMode, setBioMode] = useState<'Fingerprint' | 'Face ID'>(
     Platform.OS === 'android' ? 'Fingerprint' : 'Face ID',
   );
-  const [clipboardText, setClipboardText] = useState('cfdandroid://files');
-  const [clipboardCache, setClipboardCache] = useState('cfdandroid://files');
+  const [clipboardText, setClipboardText] = useState(filesDeepLink);
+  const [clipboardCache, setClipboardCache] = useState(filesDeepLink);
   const [systemMessage, setSystemMessage] = useState('System resources ready.');
   const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
@@ -136,17 +239,22 @@ export default function PlatformScreen() {
   const [androidPaletteIndex, setAndroidPaletteIndex] = useState(0);
   const [edgeToEdge, setEdgeToEdge] = useState(true);
   const [fabExpanded, setFabExpanded] = useState(false);
-  const [fabAction, setFabAction] = useState<(typeof ANDROID_FAB_ACTIONS)[number]>('Compose');
-  const [bottomTab, setBottomTab] = useState<(typeof ANDROID_BOTTOM_TABS)[number]>('Home');
+  const [fabAction, setFabAction] = useState<string>(quickActionChoices[0]);
+  const [bottomTab, setBottomTab] = useState<string>(bottomTabs[0]);
   const [swipedItem, setSwipedItem] = useState<string | null>('build-queue');
-  const [shortcutLog, setShortcutLog] = useState('Launcher shortcuts are ready for long press.');
+  const [shortcutLog, setShortcutLog] = useState(
+    isIOS
+      ? 'Home screen quick actions are ready for long press.'
+      : 'Launcher shortcuts are ready for long press.',
+  );
   const [pipMode, setPipMode] = useState<'Inline' | 'PiP'>('Inline');
-  const [launchMode, setLaunchMode] = useState<(typeof ANDROID_LAUNCH_STATES)[number]>('Cold start');
-  const [channelState, setChannelState] = useState<Record<string, boolean>>({
-    deployments: true,
-    messages: true,
-    sync: false,
-  });
+  const [launchMode, setLaunchMode] = useState<string>(splashModes[0]);
+  const [channelState, setChannelState] = useState<Record<string, boolean>>(
+    () =>
+      Object.fromEntries(
+        notificationGroups.map((group, index) => [group.id, index < 2]),
+      ) as Record<string, boolean>,
+  );
   const [foregroundActive, setForegroundActive] = useState(true);
   const [foregroundProgress, setForegroundProgress] = useState(68);
   const [foregroundTaskIndex, setForegroundTaskIndex] = useState(0);
@@ -154,7 +262,15 @@ export default function PlatformScreen() {
   const effectiveTheme =
     themeMode === 'system' ? systemScheme ?? (Platform.OS === 'android' ? 'dark' : 'light') : themeMode;
   const androidPalette = ANDROID_PALETTES[androidPaletteIndex];
-  const foregroundTask = ANDROID_SERVICE_TASKS[foregroundTaskIndex];
+  const foregroundTask =
+    backgroundTaskLabels[foregroundTaskIndex] ?? backgroundTaskLabels[0];
+  const notificationsToggleLabel = isIOS
+    ? foregroundActive
+      ? 'Refresh on'
+      : 'Refresh off'
+    : foregroundActive
+      ? 'Service on'
+      : 'Service off';
   const localizedCopy = {
     'en-US': {
       title: 'System resources online',
@@ -274,7 +390,17 @@ export default function PlatformScreen() {
   const engineLabel = (globalThis as {HermesInternal?: object}).HermesInternal ? 'Hermes' : 'JavaScriptCore';
 
   const triggerHaptic = (pattern: number | readonly number[], label: string) => {
-    setLastHaptic(`${label} pulse sent at ${stamp(new Date())}`);
+    const timestamp = stamp(new Date());
+    setLastHaptic(
+      isIOS
+        ? `${label} fallback fired at ${timestamp}. iOS uses a single system vibration.`
+        : `${label} pulse sent at ${timestamp}`,
+    );
+    if (isIOS) {
+      Vibration.vibrate();
+      return;
+    }
+
     if (Platform.OS === 'android') {
       Vibration.vibrate(typeof pattern === 'number' ? pattern : Array.from(pattern));
     }
@@ -329,7 +455,7 @@ export default function PlatformScreen() {
       kind === 'text'
         ? {message: 'React ShowCase system resources are ready for QA handoff.'}
         : kind === 'url'
-          ? {message: 'Open the device lab route', url: Platform.OS === 'android' ? 'cfdandroid://network' : 'cfdwindows://platform'}
+          ? {message: 'Open the device lab route', url: externalNetworkUrl}
           : {message: 'Image payload preview: https://showcase.cfd.dev/assets/device-lab.png'};
     await Share.share(payload);
     setSystemMessage(`Share sheet opened for ${kind}.`);
@@ -337,11 +463,14 @@ export default function PlatformScreen() {
 
   const openDeepLink = (target: 'files' | 'network') => {
     const routeName = target === 'files' ? 'Files' : 'Network';
-    const url = Platform.OS === 'android' ? `cfdandroid://${target}` : `cfdwindows://${target}`;
+    const url = createShowcaseDeepLink(target);
+    const referenceUrl = createShowcaseReferenceUrl(target);
 
     navigation.navigate(routeName);
     setSystemMessage(
-      `Internal route preview opened for ${routeName}. Reference URL: ${url}`,
+      supportsHttpsLinks
+        ? `Internal route preview opened for ${routeName}. Reference URLs: ${url} and ${referenceUrl}`
+        : `Internal route preview opened for ${routeName}. App scheme: ${url}. Universal links are not configured in this iOS build.`,
     );
   };
 
@@ -370,10 +499,10 @@ export default function PlatformScreen() {
     setPermissions(previous => ({...previous, [key]: !previous[key]}));
   };
 
-  const cycleAndroidPalette = () => {
+  const cyclePalette = () => {
     const nextIndex = (androidPaletteIndex + 1) % ANDROID_PALETTES.length;
     setAndroidPaletteIndex(nextIndex);
-    setSystemMessage(`Dynamic palette synced to ${ANDROID_PALETTES[nextIndex].name}.`);
+    setSystemMessage(`Design palette synced to ${ANDROID_PALETTES[nextIndex].name}.`);
   };
 
   const toggleEdgeMode = () => {
@@ -384,10 +513,12 @@ export default function PlatformScreen() {
     });
   };
 
-  const selectFabAction = (action: (typeof ANDROID_FAB_ACTIONS)[number]) => {
+  const selectFabAction = (action: string) => {
     setFabAction(action);
     setFabExpanded(false);
-    setSystemMessage(`Bottom app bar action queued: ${action}.`);
+    setSystemMessage(
+      `${isIOS ? 'Command tray' : 'Bottom app bar'} action queued: ${action}.`,
+    );
   };
 
   const toggleSwipeRow = (id: string) => {
@@ -405,7 +536,7 @@ export default function PlatformScreen() {
 
   const triggerShortcut = (shortcut: AndroidShortcut) => {
     setShortcutLog(`${shortcut.label} routed to ${shortcut.route}`);
-    setSystemMessage(`Launcher shortcut invoked: ${shortcut.label}.`);
+    setSystemMessage(`${isIOS ? 'Quick action' : 'Launcher shortcut'} invoked: ${shortcut.label}.`);
   };
 
   const togglePip = () => {
@@ -423,7 +554,11 @@ export default function PlatformScreen() {
   const toggleChannel = (id: string) => {
     setChannelState(previous => {
       const next = {...previous, [id]: !previous[id]};
-      setSystemMessage(next[id] ? `${id} channel enabled.` : `${id} channel muted.`);
+      setSystemMessage(
+        next[id]
+          ? `${id} ${isIOS ? 'category' : 'channel'} enabled.`
+          : `${id} ${isIOS ? 'category' : 'channel'} muted.`,
+      );
       return next;
     });
   };
@@ -431,15 +566,27 @@ export default function PlatformScreen() {
   const toggleForegroundService = () => {
     setForegroundActive(previous => {
       const next = !previous;
-      setSystemMessage(next ? 'Foreground service indicator published.' : 'Foreground service paused.');
+      setSystemMessage(
+        isIOS
+          ? next
+            ? 'Background refresh indicator published.'
+            : 'Background refresh paused.'
+          : next
+            ? 'Foreground service indicator published.'
+            : 'Foreground service paused.',
+      );
       return next;
     });
   };
 
   const cycleForegroundTask = () => {
-    const nextIndex = (foregroundTaskIndex + 1) % ANDROID_SERVICE_TASKS.length;
+    const nextIndex = (foregroundTaskIndex + 1) % backgroundTaskLabels.length;
     setForegroundTaskIndex(nextIndex);
-    setSystemMessage(`Foreground service moved to ${ANDROID_SERVICE_TASKS[nextIndex].toLowerCase()}.`);
+    setSystemMessage(
+      `${isIOS ? 'Background refresh' : 'Foreground service'} moved to ${backgroundTaskLabels[
+        nextIndex
+      ].toLowerCase()}.`,
+    );
   };
 
   return (
@@ -449,7 +596,8 @@ export default function PlatformScreen() {
           <Text style={styles.eyebrow}>PHASE 6</Text>
           <Text style={styles.title}>Device & System</Text>
           <Text style={styles.body}>
-            Sensors, system APIs, app lifecycle and Android-specific platform surfaces in one device lab.
+            Sensors, system APIs, app lifecycle and {platformLabel}-first platform surfaces in one
+            device lab.
           </Text>
           <View style={styles.pills}>
             <View style={styles.pill}><Text style={styles.pillText}>38 demos</Text></View>
@@ -572,7 +720,11 @@ export default function PlatformScreen() {
           <Text style={styles.sectionText}>Haptics, NFC, Bluetooth and biometrics.</Text>
         </View>
         <View style={styles.grid}>
-          <Card title="Vibration / Haptics" subtitle="Preset pulse patterns." tone={Colors.success} width={cardWidth}>
+          <Card
+            title={hapticsCardTitle}
+            subtitle={hapticsCardSubtitle}
+            tone={Colors.success}
+            width={cardWidth}>
             <View style={styles.wrap}>
               {HAPTICS.map(preset => (
                 <Pressable key={preset.label} onPress={() => triggerHaptic(preset.pattern, preset.label)} style={[styles.smallAction, {borderColor: preset.tone + '44'}]}>
@@ -627,7 +779,7 @@ export default function PlatformScreen() {
 
         <View style={styles.sectionHead}>
           <Text style={styles.sectionTitle}>System Actions</Text>
-          <Text style={styles.sectionText}>Clipboard, sharing, deep links, notifications and permissions.</Text>
+          <Text style={styles.sectionText}>{systemActionsCopy}</Text>
         </View>
         <View style={styles.grid}>
           <Card title="Clipboard" subtitle="Keep a local preview buffer and sync the clipboard when available." tone={Colors.primary} width={cardWidth}>
@@ -645,7 +797,7 @@ export default function PlatformScreen() {
               <Pressable style={styles.smallAction} onPress={pasteClipboard}>
                 <Text style={styles.smallActionText}>Paste</Text>
               </Pressable>
-              <Pressable style={styles.smallAction} onPress={() => setClipboardText(Platform.OS === 'android' ? 'cfdandroid://files' : 'cfdwindows://files')}>
+              <Pressable style={styles.smallAction} onPress={() => setClipboardText(filesDeepLink)}>
                 <Text style={styles.smallActionText}>Seed link</Text>
               </Pressable>
             </View>
@@ -671,7 +823,7 @@ export default function PlatformScreen() {
               </Pressable>
             </View>
             <Text style={styles.note}>
-              Reference URLs: {Platform.OS === 'android' ? 'cfdandroid://files | cfdandroid://network' : 'cfdwindows://files | cfdwindows://network'}
+              {linksNote}
             </Text>
           </Card>
 
@@ -814,19 +966,17 @@ export default function PlatformScreen() {
         </View>
 
         <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Android Platform</Text>
-          <Text style={styles.sectionText}>
-            Material You, edge-to-edge layouts, launcher shortcuts, PiP and notification plumbing.
-          </Text>
+          <Text style={styles.sectionTitle}>{platformSectionTitle}</Text>
+          <Text style={styles.sectionText}>{platformSectionCopy}</Text>
         </View>
         <View style={styles.grid}>
           <Card
-            title="Material You"
-            subtitle="Material 3 tokens, dynamic colors and an edge-to-edge chrome preview."
+            title={designSystemTitle}
+            subtitle={designSystemSubtitle}
             tone={androidPalette.primary}
             width={fullWidth}
             actionLabel="Shuffle palette"
-            onAction={cycleAndroidPalette}>
+            onAction={cyclePalette}>
             <View style={[styles.materialFrame, {backgroundColor: androidPalette.wallpaper}]}>
               <View
                 style={[
@@ -849,10 +999,12 @@ export default function PlatformScreen() {
                     marginTop: edgeToEdge ? 18 : 8,
                   },
                 ]}>
-                <Text style={[styles.materialKicker, {color: androidPalette.primary}]}>Material 3</Text>
+                <Text style={[styles.materialKicker, {color: androidPalette.primary}]}>
+                  {isIOS ? 'iOS chrome' : 'Material 3'}
+                </Text>
                 <Text style={[styles.materialHeadline, {color: androidPalette.onSurface}]}>Adaptive color roles</Text>
                 <Text style={[styles.materialCopy, {color: androidPalette.onSurface}]}>
-                  Wallpaper extraction seeds the accent, tonal surfaces and controls for Android.
+                  {designSystemCopy}
                 </Text>
                 <View style={styles.materialSwatches}>
                   {[
@@ -885,11 +1037,13 @@ export default function PlatformScreen() {
                 </Text>
               </Pressable>
               <View style={[styles.smallAction, {borderColor: androidPalette.primary + '55'}]}>
-                <Text style={[styles.smallActionText, {color: androidPalette.primary}]}>Dynamic colors</Text>
+                <Text style={[styles.smallActionText, {color: androidPalette.primary}]}>
+                  {isIOS ? 'Semantic colors' : 'Dynamic colors'}
+                </Text>
               </View>
               <View style={[styles.smallAction, {borderColor: androidPalette.secondary + '55'}]}>
                 <Text style={[styles.smallActionText, {color: androidPalette.secondary}]}>
-                  Palette: {androidPalette.name}
+                  {isIOS ? 'Tint set' : 'Palette'}: {androidPalette.name}
                 </Text>
               </View>
             </View>
@@ -899,14 +1053,14 @@ export default function PlatformScreen() {
           </Card>
 
           <Card
-            title="FAB Menu & Bottom App Bar"
-            subtitle="Primary actions stay anchored to a Material bottom app bar."
+            title={shellCardTitle}
+            subtitle={shellCardSubtitle}
             tone={androidPalette.secondary}
             width={fullWidth}>
             <View style={[styles.bottomBarStage, {backgroundColor: androidPalette.surfaceAlt}]}>
               {fabExpanded ? (
                 <View style={styles.fabMenu}>
-                  {ANDROID_FAB_ACTIONS.map(action => (
+                  {quickActionChoices.map(action => (
                     <Pressable
                       key={action}
                       style={[styles.fabMenuItem, fabAction === action && styles.fabMenuItemActive]}
@@ -919,16 +1073,18 @@ export default function PlatformScreen() {
                 </View>
               ) : null}
               <View style={styles.bottomBarInfo}>
-                <Text style={[styles.materialKicker, {color: androidPalette.secondary}]}>Bottom app bar</Text>
+                <Text style={[styles.materialKicker, {color: androidPalette.secondary}]}>
+                  {shellKicker}
+                </Text>
                 <Text style={[styles.materialHeadline, {color: androidPalette.onSurface}]}>
                   Quick action: {fabAction}
                 </Text>
                 <Text style={[styles.materialCopy, {color: androidPalette.onSurface}]}>
-                  Core navigation stays docked while the floating button expands into a compact action sheet.
+                  {shellCardCopy}
                 </Text>
               </View>
               <View style={[styles.bottomBar, {backgroundColor: androidPalette.surface}]}>
-                {ANDROID_BOTTOM_TABS.slice(0, 2).map(tab => (
+                {bottomTabs.slice(0, 2).map(tab => (
                   <Pressable key={tab} style={styles.bottomTab} onPress={() => setBottomTab(tab)}>
                     <Text style={[styles.bottomTabText, bottomTab === tab && {color: androidPalette.primary}]}>
                       {tab}
@@ -936,7 +1092,7 @@ export default function PlatformScreen() {
                   </Pressable>
                 ))}
                 <View style={styles.bottomTabGap} />
-                {ANDROID_BOTTOM_TABS.slice(2).map(tab => (
+                {bottomTabs.slice(2).map(tab => (
                   <Pressable key={tab} style={styles.bottomTab} onPress={() => setBottomTab(tab)}>
                     <Text style={[styles.bottomTabText, bottomTab === tab && {color: androidPalette.primary}]}>
                       {tab}
@@ -984,12 +1140,12 @@ export default function PlatformScreen() {
                 </View>
               );
             })}
-            <Text style={styles.note}>Tap a row to reveal Android-style swipe actions on the trailing edge.</Text>
+            <Text style={styles.note}>{swipeActionsNote}</Text>
           </Card>
 
           <Card
-            title="App Shortcuts & PiP"
-            subtitle="Long-press launcher routes plus compact video playback."
+            title={shortcutsCardTitle}
+            subtitle={shortcutsCardSubtitle}
             tone={Colors.primary}
             width={cardWidth}>
             <View style={styles.wrap}>
@@ -1031,7 +1187,7 @@ export default function PlatformScreen() {
 
           <Card
             title="Splash Screen API"
-            subtitle="Android 12 launch icon mask, keep condition and handoff timing."
+            subtitle={splashCardSubtitle}
             tone={Colors.warning}
             width={cardWidth}>
             <View style={[styles.androidSplash, {backgroundColor: androidPalette.surfaceAlt}]}>
@@ -1040,11 +1196,11 @@ export default function PlatformScreen() {
               </View>
               <Text style={styles.androidSplashTitle}>{launchMode}</Text>
               <Text style={styles.androidSplashCopy}>
-                Icon mask, brand background and exit animation stay in sync with the startup mode.
+                {splashCardCopy}
               </Text>
             </View>
             <View style={styles.wrap}>
-              {ANDROID_LAUNCH_STATES.map(mode => (
+              {splashModes.map(mode => (
                 <Pressable
                   key={mode}
                   style={[styles.smallAction, launchMode === mode && styles.smallActionActive]}
@@ -1058,11 +1214,11 @@ export default function PlatformScreen() {
           </Card>
 
           <Card
-            title="Notification Channels & Foreground Service"
-            subtitle="Per-channel routing plus an always-on service indicator."
+            title={notificationsCardTitle}
+            subtitle={notificationsCardSubtitle}
             tone={Colors.success}
             width={cardWidth}>
-            {ANDROID_CHANNELS.map(channel => (
+            {notificationGroups.map(channel => (
               <View key={channel.id} style={styles.channelRow}>
                 <View style={styles.listCopy}>
                   <Text style={styles.listTitle}>{channel.label}</Text>
@@ -1078,7 +1234,7 @@ export default function PlatformScreen() {
               </View>
             ))}
             <Meter
-              label="Foreground service"
+              label={notificationsMeterLabel}
               value={foregroundActive ? `${foregroundProgress}%` : 'Paused'}
               progress={foregroundActive ? foregroundProgress : 0}
               tone={foregroundActive ? Colors.success : Colors.textMuted}
@@ -1088,15 +1244,15 @@ export default function PlatformScreen() {
                 style={[styles.smallAction, foregroundActive && styles.smallActionActive]}
                 onPress={toggleForegroundService}>
                 <Text style={foregroundActive ? styles.smallActionTextActive : styles.smallActionText}>
-                  {foregroundActive ? 'Service on' : 'Service off'}
+                  {notificationsToggleLabel}
                 </Text>
               </Pressable>
               <Pressable style={styles.smallAction} onPress={cycleForegroundTask}>
-                <Text style={styles.smallActionText}>Next task</Text>
+                <Text style={styles.smallActionText}>{notificationsNextLabel}</Text>
               </Pressable>
             </View>
             <Text style={styles.note}>
-              {enabledChannelCount}/3 channels enabled - indicator bound to {foregroundTask.toLowerCase()}.
+              {enabledChannelCount}/{notificationGroups.length} {isIOS ? 'categories' : 'channels'} enabled - indicator bound to {foregroundTask.toLowerCase()}.
             </Text>
           </Card>
         </View>

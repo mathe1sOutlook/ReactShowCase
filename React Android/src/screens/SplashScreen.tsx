@@ -1,5 +1,5 @@
 /**
- * SplashScreen - Animated splash screen for CFD Android ShowCase
+ * SplashScreen - Animated splash screen for the mobile showcase
  *
  * Full-screen animated splash with atom icon, app title, and loading dots.
  */
@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from 'react-native';
 import {Colors} from '../theme/colors';
+import {getShowcaseHeroSubtitle} from '../utils/platformShowcase';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -20,7 +21,9 @@ interface SplashScreenProps {
 
 const {width, height} = Dimensions.get('window');
 
-export default function SplashScreen({onFinish}: SplashScreenProps): React.JSX.Element {
+export default function SplashScreen({
+  onFinish,
+}: SplashScreenProps): React.JSX.Element {
   // Icon animations
   const iconScale = useRef(new Animated.Value(0.3)).current;
   const glowOpacity = useRef(new Animated.Value(0.5)).current;
@@ -153,7 +156,7 @@ export default function SplashScreen({onFinish}: SplashScreenProps): React.JSX.E
                 textShadowRadius: 30,
               },
             ]}>
-            ⚛
+            {'\u269B'}
           </Animated.Text>
         </Animated.View>
 
@@ -164,7 +167,7 @@ export default function SplashScreen({onFinish}: SplashScreenProps): React.JSX.E
 
         {/* Subtitle */}
         <Animated.Text style={[styles.subtitle, {opacity: subtitleOpacity}]}>
-          Android ShowCase
+          {getShowcaseHeroSubtitle()}
         </Animated.Text>
       </View>
 

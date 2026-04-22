@@ -10,6 +10,8 @@ import {
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import StateBlock from '../components/common/StateBlock';
 import {Colors, Radius, Spacing} from '../theme';
+import {createOperationController} from './network/operationController';
+import {useTimeoutRegistry} from './network/useTimeoutRegistry';
 
 type RestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type RestStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -53,6 +55,17 @@ type ApiEnvelope = {
   data: unknown;
 };
 
+type RequestFlow = 'rest' | 'retry' | null;
+
+const NETWORK_OPERATION_KEYS = [
+  'request',
+  'graph',
+  'upload',
+  'download',
+  'heartbeat',
+  'socket-session',
+] as const;
+
 const REST_PRESETS: RestPreset[] = [
   {id: 'projects', label: 'Projects', path: '/v1/projects', tone: Colors.primary},
   {id: 'deployments', label: 'Deployments', path: '/v1/deployments', tone: Colors.secondary},
@@ -86,12 +99,6 @@ function stamp() {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-  });
-}
-
-function wait(ms: number) {
-  return new Promise<void>(resolve => {
-    setTimeout(() => resolve(), ms);
   });
 }
 
@@ -186,6 +193,7 @@ export default function NetworkScreen() {
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [requestFlow, setRequestFlow] = useState<RequestFlow>(null);
   const [graphPresetId, setGraphPresetId] = useState('workspace');
   const [graphLoading, setGraphLoading] = useState(false);
   const [graphError, setGraphError] = useState('');
@@ -207,44 +215,78 @@ export default function NetworkScreen() {
   const [activityLog, setActivityLog] = useState<LogItem[]>([
     makeLog('Network lab ready', 'REST, GraphQL, WebSocket and transfers are standing by.', Colors.primary),
   ]);
-  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const graphFailureRef = useRef<Record<string, boolean>>({billing: true});
+  const operationController = useRef(createOperationController()).current;
+  const {clearTimeouts, scheduleTimeout} = useTimeoutRegistry();
   const restPreset = REST_PRESETS.find(item => item.id === restPresetId) ?? REST_PRESETS[0];
   const graphPreset = GRAPH_PRESETS.find(item => item.id === graphPresetId) ?? GRAPH_PRESETS[0];
   const cacheKey = `${method}:${restPreset.path}`;
 
-  useEffect(() => () => timersRef.current.forEach(timer => clearTimeout(timer)), []);
+  function pushLog(title: string, detail: string, tone: string) {
+    setActivityLog(previous => [makeLog(title, detail, tone), ...previous].slice(0, 8));
+  }
+
+  useEffect(() => {
+    return () => {
+      clearTimeouts();
+      operationController.cancelAll(NETWORK_OPERATION_KEYS);
+    };
+  }, [clearTimeouts, operationController]);
 
   useEffect(() => {
     if (!socketConnected) {
+      operationController.cancel('heartbeat');
+      operationController.cancel('socket-session');
       return;
     }
 
-    const timer = setTimeout(() => {
-      const heartbeat: ChatMessage = {
-        id: `hb-${Date.now()}`,
-        author: 'Socket',
-        text: 'Heartbeat OK. Cache warm and gateway latency steady.',
-        time: stamp(),
-        tone: Colors.secondary,
-      };
-      setChatMessages(previous => [heartbeat, ...previous].slice(0, 8));
-      setActivityLog(previous => [
-        makeLog('Socket heartbeat', 'Realtime channel published a status pulse.', Colors.secondary),
-        ...previous,
-      ].slice(0, 8));
-    }, 5200);
+    const sessionToken = operationController.start('socket-session');
+    const heartbeatToken = operationController.start('heartbeat');
 
-    timersRef.current.push(timer);
-    return () => clearTimeout(timer);
-  }, [socketConnected, chatMessages.length]);
+    const scheduleHeartbeat = () => {
+      scheduleTimeout(() => {
+        if (
+          !operationController.isCurrent('heartbeat', heartbeatToken) ||
+          !operationController.isCurrent('socket-session', sessionToken)
+        ) {
+          return;
+        }
 
-  const pushLog = (title: string, detail: string, tone: string) => {
-    setActivityLog(previous => [makeLog(title, detail, tone), ...previous].slice(0, 8));
-  };
+        const heartbeat: ChatMessage = {
+          id: `hb-${Date.now()}`,
+          author: 'Socket',
+          text: 'Heartbeat OK. Cache warm and gateway latency steady.',
+          time: stamp(),
+          tone: Colors.secondary,
+        };
+        setChatMessages(previous => [heartbeat, ...previous].slice(0, 8));
+        pushLog(
+          'Socket heartbeat',
+          'Realtime channel published a status pulse.',
+          Colors.secondary,
+        );
+        scheduleHeartbeat();
+      }, 5200);
+    };
 
-  const runRestRequest = async () => {
+    scheduleHeartbeat();
+
+    return () => {
+      operationController.cancel('heartbeat');
+      operationController.cancel('socket-session');
+    };
+  }, [operationController, scheduleTimeout, socketConnected]);
+
+  const runRestRequest = () => {
+    if (requestFlow) {
+      setRetryPlan('Wait for the active request flow to finish first.');
+      pushLog('REST blocked', 'Another request flow is already running.', Colors.warning);
+      return;
+    }
+
     const parsedBody = parseBody(requestBody);
+    const requestToken = operationController.start('request');
+    setRequestFlow('rest');
     setRestStatus('loading');
     setRestError('');
     setRetryPlan('Direct request in flight.');
@@ -258,150 +300,209 @@ export default function NetworkScreen() {
       };
       setRestResponse(cached);
       setRestStatus('success');
+      setRequestFlow(null);
       setRetryPlan('Cache hit served instantly.');
       pushLog('Cache hit', cacheKey, Colors.success);
       return;
     }
 
-    await wait(520);
+    scheduleTimeout(() => {
+      if (!operationController.isCurrent('request', requestToken)) {
+        return;
+      }
 
-    if (restPreset.id === 'unstable') {
-      setRestStatus('error');
-      setRestError('503 gateway unstable. Use retry with exponential backoff.');
-      setRetryPlan('Endpoint marked unstable. Retry available with 400ms, 800ms and 1600ms delays.');
-      pushLog('REST error', '503 gateway unstable', Colors.error);
+      if (restPreset.id === 'unstable') {
+        setRestStatus('error');
+        setRestError('503 gateway unstable. Use retry with exponential backoff.');
+        setRetryPlan('Endpoint marked unstable. Retry available with 400ms, 800ms and 1600ms delays.');
+        setRequestFlow(null);
+        pushLog('REST error', '503 gateway unstable', Colors.error);
+        return;
+      }
+
+      const response: ApiEnvelope = {
+        source: 'network',
+        status: method === 'DELETE' ? 204 : method === 'POST' ? 201 : 200,
+        method,
+        endpoint: restPreset.path,
+        latencyMs: 520,
+        data: buildRestData(restPreset, method, parsedBody, 'network'),
+      };
+
+      if (method === 'GET') {
+        setCacheStore(previous => ({...previous, [cacheKey]: response}));
+      }
+
+      setRestResponse(response);
+      setRestStatus('success');
+      setRequestFlow(null);
+      setRetryPlan(method === 'GET' ? 'Response cached for the next identical request.' : 'Mutation completed without retry.');
+      pushLog('REST success', `${response.status} ${restPreset.path}`, Colors.primary);
+    }, 520);
+  };
+
+  const runRetrySequence = () => {
+    if (requestFlow) {
+      setRetryPlan('Wait for the active request flow to finish first.');
+      pushLog('Retry blocked', 'Another request flow is already running.', Colors.warning);
       return;
     }
 
-    const response: ApiEnvelope = {
-      source: 'network',
-      status: method === 'DELETE' ? 204 : method === 'POST' ? 201 : 200,
-      method,
-      endpoint: restPreset.path,
-      latencyMs: 520,
-      data: buildRestData(restPreset, method, parsedBody, 'network'),
-    };
-
-    if (method === 'GET') {
-      setCacheStore(previous => ({...previous, [cacheKey]: response}));
-    }
-
-    setRestResponse(response);
-    setRestStatus('success');
-    setRetryPlan(method === 'GET' ? 'Response cached for the next identical request.' : 'Mutation completed without retry.');
-    pushLog('REST success', `${response.status} ${restPreset.path}`, Colors.primary);
-  };
-
-  const runRetrySequence = async () => {
     const parsedBody = parseBody(requestBody);
     const delays = [400, 800, 1600];
+    const requestToken = operationController.start('request');
+    setRequestFlow('retry');
     setRestStatus('loading');
     setRestError('');
     setRetryPlan('Attempt 1 scheduled after 400ms.');
     pushLog('Retry start', `${method} ${restPreset.path} with exponential backoff`, Colors.warning);
 
-    for (let attempt = 0; attempt < delays.length; attempt += 1) {
+    const runAttempt = (attempt: number) => {
+      if (!operationController.isCurrent('request', requestToken)) {
+        return;
+      }
+
       const delay = delays[attempt];
       setRetryPlan(`Attempt ${attempt + 1} waiting ${delay}ms.`);
-      await wait(delay);
+      scheduleTimeout(() => {
+        if (!operationController.isCurrent('request', requestToken)) {
+          return;
+        }
 
-      if (attempt < delays.length - 1) {
-        pushLog('Retry miss', `Attempt ${attempt + 1} failed after ${delay}ms`, Colors.warning);
-        setRetryPlan(`Attempt ${attempt + 1} failed. Escalating to ${delays[attempt + 1]}ms.`);
-        continue;
-      }
+        if (attempt < delays.length - 1) {
+          pushLog('Retry miss', `Attempt ${attempt + 1} failed after ${delay}ms`, Colors.warning);
+          setRetryPlan(`Attempt ${attempt + 1} failed. Escalating to ${delays[attempt + 1]}ms.`);
+          runAttempt(attempt + 1);
+          return;
+        }
 
-      const response: ApiEnvelope = {
-        source: 'retry',
-        status: 200,
-        method,
-        endpoint: restPreset.path,
-        latencyMs: delay,
-        data: buildRestData(restPreset, method, parsedBody, 'retry'),
-      };
-      if (method === 'GET') {
-        setCacheStore(previous => ({...previous, [cacheKey]: response}));
-      }
-      setRestResponse(response);
-      setRestStatus('success');
-      setRetryPlan(`Attempt ${attempt + 1} succeeded after ${delay}ms.`);
-      pushLog('Retry success', `Recovered on attempt ${attempt + 1}`, Colors.success);
-    }
+        const response: ApiEnvelope = {
+          source: 'retry',
+          status: 200,
+          method,
+          endpoint: restPreset.path,
+          latencyMs: delay,
+          data: buildRestData(restPreset, method, parsedBody, 'retry'),
+        };
+        if (method === 'GET') {
+          setCacheStore(previous => ({...previous, [cacheKey]: response}));
+        }
+        setRestResponse(response);
+        setRestStatus('success');
+        setRequestFlow(null);
+        setRetryPlan(`Attempt ${attempt + 1} succeeded after ${delay}ms.`);
+        pushLog('Retry success', `Recovered on attempt ${attempt + 1}`, Colors.success);
+      }, delay);
+    };
+
+    runAttempt(0);
   };
 
   const startTransfer = (kind: TransferKind) => {
     const setter = kind === 'upload' ? setUploadProgress : setDownloadProgress;
     const toggle = kind === 'upload' ? setUploading : setDownloading;
+    const operationKey = kind === 'upload' ? 'upload' : 'download';
+    const operationToken = operationController.start(operationKey);
+    const isRestart = kind === 'upload' ? uploading : downloading;
+
     setter(0);
     toggle(true);
-    pushLog(kind === 'upload' ? 'Upload started' : 'Download started', `${kind} transfer queued`, Colors.accent);
+    pushLog(
+      kind === 'upload'
+        ? isRestart
+          ? 'Upload restarted'
+          : 'Upload started'
+        : isRestart
+          ? 'Download restarted'
+          : 'Download started',
+      `${kind} transfer queued`,
+      Colors.accent,
+    );
 
     const step = () => {
-      setter(previous => {
-        const next = Math.min(previous + (kind === 'upload' ? 11 : 9), 100);
-        if (next >= 100) {
-          toggle(false);
-          pushLog(
-            kind === 'upload' ? 'Upload complete' : 'Download complete',
-            kind === 'upload' ? 'proposal.zip sent to object storage' : 'bundle.tar cached locally',
-            Colors.success,
-          );
-          return 100;
+      scheduleTimeout(() => {
+        if (!operationController.isCurrent(operationKey, operationToken)) {
+          return;
         }
-        const timer = setTimeout(step, 220);
-        timersRef.current.push(timer);
-        return next;
-      });
+
+        setter(previous => {
+          const next = Math.min(previous + (kind === 'upload' ? 11 : 9), 100);
+          if (next >= 100) {
+            toggle(false);
+            pushLog(
+              kind === 'upload' ? 'Upload complete' : 'Download complete',
+              kind === 'upload'
+                ? 'proposal.zip queued for share preview'
+                : 'bundle.tar preview cached locally',
+              Colors.success,
+            );
+            return 100;
+          }
+
+          step();
+          return next;
+        });
+      }, 220);
     };
 
-    const timer = setTimeout(step, 220);
-    timersRef.current.push(timer);
+    step();
   };
 
-  const runGraphQuery = async () => {
-    setGraphLoading(true);
-    setGraphError('');
-    pushLog('GraphQL query', graphPreset.label, graphPreset.tone);
-    await wait(460);
-
-    if (graphFailureRef.current[graphPreset.id]) {
-      graphFailureRef.current[graphPreset.id] = false;
-      setGraphLoading(false);
-      setGraphError(`Resolver timeout while loading ${graphPreset.label}. Retry the query to recover.`);
-      pushLog('GraphQL error', `${graphPreset.label} resolver timed out`, Colors.error);
+  const runGraphQuery = () => {
+    if (graphLoading) {
+      pushLog('GraphQL blocked', 'Wait for the active query to finish first.', Colors.warning);
       return;
     }
 
-    const response = {
-      data:
-        graphPreset.id === 'workspace'
-          ? {
-              workspace: {
-                name: 'Showcase Lab',
-                activeUsers: 18,
-                regions: ['sa-east', 'us-east'],
-              },
-            }
-          : graphPreset.id === 'release'
+    const graphToken = operationController.start('graph');
+    setGraphLoading(true);
+    setGraphError('');
+    pushLog('GraphQL query', graphPreset.label, graphPreset.tone);
+
+    scheduleTimeout(() => {
+      if (!operationController.isCurrent('graph', graphToken)) {
+        return;
+      }
+
+      if (graphFailureRef.current[graphPreset.id]) {
+        graphFailureRef.current[graphPreset.id] = false;
+        setGraphLoading(false);
+        setGraphError(`Resolver timeout while loading ${graphPreset.label}. Retry the query to recover.`);
+        pushLog('GraphQL error', `${graphPreset.label} resolver timed out`, Colors.error);
+        return;
+      }
+
+      const response = {
+        data:
+          graphPreset.id === 'workspace'
             ? {
-                release: {
-                  version: 'beta-42',
-                  status: 'green',
-                  blockers: 1,
+                workspace: {
+                  name: 'Showcase Lab',
+                  activeUsers: 18,
+                  regions: ['sa-east', 'us-east'],
                 },
               }
-            : {
-                billing: {
-                  plan: 'Studio',
-                  invoicesDue: 2,
-                  spendThisMonth: '$4,820',
+            : graphPreset.id === 'release'
+              ? {
+                  release: {
+                    version: 'beta-42',
+                    status: 'green',
+                    blockers: 1,
+                  },
+                }
+              : {
+                  billing: {
+                    plan: 'Studio',
+                    invoicesDue: 2,
+                    spendThisMonth: '$4,820',
+                  },
                 },
-              },
-    };
+      };
 
-    setGraphResponse(response);
-    setGraphLoading(false);
-    pushLog('GraphQL success', `${graphPreset.label} resolved in 460ms`, Colors.success);
+      setGraphResponse(response);
+      setGraphLoading(false);
+      pushLog('GraphQL success', `${graphPreset.label} resolved in 460ms`, Colors.success);
+    }, 460);
   };
 
   const toggleSocket = () => {
@@ -421,6 +522,7 @@ export default function NetworkScreen() {
       return;
     }
 
+    const sessionToken = operationController.current('socket-session');
     const outbound: ChatMessage = {
       id: `you-${Date.now()}`,
       author: 'You',
@@ -433,7 +535,11 @@ export default function NetworkScreen() {
     setChatInput('');
     pushLog('Socket send', outbound.text, Colors.primary);
 
-    const timer = setTimeout(() => {
+    scheduleTimeout(() => {
+      if (!operationController.isCurrent('socket-session', sessionToken)) {
+        return;
+      }
+
       const inbound: ChatMessage = {
         id: `socket-${Date.now()}`,
         author: 'Socket',
@@ -443,7 +549,6 @@ export default function NetworkScreen() {
       };
       setChatMessages(previous => [inbound, ...previous].slice(0, 8));
     }, 720);
-    timersRef.current.push(timer);
   };
 
   return (

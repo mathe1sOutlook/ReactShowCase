@@ -2,12 +2,17 @@ import React, {useEffect, useRef} from 'react';
 import {Animated, Easing, Linking, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Colors, Spacing} from '../theme';
 import {ScreenContainer} from '../components/common/ScreenContainer';
+import {
+  CURRENT_SHOWCASE_PLATFORM,
+  getShowcaseEditionLabel,
+  getShowcasePlatformLabel,
+} from '../utils/platformShowcase';
 
 const TECH_STACK = [
   {label: 'React Native', value: '0.84.1'},
   {label: 'React', value: '19.2.3'},
   {label: 'TypeScript', value: '5.8'},
-  {label: 'Platform', value: 'Android'},
+  {label: 'Platform', value: getShowcasePlatformLabel()},
   {label: 'Navigation', value: 'React Navigation 7'},
   {label: 'Animations', value: 'Animated API (built-in)'},
 ];
@@ -30,7 +35,7 @@ export default function AboutScreen() {
         <View style={styles.logoContainer}>
           <Text style={styles.logo}>{'\u269B'}</Text>
           <Text style={styles.title}>React Native ShowCase</Text>
-          <Text style={styles.subtitle}>Android Edition</Text>
+          <Text style={styles.subtitle}>{getShowcaseEditionLabel()}</Text>
         </View>
 
         <View style={styles.card}>
@@ -47,7 +52,7 @@ export default function AboutScreen() {
           <Text style={styles.cardTitle}>About</Text>
           <Text style={styles.description}>
             This app demonstrates the full spectrum of React Native's graphical
-            and interactive capabilities on Android. Every animation, chart,
+            and interactive capabilities on {getShowcasePlatformLabel(CURRENT_SHOWCASE_PLATFORM)}. Every animation, chart,
             and UI component showcases what's possible with this technology.
           </Text>
           <Text style={styles.description}>
