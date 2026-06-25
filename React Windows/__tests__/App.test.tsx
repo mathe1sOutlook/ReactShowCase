@@ -1,8 +1,8 @@
 import {describe, expect, it, jest} from '@jest/globals';
+import React, {type ReactNode} from 'react';
 import renderer from 'react-test-renderer';
 
 jest.mock('../src/navigation/AppNavigator', () => {
-  const React = require('react');
   const {Text} = require('react-native');
 
   return function MockAppNavigator() {
@@ -17,22 +17,19 @@ jest.mock('../src/quality/PerformanceOverlay', () => {
 });
 
 jest.mock('@react-navigation/native', () => {
-  const React = require('react');
-
   return {
-    NavigationContainer: ({children}: {children: React.ReactNode}) => children,
+    NavigationContainer: ({children}: {children: ReactNode}) => children,
   };
 });
 
 jest.mock('react-native-safe-area-context', () => ({
-  SafeAreaProvider: ({children}: {children: React.ReactNode}) => children,
+  SafeAreaProvider: ({children}: {children: ReactNode}) => children,
 }));
 
 jest.mock('react-native-screens', () => ({
   enableFreeze: jest.fn(),
 }));
 
-import React from 'react';
 import App from '../App';
 
 describe('App shell', () => {

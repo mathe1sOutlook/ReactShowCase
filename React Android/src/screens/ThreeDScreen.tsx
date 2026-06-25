@@ -445,8 +445,8 @@ function Software3DSection() {
       <View style={styles.noticeCard}>
         <Text style={styles.noticeTitle}>GL fallback active</Text>
         <Text style={styles.noticeText}>
-          The native WebGL bridge is still pending on Windows, so this phase is
-          rendered in JS + SVG to keep Android and Windows aligned.
+          The native WebGL bridge is still pending on some targets, so this
+          phase is rendered in JS + SVG to keep the mobile showcase consistent.
         </Text>
       </View>
 

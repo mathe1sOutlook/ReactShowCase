@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Colors, Radius} from '../theme';
+import {Colors} from '../theme';
 import {useAnimatedValue} from '../hooks/useAnimatedValue';
 import {SectionWrapper} from '../components/common/SectionWrapper';
 import {ScreenContainer} from '../components/common/ScreenContainer';

@@ -1,5 +1,8 @@
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  createBottomTabNavigator,
+  type BottomTabNavigationOptions,
+} from '@react-navigation/bottom-tabs';
 import {StyleSheet, View} from 'react-native';
 import {Colors} from '../theme';
 import type {RootTabParamList} from './types';
@@ -16,27 +19,28 @@ const ComponentsScreenMonitored = withScreenQuality(
   ComponentsScreen,
 );
 const AboutScreenMonitored = withScreenQuality('About', AboutScreen);
+type TabRouteKey = keyof RootTabParamList;
+
+const TAB_ICON_BY_ROUTE: Record<TabRouteKey, IconName> = {
+  HomeTab: 'home',
+  ComponentsTab: 'grid',
+  AboutTab: 'info',
+};
 
 function TabIcon({
-  label,
+  iconName,
   color,
   focused,
 }: {
-  label: string;
+  iconName: IconName;
   color: string;
   focused: boolean;
 }) {
-  const icons: Record<string, IconName> = {
-    HomeTab: 'home',
-    ComponentsTab: 'grid',
-    AboutTab: 'info',
-  };
-
   return (
     <View style={styles.tabIcon}>
       <View style={[styles.tabGlyphWrap, focused && styles.tabGlyphWrapFocused]}>
         <IconSymbol
-          name={icons[label] || 'grid'}
+          name={iconName}
           size={19}
           color={focused ? Colors.primary : color}
         />
@@ -45,45 +49,71 @@ function TabIcon({
   );
 }
 
+function getTabNavigatorOptions(): BottomTabNavigationOptions {
+  return {
+    headerShown: false,
+    freezeOnBlur: true,
+    lazy: true,
+    tabBarStyle: styles.tabBar,
+    tabBarActiveTintColor: Colors.primary,
+    tabBarInactiveTintColor: Colors.textMuted,
+    tabBarLabelStyle: styles.tabLabel,
+  };
+}
+
+function createTabOptions(
+  routeKey: TabRouteKey,
+  label: string,
+  accessibilityLabel: string,
+): BottomTabNavigationOptions {
+  return {
+    tabBarLabel: label,
+    tabBarAccessibilityLabel: accessibilityLabel,
+    tabBarIcon: ({color, focused}) => (
+      <TabIcon
+        iconName={TAB_ICON_BY_ROUTE[routeKey]}
+        color={color}
+        focused={focused}
+      />
+    ),
+  };
+}
+
+const HOME_TAB_OPTIONS = createTabOptions(
+  'HomeTab',
+  'Explore',
+  'Explore showcase screens',
+);
+const COMPONENTS_TAB_OPTIONS = createTabOptions(
+  'ComponentsTab',
+  'Components',
+  'Open component showcase',
+);
+const ABOUT_TAB_OPTIONS = createTabOptions(
+  'AboutTab',
+  'About',
+  'Open about screen',
+);
+
 export default function AppNavigator() {
   return (
     <Tab.Navigator
       detachInactiveScreens
-      screenOptions={({route}) => ({
-        headerShown: false,
-        freezeOnBlur: true,
-        lazy: true,
-        tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textMuted,
-        tabBarLabelStyle: styles.tabLabel,
-        tabBarIcon: ({color, focused}) => (
-          <TabIcon label={route.name} color={color} focused={focused} />
-        ),
-      })}>
+      screenOptions={getTabNavigatorOptions()}>
       <Tab.Screen
         name="HomeTab"
         component={HomeStack}
-        options={{
-          tabBarLabel: 'Explore',
-          tabBarAccessibilityLabel: 'Explore showcase screens',
-        }}
+        options={HOME_TAB_OPTIONS}
       />
       <Tab.Screen
         name="ComponentsTab"
         component={ComponentsScreenMonitored}
-        options={{
-          tabBarLabel: 'Components',
-          tabBarAccessibilityLabel: 'Open component showcase',
-        }}
+        options={COMPONENTS_TAB_OPTIONS}
       />
       <Tab.Screen
         name="AboutTab"
         component={AboutScreenMonitored}
-        options={{
-          tabBarLabel: 'About',
-          tabBarAccessibilityLabel: 'Open about screen',
-        }}
+        options={ABOUT_TAB_OPTIONS}
       />
     </Tab.Navigator>
   );

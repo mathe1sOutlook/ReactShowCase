@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useReducer, useRef, useState} from 'react';
 import {
   Linking,
   Pressable,
@@ -20,6 +20,11 @@ import type {
 import {ScreenContainer} from '../components/common/ScreenContainer';
 import StateBlock from '../components/common/StateBlock';
 import {Colors, Radius, Spacing} from '../theme';
+import {
+  browserHistoryReducer,
+  createBrowserHistoryState,
+  getCurrentHistoryUrl,
+} from './web/history';
 
 type BrowserPreset = {
   label: string;
@@ -392,9 +397,13 @@ export default function WebScreen() {
   const cardWidth = width >= 1080 ? (width - Spacing.lg * 2 - Spacing.md) / 2 : width - Spacing.lg * 2;
   const browserHeight = width >= 1200 ? 560 : width >= 760 ? 500 : 420;
   const webRef = useRef<WebView>(null);
-  const [history, setHistory] = useState<string[]>([LOCAL_URLS.home]);
-  const [historyIndex, setHistoryIndex] = useState(0);
-  const currentUrl = history[historyIndex] ?? LOCAL_URLS.home;
+  const [historyState, dispatchHistory] = useReducer(
+    browserHistoryReducer,
+    LOCAL_URLS.home,
+    createBrowserHistoryState,
+  );
+  const {entries: history, index: historyIndex} = historyState;
+  const currentUrl = getCurrentHistoryUrl(historyState);
   const [addressInput, setAddressInput] = useState(currentUrl);
   const [progress, setProgress] = useState(0.14);
   const [loading, setLoading] = useState(false);
@@ -430,14 +439,13 @@ export default function WebScreen() {
       return;
     }
 
-    setHistory(previous => {
-      const base = previous.slice(0, historyIndex + 1);
-      if (base[base.length - 1] === nextUrl) {
-        return base;
-      }
-      return [...base, nextUrl];
-    });
-    setHistoryIndex(previous => previous + 1);
+    if (nextUrl === currentUrl) {
+      setLastRouteAction(`Already focused on ${nextUrl}`);
+      appendRequest('Navigate skipped', nextUrl, Colors.warning);
+      return;
+    }
+
+    dispatchHistory({type: 'navigate', url: nextUrl});
     setProgress(0.12);
     appendRequest('Navigate', nextUrl, Colors.primary);
   };
@@ -446,18 +454,18 @@ export default function WebScreen() {
     if (historyIndex === 0) {
       return;
     }
-    const nextIndex = historyIndex - 1;
-    setHistoryIndex(nextIndex);
-    appendRequest('Back', history[nextIndex] ?? currentUrl, Colors.warning);
+    const nextUrl = history[historyIndex - 1] ?? currentUrl;
+    dispatchHistory({type: 'back'});
+    appendRequest('Back', nextUrl, Colors.warning);
   };
 
   const goForward = () => {
     if (historyIndex >= history.length - 1) {
       return;
     }
-    const nextIndex = historyIndex + 1;
-    setHistoryIndex(nextIndex);
-    appendRequest('Forward', history[nextIndex] ?? currentUrl, Colors.success);
+    const nextUrl = history[historyIndex + 1] ?? currentUrl;
+    dispatchHistory({type: 'forward'});
+    appendRequest('Forward', nextUrl, Colors.success);
   };
 
   const refresh = () => {

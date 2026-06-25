@@ -36,7 +36,7 @@ export default function AnimatedHeader({
         useNativeDriver: true,
       }),
     ]).start();
-  }, [title]);
+  }, [title, titleOpacity, titleTranslateX]);
 
   const handleBackPressIn = () => {
     Animated.spring(backScale, {

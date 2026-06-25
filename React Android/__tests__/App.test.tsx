@@ -1,8 +1,8 @@
 import {describe, expect, it, jest} from '@jest/globals';
+import type {ReactNode} from 'react';
 import renderer from 'react-test-renderer';
 
 jest.mock('../src/navigation/AppNavigator', () => {
-  const React = require('react');
   const {Text} = require('react-native');
 
   return function MockAppNavigator() {
@@ -11,7 +11,6 @@ jest.mock('../src/navigation/AppNavigator', () => {
 });
 
 jest.mock('../src/screens/SplashScreen', () => {
-  const React = require('react');
   const {Text} = require('react-native');
 
   return function MockSplashScreen({
@@ -34,15 +33,13 @@ jest.mock('../src/quality/PerformanceOverlay', () => {
 });
 
 jest.mock('@react-navigation/native', () => {
-  const React = require('react');
-
   return {
-    NavigationContainer: ({children}: {children: React.ReactNode}) => children,
+    NavigationContainer: ({children}: {children: ReactNode}) => children,
   };
 });
 
 jest.mock('react-native-safe-area-context', () => ({
-  SafeAreaProvider: ({children}: {children: React.ReactNode}) => children,
+  SafeAreaProvider: ({children}: {children: ReactNode}) => children,
 }));
 
 jest.mock('react-native-screens', () => ({
@@ -50,10 +47,9 @@ jest.mock('react-native-screens', () => ({
 }));
 
 jest.mock('react-native-gesture-handler', () => ({
-  GestureHandlerRootView: ({children}: {children: React.ReactNode}) => children,
+  GestureHandlerRootView: ({children}: {children: ReactNode}) => children,
 }));
 
-import React from 'react';
 import App from '../App';
 
 describe('App shell', () => {

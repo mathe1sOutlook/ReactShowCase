@@ -65,7 +65,7 @@ function Particle({
 
     const timer = setTimeout(animate, delay);
     return () => clearTimeout(timer);
-  }, []);
+  }, [delay, opacity, posX, posY, scale]);
 
   return (
     <Animated.View
